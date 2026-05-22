@@ -1,5 +1,5 @@
 import React from 'react'
-import { useAuth } from '../Context/AuthContext'
+import { useAuth } from '../../Context/AuthContext'
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
