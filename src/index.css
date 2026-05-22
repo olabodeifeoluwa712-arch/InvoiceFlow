@@ -1,1 +1,69 @@
 @import "tailwindcss";
+
+@theme {
+  --color-neon-cyan: #00f3ff;
+  --color-neon-purple: #bd00ff;
+  --color-neon-pink: #ff007f;
+  --color-cyber-dark: #080b11;
+  --color-cyber-card: #0e1320;
+}
+
+@utility neon-glow-cyan {
+  box-shadow: 0 0 20px rgba(0, 243, 255, 0.45);
+}
+
+@utility neon-glow-purple {
+  box-shadow: 0 0 20px rgba(189, 0, 255, 0.45);
+}
+
+@utility neon-glow-pink {
+  box-shadow: 0 0 20px rgba(255, 0, 127, 0.45);
+}
+
+@utility text-glow-cyan {
+  text-shadow: 0 0 10px rgba(0, 243, 255, 0.6);
+}
+
+@utility text-glow-purple {
+  text-shadow: 0 0 10px rgba(189, 0, 255, 0.6);
+}
+
+@utility text-glow-pink {
+  text-shadow: 0 0 10px rgba(255, 0, 127, 0.6);
+}
+
+@keyframes float-slow-1 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(60px, -80px) scale(1.2);
+  }
+}
+
+@keyframes float-slow-2 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1.2);
+  }
+  50% {
+    transform: translate(-70px, 50px) scale(0.9);
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+@utility animate-float-1 {
+  animation: float-slow-1 16s ease-in-out infinite;
+}
+
+@utility animate-float-2 {
+  animation: float-slow-2 20s ease-in-out infinite;
+}
+
+@utility animate-shake {
+  animation: shake 0.25s ease-in-out;
+}
