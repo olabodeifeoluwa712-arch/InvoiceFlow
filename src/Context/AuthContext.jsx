@@ -32,7 +32,6 @@ export function AuthProvider({ children }) {
   // Rehydrate from localStorage on first load
   const [currentUser,      setCurrentUser]      = useState(() => getSession());
   const [isAuthenticated,  setIsAuthenticated]  = useState(() => !!getSession());
-  //const [authView,         setAuthView]         = useState('login'); // 'login' | 'register'
 
   // ── Register ────────────────────────────────────────────────────────────────
   const register = useCallback(({ email, password, firstName, lastName, role }) => {
@@ -62,6 +61,7 @@ export function AuthProvider({ children }) {
     setIsAuthenticated(true);
     return { success: true, user: newUser };
     }, []);
+
 
     // ── Login ────────────────────────────────────────────────────────────────────
   const login = useCallback(({ email, password }) => {

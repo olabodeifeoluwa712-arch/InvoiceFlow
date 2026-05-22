@@ -13,8 +13,6 @@ function App() {
     <AuthProvider>
       <Routes>
         <Route path="/" element={<MainLayout/>} />
-        <Route path="/about" element={<h1>About</h1>} />
-        <Route path="/contact" element={<h1>Contact</h1>} />
         <Route path="/register" element={<Register/>} />
         <Route path="/login" element={<Login/>} />
       </Routes>

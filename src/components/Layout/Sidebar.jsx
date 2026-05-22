@@ -32,7 +32,7 @@ if (currentUser == null) {
         <div><h1>welcome user</h1></div>
        )}
 
-       {currentUser.role.toLowerCase().trim() == "solopreneur" && (
+       {currentUser.role.toLowerCase().trim() == "soloprenuer" && (
         <div><h1>welcome solopreneur</h1></div>
        )}
 
