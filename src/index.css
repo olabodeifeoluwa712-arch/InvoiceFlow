@@ -1,5 +1,13 @@
 @import "tailwindcss";
-
+:root {
+  --color--purple-ish: #7F22FE;
+  --color--faded-gray: #99A1AF;
+  --color-faded-black: #6A799E;
+  --bgcolor--notif-yellow: #FEF3C6;
+  --color--notif-brown: #BB4D00;
+  --color--label-lightred: #FEF2F2;
+  --color--focus-lightpurple: #F5F3FF;
+}
 @theme {
   --color-neon-cyan: #00f3ff;
   --color-neon-purple: #bd00ff;

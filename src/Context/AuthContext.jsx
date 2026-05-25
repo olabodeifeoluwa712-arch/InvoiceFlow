@@ -87,9 +87,16 @@ export function AuthProvider({ children }) {
     setCurrentUser(null);
     setIsAuthenticated(false);
   }, []);
+  const getInitials = (name) => {
+  const words = name.split(' ');
+  if (words.length >= 2) {
+    return (words[0][0] + words[1][0]).toUpperCase();
+  }
+  return name.slice(0, 2).toUpperCase();
+};
 
   return (
-  <AuthContext.Provider value={{isAuthenticated, setIsAuthenticated, login, register, logout, currentUser, setCurrentUser}}>
+  <AuthContext.Provider value={{isAuthenticated, setIsAuthenticated, login, register, logout, currentUser, setCurrentUser,getInitials}}>
     {children}
   </AuthContext.Provider>
   )
