@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 :root {
   --color--purple-ish: #7F22FE;
   --color--faded-gray: #99A1AF;

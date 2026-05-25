@@ -1,32 +1,71 @@
 import { useAuth } from '../../Context/AuthContext'
-import { useNavigate } from 'react-router-dom'
-import Audit from './Pages/Accountant/Audit'
-import Accountantdashboard from './Pages/Accountant/Dashboard'
-import Payments from './Pages/Accountant/Payments'
-import Reports from './Pages/Accountant/Reports'
-import Records from './Pages/Accountant/Records'
-import CreateInvoice from './Pages/Admin/CreateInvoice'
-import AdminDashboard from './Pages/Admin/Dashboard'
-import AdminCustomers from './Pages/Admin/Customers'
-import AdminInvoices from './Pages/Admin/Invoices'
-import AdminProducts from './Pages/Admin/Products'
-import AdminReceipts from './Pages/Admin/Receipts'
-import AdminSettings from './Pages/Admin/Settings'
-import Catalogue from './Pages/solopreneur/Catalogue'
-import Customers from './Pages/solopreneur/Customers'
-import Invoice from './Pages/solopreneur/Invoice'
-import Orders from './Pages/solopreneur/Orders'
-import Profile from './Pages/solopreneur/Profile'
-import SolopreneurDashboard from './Pages/solopreneur/Dashboard'
-import SalesDashboard from './Pages/Sales/Dashboard'
-import Notifications from './Pages/Sales/Notifications'
-import Receipt from './Pages/Sales/Receipt'
-import Sales from './Pages/Sales/Sales'
-import Stocks from './Pages/Sales/Stocks'
-import Register from './Pages/user/Register'
-import Dashboard from './Pages/user/Dashboard'
+import { useTheme } from '../../Context/ThemeContext'
+import { NavLink, useNavigate } from 'react-router-dom'
+import {
+  ChevronLeftIcon as ChevronLeftIconOutline,
+  Squares2X2Icon as Squares2X2IconOutline,
+  DocumentTextIcon as DocumentTextIconOutline,
+  PlusCircleIcon as PlusCircleIconOutline,
+  UsersIcon as UsersIconOutline,
+  ReceiptPercentIcon as ReceiptPercentIconOutline,
+  CubeIcon as CubeIconOutline,
+  Cog6ToothIcon as Cog6ToothIconOutline,
+  CreditCardIcon as CreditCardIconOutline,
+  ClipboardDocumentListIcon as ClipboardDocumentListIconOutline,
+  ChartBarIcon as ChartBarIconOutline,
+  ShieldCheckIcon as ShieldCheckIconOutline,
+  BellIcon as BellIconOutline,
+  ShoppingCartIcon as ShoppingCartIconOutline,
+  ArchiveBoxIcon as ArchiveBoxIconOutline,
+  BookOpenIcon as BookOpenIconOutline,
+  ClipboardDocumentCheckIcon as ClipboardDocumentCheckIconOutline,
+  UserCircleIcon as UserCircleIconOutline,
+  DocumentDuplicateIcon as DocumentDuplicateIconOutline,
+  UserPlusIcon as UserPlusIconOutline,
+  ArrowRightOnRectangleIcon as ArrowRightOnRectangleIconOutline,
+  ArrowsUpDownIcon as ArrowUpDownIconOutline,
+  ExclamationTriangleIcon as ExclamationTriangleIconOutline,
+  ClockIcon as ClockIconOutline,
+} from "@heroicons/react/24/outline";
+
+import {
+  BoltIcon as BoltIconSolid,
+  Squares2X2Icon as Squares2X2IconSolid,
+  DocumentTextIcon as DocumentTextIconSolid,
+  PlusCircleIcon as PlusCircleIconSolid,
+  UsersIcon as UsersIconSolid,
+  ReceiptPercentIcon as ReceiptPercentIconSolid,
+  CubeIcon as CubeIconSolid,
+  Cog6ToothIcon as Cog6ToothIconSolid,
+  CreditCardIcon as CreditCardIconSolid,
+  ClipboardDocumentListIcon as ClipboardDocumentListIconSolid,
+  ChartBarIcon as ChartBarIconSolid,
+  ShieldCheckIcon as ShieldCheckIconSolid,
+  BellIcon as BellIconSolid,
+  ShoppingCartIcon as ShoppingCartIconSolid,
+  ArchiveBoxIcon as ArchiveBoxIconSolid,
+  BookOpenIcon as BookOpenIconSolid,
+  ClipboardDocumentCheckIcon as ClipboardDocumentCheckIconSolid,
+  UserCircleIcon as UserCircleIconSolid,
+  DocumentDuplicateIcon as DocumentDuplicateIconSolid,
+  UserPlusIcon as UserPlusIconSolid,
+  ArrowRightOnRectangleIcon as ArrowRightOnRectangleIconSolid,
+  ArrowsUpDownIcon as ArrowUpDownIconSolid,
+  ExclamationTriangleIcon as ExclamationTriangleIconSolid,
+  ClockIcon as ClockIconSolid,
+} from "@heroicons/react/24/solid";
+
+const formatRole = (role) =>
+  role
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/[-_]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toUpperCase();
+
 const Sidebar = () => {
   const { currentUser, logout, getInitials } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate()
 
   if (currentUser == null) {
@@ -126,7 +165,7 @@ const Sidebar = () => {
             activeIcon: UsersIconSolid,
           },
           {
-            to: "/business/create-receipt",
+            to: "/business-create-receipt",
             label: "Create Receipt",
             icon: CubeIconOutline,
             activeIcon: CubeIconSolid,
@@ -339,38 +378,35 @@ admin:[
   }
 
   return (
-    <div>
-       
-       {currentUser.role.toLowerCase().trim() == "admin" && (
-        <div>
-          <div>
-            <img src="" alt="" />
-            <h2>Invoiceflow</h2>
+    <aside className="w-[200px] max-w-full h-screen border-r border-[#e8e5f7] bg-white flex flex-col transition-colors duration-300 dark:bg-[#0D121E] dark:border-slate-800 dark:text-slate-100">
+
+      {/* LOGO */}
+      <div className="h-10 pb-8 pt-8 flex items-center justify-between border-b border-[#e8e5f7] transition-colors duration-300 dark:border-slate-800">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-6 h-6 rounded-xl ml-5 bg-[var(--color--purple-ish)] text-white flex items-center justify-center shadow-[0_8px_18px_rgba(127,34,254,0.24)] dark:bg-gradient-to-tr dark:from-neon-cyan dark:to-neon-purple dark:text-slate-950 dark:shadow-[0_0_18px_rgba(0,243,255,0.28)]">
+            <BoltIconSolid className="w-4 h-4" />
           </div>
+          <h2 className="leading-none text-[#2a2850] font-extrabold truncate dark:bg-gradient-to-r dark:from-neon-cyan dark:to-neon-purple dark:bg-clip-text dark:text-transparent dark:text-glow-cyan">
+            InvoiceFlow
+          </h2>
         </div>
 
-        <button
-          type="button"
-          className="w-5 h-5 rounded-full bg-[#f0eff9] text-[#827ea6] flex items-center justify-center hover:bg-[#e8e6f5] transition-colors"
-          aria-label="Collapse sidebar"
-        >
-          <ChevronLeftIconOutline className="w-3 h-3" />
-        </button>
+        
       </div>
 
       {/* NAV */}
       <nav className="flex-1 px-2 py-3 overflow-y-auto">
-        <div className="mb-5 rounded-xl border border-[#ded7ff] bg-[var(--color--focus-lightpurple)] px-3 py-1.5 text-sm font-normal text-[var(--color--purple-ish)]">
+        <div className="mb-5 rounded-xl border border-[#ded7ff] bg-[var(--color--focus-lightpurple)] px-3 py-[0.3rem] text-sm font-normal text-[var(--color--purple-ish)] transition-colors duration-300 dark:border-neon-cyan/25 dark:bg-neon-cyan/10 dark:text-neon-cyan dark:shadow-[0_0_14px_rgba(0,243,255,0.08)]">
           {displayRole}
         </div>
 
         {sections.map((section) => (
           <div key={section.title} className="mb-3.5">
-            <h3 className="px-1.5 mb-1.5  font-light text-[15px] tracking-[0.16em] text-[#817da5]">
+            <h3 className="px-2.5 mb-2.5 font-light text-[15px] tracking-[0.16em] text-[#817da5] transition-colors duration-300 dark:text-slate-500">
               {section.title}
             </h3>
 
-            <div className="space-y-2">
+            <div className="space-y-3">
               {section.items.map((item) => (
                 <NavLink
                   key={item.to}
@@ -378,14 +414,14 @@ admin:[
                   className="block no-underline"
                 >
                   {({ isActive }) => (
-                    <div className={`min-h-7 rounded-[22px] px-3 flex items-center gap-5 transition-colors ${isActive ? 'bg-[#efedf7] text-[#17162b] font-normal' : 'text-[#7f7da5] hover:bg-[#f6f4fb]'}`}>
+                    <div className={`min-h-7 rounded-[22px] px-3 py-[0.3rem] flex items-center gap-5 transition-colors duration-300 ${isActive ? 'bg-[#efedf7] text-[#17162b] font-normal dark:bg-neon-cyan/10 dark:text-neon-cyan dark:shadow-[0_0_14px_rgba(0,243,255,0.08)]' : 'text-[#7f7da5] hover:bg-[#f6f4fb] dark:text-slate-400 dark:hover:bg-slate-900/70 dark:hover:text-slate-100'}`}>
                       {(() => {
                         const Icon = isActive ? item.activeIcon : item.icon;
                         return <Icon className="w-5 h-5 flex-shrink-0" />;
                       })()}
                       <span className="flex-1 truncate">{item.label}</span>
                       {item.badge && (
-                        <span className="min-w-4 h-4 px-2 rounded-full bg-[var(--bgcolor--notif-yellow)] border border-[#ffd96b] text-[var(--color--notif-brown)] font-normal flex items-center justify-center">
+                        <span className="min-w-4 h-4 px-2 rounded-full bg-[var(--bgcolor--notif-yellow)] border border-[#ffd96b] text-[var(--color--notif-brown)] font-normal flex items-center justify-center dark:bg-neon-pink/10 dark:border-neon-pink/30 dark:text-neon-pink">
                           {item.badge}
                         </span>
                       )}
@@ -399,20 +435,20 @@ admin:[
       </nav>
 
       {/* USER INFO */}
-      <div className="border-t border-[#e8e5f7] px-3 py-3 flex items-center gap-4">
-        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#7f5cff] to-[#a45cff] text-white flex items-center justify-center  font-normal">
+      <div className="border-t border-[#e8e5f7] px-3 py-3 flex items-center gap-4 transition-colors duration-300 dark:border-slate-800 dark:bg-slate-950/20">
+        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#7f5cff] to-[#a45cff] text-white flex items-center justify-center font-normal dark:from-neon-cyan dark:to-neon-purple dark:text-slate-950">
           {getInitials(currentUser?.firstName || 'User')}
         </div>
         <div className="min-w-0 flex-1">
-          <p className=" leading-tight text-[#08071a] truncate">
+          <p className="leading-tight text-[#08071a] truncate dark:text-slate-100">
             {[currentUser?.firstName, currentUser?.lastName].filter(Boolean).join(' ') || 'User'}
           </p>
-          <p className="font-normal leading-tight text-[#7f7da5] truncate capitalize">{role}</p>
+          <p className="font-normal leading-tight text-[#7f7da5] truncate capitalize dark:text-slate-500">{role}</p>
         </div>
         <button
           type="button"
           onClick={handleLogout}
-          className="w-5 h-5 rounded-full text-[#7f7da5] hover:bg-[#f0eff9] flex items-center justify-center transition-colors"
+          className="w-5 h-5 rounded-full text-[#7f7da5] hover:bg-[#f0eff9] flex items-center justify-center transition-colors dark:text-slate-500 dark:hover:bg-slate-900/70 dark:hover:text-neon-pink"
           aria-label="Log out"
         >
           <ArrowRightOnRectangleIconOutline className="w-3 h-3" />
