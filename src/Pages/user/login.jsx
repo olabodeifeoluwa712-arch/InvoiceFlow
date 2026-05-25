@@ -2,8 +2,10 @@ import React from 'react'
 import { useAuth } from '../../Context/AuthContext'
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams, Link } from 'react-router-dom'
+import { useTheme } from '../../Context/ThemeContext'
 
 const Login = () => {
+  const { theme, toggleTheme } = useTheme();
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -66,31 +68,48 @@ const Login = () => {
   };
 
   return (
-    <div className="bg-cyber-dark text-slate-100 min-h-screen flex items-center justify-center p-4 relative overflow-hidden select-none font-sans">
+    <div className="transition-colors duration-300 bg-slate-50 text-slate-800 dark:bg-cyber-dark dark:text-slate-100 min-h-screen flex items-center justify-center p-4 relative overflow-hidden select-none font-sans">
+      {/* Floating Theme Switcher */}
+      <button
+        onClick={toggleTheme}
+        className="absolute top-4 right-4 z-50 flex items-center justify-center p-3 rounded-xl border transition-all duration-300 hover:scale-105 cursor-pointer bg-white border-slate-200 text-slate-600 hover:bg-slate-50 dark:bg-slate-950/40 dark:border-slate-800 dark:text-neon-cyan dark:hover:bg-slate-900/60 shadow-md"
+        title={theme === 'dark' ? "Switch to Light Mode" : "Switch to Dark Mode"}
+      >
+        {theme === 'dark' ? (
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.364 17.636l-.707.707M18.364 18.364l-.707-.707M6.364 6.364l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"></path>
+          </svg>
+        ) : (
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+          </svg>
+        )}
+      </button>
+
       {/* Background Decorative Ambient Glow Blobs */}
-      <div className="absolute top-1/4 -right-36 w-96 h-96 bg-neon-purple/15 rounded-full blur-[110px] animate-float-1 pointer-events-none"></div>
-      <div className="absolute bottom-1/4 -left-36 w-96 h-96 bg-neon-cyan/15 rounded-full blur-[110px] animate-float-2 pointer-events-none"></div>
-      <div className="absolute top-1/3 left-1/4 w-80 h-80 bg-neon-pink/10 rounded-full blur-[130px] animate-float-2 pointer-events-none"></div>
+      <div className="absolute top-1/4 -right-36 w-96 h-96 bg-neon-purple/5 dark:bg-neon-purple/15 rounded-full blur-[110px] animate-float-1 pointer-events-none transition-all duration-300"></div>
+      <div className="absolute bottom-1/4 -left-36 w-96 h-96 bg-neon-cyan/5 dark:bg-neon-cyan/15 rounded-full blur-[110px] animate-float-2 pointer-events-none transition-all duration-300"></div>
+      <div className="absolute top-1/3 left-1/4 w-80 h-80 bg-neon-pink/5 dark:bg-neon-pink/10 rounded-full blur-[130px] animate-float-2 pointer-events-none transition-all duration-300"></div>
 
       {/* Main Glassmorphic Container */}
-      <div className={`w-full max-w-md bg-cyber-card/85 backdrop-blur-xl border border-slate-800 rounded-3xl p-8 md:p-10 shadow-2xl relative z-10 duration-500 transition-all hover:border-slate-700/80 ${animateShake ? 'animate-shake' : ''}`}>
+      <div className={`w-full max-w-md bg-white border border-slate-200 shadow-xl dark:bg-cyber-card/85 dark:backdrop-blur-xl dark:border-slate-800 rounded-3xl p-8 md:p-10 dark:shadow-2xl relative z-10 duration-500 transition-all hover:border-slate-300 dark:hover:border-slate-700/80 ${animateShake ? 'animate-shake' : ''}`}>
 
         {/* Glow Border Overlay Accent */}
-        <div className="absolute -top-[1px] left-10 right-10 h-[2px] bg-gradient-to-r from-transparent via-neon-cyan via-neon-purple to-transparent opacity-80"></div>
+        <div className="absolute -top-[1px] left-10 right-10 h-[2px] bg-gradient-to-r from-transparent via-neon-purple to-transparent dark:via-neon-cyan dark:to-transparent opacity-80"></div>
 
         {/* Logo and Subtitle */}
         <div className="flex flex-col items-center mb-8">
           <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-neon-cyan to-neon-purple p-[2px] mb-4 shadow-[0_0_20px_rgba(0,243,255,0.3)] animate-pulse">
-            <div className="w-full h-full bg-cyber-card rounded-2xl flex items-center justify-center">
-              <svg className="w-8 h-8 text-neon-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <div className="w-full h-full bg-white dark:bg-cyber-card rounded-2xl flex items-center justify-center">
+              <svg className="w-8 h-8 text-neon-purple dark:text-neon-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
               </svg>
             </div>
           </div>
-          <h1 className="text-3xl font-extrabold tracking-wider bg-gradient-to-r from-neon-cyan via-slate-100 to-neon-purple bg-clip-text text-transparent text-glow-cyan text-center">
+          <h1 className="text-3xl font-extrabold tracking-wider text-center text-slate-900 bg-gradient-to-r dark:from-neon-cyan dark:via-slate-100 dark:to-neon-purple dark:bg-clip-text dark:text-transparent dark:text-glow-cyan">
             INVOICE FLOW
           </h1>
-          <p className="text-slate-400 text-xs mt-1 tracking-widest font-mono uppercase text-center">
+          <p className="text-slate-500 dark:text-slate-400 text-xs mt-1 tracking-widest font-mono uppercase text-center">
             Operator Access Required
           </p>
         </div>
@@ -119,7 +138,7 @@ const Login = () => {
 
           {/* Email Input */}
           <div className="relative group">
-            <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-500 group-focus-within:text-neon-cyan transition-colors">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 group-focus-within:text-neon-purple dark:text-slate-500 dark:group-focus-within:text-neon-cyan transition-colors">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
               </svg>
@@ -129,13 +148,13 @@ const Login = () => {
               placeholder="Operator Email"
               onChange={(e) => set('email', e.target.value)}
               value={form.email}
-              className="w-full bg-slate-950/40 border border-slate-800 rounded-xl pl-10 pr-4 py-3 text-sm focus:border-neon-cyan/80 focus:outline-none transition-all duration-300 focus:ring-1 focus:ring-neon-cyan/50 text-slate-100 placeholder-slate-500 font-medium focus:neon-glow-cyan"
+              className="w-full bg-slate-100 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-sm focus:border-neon-purple focus:outline-none transition-all duration-300 focus:ring-1 focus:ring-neon-purple/35 text-slate-800 placeholder-slate-450 font-medium dark:bg-slate-950/40 dark:border-slate-800 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-neon-cyan/80 dark:focus:ring-neon-cyan/50 focus:neon-glow-cyan"
             />
           </div>
 
           {/* Password Input */}
           <div className="relative group">
-            <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-500 group-focus-within:text-neon-purple transition-colors">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 group-focus-within:text-neon-purple dark:text-slate-500 dark:group-focus-within:text-neon-cyan transition-colors">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
               </svg>
@@ -145,7 +164,7 @@ const Login = () => {
               placeholder="Operator Password"
               onChange={(e) => set('password', e.target.value)}
               value={form.password}
-              className="w-full bg-slate-950/40 border border-slate-800 rounded-xl pl-10 pr-4 py-3 text-sm focus:border-neon-purple/80 focus:outline-none transition-all duration-300 focus:ring-1 focus:ring-neon-purple/50 text-slate-100 placeholder-slate-500 font-medium focus:neon-glow-purple"
+              className="w-full bg-slate-100 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-sm focus:border-neon-purple focus:outline-none transition-all duration-300 focus:ring-1 focus:ring-neon-purple/35 text-slate-800 placeholder-slate-450 font-medium dark:bg-slate-950/40 dark:border-slate-800 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-neon-cyan/80 dark:focus:ring-neon-cyan/50 focus:neon-glow-purple"
             />
           </div>
 
@@ -179,11 +198,11 @@ const Login = () => {
 
         {/* Bottom Navigation */}
         <div className="mt-8 text-center text-sm font-medium">
-          <p className="text-slate-400">
+          <p className="text-slate-500 dark:text-slate-400">
             New operator?{' '}
             <Link
               to="/register"
-              className="text-neon-cyan font-bold hover:text-neon-pink hover:text-glow-pink transition-colors relative group py-1"
+              className="text-neon-purple dark:text-neon-cyan font-bold hover:text-neon-pink dark:hover:text-neon-pink transition-colors relative group py-1"
             >
               Request Access
               <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-neon-pink group-hover:w-full transition-all duration-300"></span>

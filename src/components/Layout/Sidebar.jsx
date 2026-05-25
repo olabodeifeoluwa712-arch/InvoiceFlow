@@ -1,31 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '../../Context/AuthContext'
-import { useNavigate } from 'react-router-dom'
-import Audit from './Pages/Accountant/Audit'
-import Accountantdashboard from './Pages/Accountant/Dashboard'
-import Payments from './Pages/Accountant/Payments'
-import Reports from './Pages/Accountant/Reports'
-import Records from './Pages/Accountant/Records'
-import CreateInvoice from './Pages/Admin/CreateInvoice'
-import AdminDashboard from './Pages/Admin/Dashboard'
-import AdminCustomers from './Pages/Admin/Customers'
-import AdminInvoices from './Pages/Admin/Invoices'
-import AdminProducts from './Pages/Admin/Products'
-import AdminReceipts from './Pages/Admin/Receipts'
-import AdminSettings from './Pages/Admin/Settings'
-import Catalogue from './Pages/solopreneur/Catalogue'
-import Customers from './Pages/solopreneur/Customers'
-import Invoice from './Pages/solopreneur/Invoice'
-import Orders from './Pages/solopreneur/Orders'
-import Profile from './Pages/solopreneur/Profile'
-import SolopreneurDashboard from './Pages/solopreneur/Dashboard'
-import SalesDashboard from './Pages/Sales/Dashboard'
-import Notifications from './Pages/Sales/Notifications'
-import Receipt from './Pages/Sales/Receipt'
-import Sales from './Pages/Sales/Sales'
-import Stocks from './Pages/Sales/Stocks'
-import Register from './Pages/user/Register'
-import Dashboard from './Pages/user/Dashboard'
+import { useNavigate, Link, NavLink } from 'react-router-dom'
 const Sidebar = () => {
 const { currentUser, logout, setCurrentUser } = useAuth();
 
@@ -45,14 +20,18 @@ if (currentUser == null) {
 
 
   return (
-    <div>
+    <div className='w-72 bg-white border-r p-4'>
        
        {currentUser.role.toLowerCase().trim() == "admin" && (
         <div>
-          <div>
-            <img src="" alt="" />
-            <h2>Invoiceflow</h2>
-          </div>
+
+          <NavLink to="/admin/customers" className="block p-3 rounded-xl hover:bg-purple-100">customers</NavLink>
+          <NavLink to='/admin/products' className="block p-3 rounded-xl hover:bg-purple-100">Products</NavLink>
+          <NavLink to='/admin/invoices' className="block p-3 rounded-xl hover:bg-purple-100">Invoices</NavLink>
+          <NavLink to='/admin/receipts' className="block p-3 rounded-xl hover:bg-purple-100">Receipts</NavLink>
+          <NavLink to='/admin/settings' className="block p-3 rounded-xl hover:bg-purple-100">Settings</NavLink>
+          <NavLink to='/admin/create-receipt' className="block p-3 rounded-xl hover:bg-purple-100">create-receipt</ NavLink>
+          <NavLink to='/admin/create-invoice' className="block p-3 rounded-xl hover:bg-purple-100">create-invoice</NavLink>
         </div>
        )}
 
