@@ -133,7 +133,7 @@ const Sidebar = () => {
         title: "MAIN MENU",
         items: [
           {
-            to: "/business-dashboard",
+            to: "/",
             label: "Dashboard",
             icon: Squares2X2IconOutline,
             activeIcon: Squares2X2IconSolid,
@@ -407,6 +407,7 @@ admin:[
             </h3>
 
             <div className="space-y-3">
+             
               {section.items.map((item) => (
                 <NavLink
                   key={item.to}

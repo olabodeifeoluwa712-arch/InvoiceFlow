@@ -45,7 +45,7 @@ function App() {
        
         <Router>
           <Routes>
-            <Route path="/" element={<MainLayout />}>
+            <Route element={<MainLayout />}>
             
               {/* Inventory Manager */}
               <Route path="/inventory-dashboard" element={<InventoryDashboard />} />
@@ -62,7 +62,7 @@ function App() {
               <Route path="/orders" element={<Orders />} />
               <Route path="/profile" element={<Profile />} />
               {/* Business */}
-              <Route path="/business-dashboard" element={<BusinessDashboard />} />
+              <Route path="/" element={<BusinessDashboard />} />
               <Route path="/business-customers" element={<BusinessCustomers />} />
               <Route path="/business-invoices" element={<BusinessInvoices />} />
               <Route path="/business-create-receipt" element={<BusinessCreateReceipt />} />
