@@ -56,7 +56,7 @@ function App() {
               <Route index path="/inventory-dashboard" element={<InventoryDashboard />} />
               <Route path="/inventory" element={<Inventory />} />
               <Route path="/inventory-products" element={<Products />} />
-              <Route path="/stock-adjustment" element={<StockAdjustment />} />
+              <Route path="/stock-adjustments" element={<StockAdjustment />} />
               <Route path="/stock-history" element={<StockHistory />} />
               <Route path="/low-stock-alerts" element={<LowStockAlerts />} />
               <Route path="/add-products" element={<AddProducts />} />

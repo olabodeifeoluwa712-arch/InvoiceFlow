@@ -136,28 +136,28 @@ const movements = [
 const typeMeta = {
   'Stock In': {
     icon: ArrowUpCircleIcon,
-    iconStyle: 'bg-[#E6FBF1] text-[#00A879]',
-    badge: 'border-[#A6EFD4] bg-[#EFFFF8] text-[#008E68]',
+    iconStyle: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border dark:border-emerald-500/20',
+    badge: 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/25 dark:bg-emerald-500/10 dark:text-emerald-400',
   },
   'Stock Out': {
     icon: ArrowDownCircleIcon,
-    iconStyle: 'bg-[#EAF4FF] text-[#1478FF]',
-    badge: 'border-[#B9D8FF] bg-[#F0F7FF] text-[#005BFF]',
+    iconStyle: 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 dark:border dark:border-blue-500/20',
+    badge: 'border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-500/25 dark:bg-blue-500/10 dark:text-blue-400',
   },
   'Manual Adjustment': {
     icon: AdjustmentsHorizontalIcon,
-    iconStyle: 'bg-[#F3EEFF] text-[#7F22FE]',
-    badge: 'border-[#D8C8FF] bg-[#F6F1FF] text-[#6917FF]',
+    iconStyle: 'bg-purple-50 text-purple-600 dark:bg-neon-purple/10 dark:text-neon-cyan dark:border dark:border-neon-cyan/20',
+    badge: 'border-purple-200 bg-purple-50 text-purple-700 dark:border-neon-cyan/25 dark:bg-neon-cyan/10 dark:text-neon-cyan',
   },
   Return: {
     icon: ArrowPathIcon,
-    iconStyle: 'bg-[#EAF8FF] text-[#009FEA]',
-    badge: 'border-[#B9E4FF] bg-[#F1FAFF] text-[#007BB7]',
+    iconStyle: 'bg-cyan-50 text-cyan-600 dark:bg-cyan-500/10 dark:text-cyan-300 dark:border dark:border-cyan-500/20',
+    badge: 'border-cyan-200 bg-cyan-50 text-cyan-700 dark:border-cyan-500/25 dark:bg-cyan-500/10 dark:text-cyan-300',
   },
   'Write-off': {
     icon: TrashIcon,
-    iconStyle: 'bg-[#FFF0F0] text-[#FF1F2D]',
-    badge: 'border-[#FFC5C5] bg-[#FFF6F6] text-[#FF1F2D]',
+    iconStyle: 'bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400 dark:border dark:border-rose-500/20',
+    badge: 'border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-500/25 dark:bg-rose-500/10 dark:text-rose-400',
   },
 }
 
@@ -189,122 +189,135 @@ const StockHistory = () => {
   }, [activeFilter, searchTerm])
 
   return (
-    <div className="min-h-screen w-full overflow-x-hidden bg-[#F8F8FF] font-sans text-[#19192B]">
-      <section className="rounded-b-[18px] border-b border-[#ECEBFA] bg-white px-4 py-3 md:px-6">
-        <div className="flex w-full flex-col gap-4 xl:flex-row xl:items-center">
-          <label className="flex h-11 w-full max-w-[430px] items-center gap-3 rounded-[18px] bg-[#EEEEF8] px-4 text-[#7D7CA4]">
-            <MagnifyingGlassIcon className="h-5 w-5 shrink-0" />
-            <input
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
-              className="h-full min-w-0 flex-1 bg-transparent text-sm font-medium outline-none placeholder:text-[#9A99B8]"
-              placeholder="Search product, SKU, reference..."
-            />
-          </label>
+    <div className="relative min-h-screen w-full overflow-x-hidden bg-[#F8F9FC] p-4 font-sans text-slate-900 transition-colors duration-300 dark:bg-cyber-dark dark:text-slate-100 md:p-6 lg:p-8">
+      <div className="pointer-events-none absolute top-1/4 -right-36 h-96 w-96 rounded-full bg-neon-purple/5 blur-[120px] transition-all duration-300 dark:bg-neon-purple/10"></div>
+      <div className="pointer-events-none absolute bottom-1/4 -left-36 h-96 w-96 rounded-full bg-neon-cyan/5 blur-[120px] transition-all duration-300 dark:bg-neon-cyan/10"></div>
 
-          <div className="flex min-h-11 flex-1 flex-wrap items-center gap-1 rounded-[18px] bg-[#EDECF7] p-1">
-            {filters.map((filter) => (
-              <button
-                key={filter}
-                type="button"
-                onClick={() => setActiveFilter(filter)}
-                className={`h-9 rounded-[14px] px-4 text-xs font-extrabold transition ${
-                  filter === activeFilter
-                    ? 'bg-[#7A66F4] text-white shadow-[0_6px_13px_rgba(122,102,244,0.34)]'
-                    : 'text-[#77769D] hover:bg-white/45'
-                }`}
-              >
-                {filter}
-              </button>
-            ))}
+      <div className="relative z-10 mx-auto w-full max-w-7xl space-y-5">
+        <header>
+          <h1 className="text-2xl font-extrabold leading-tight tracking-tight text-slate-900 dark:text-slate-100 md:text-3xl">
+            Stock History
+          </h1>
+          <p className="mt-1.5 text-sm font-semibold text-slate-400 dark:text-slate-500">
+            Track stock movement, references, and adjustment notes.
+          </p>
+        </header>
+
+        <section className="rounded-2xl border border-slate-100 bg-white p-3 shadow-sm transition-colors duration-300 dark:border-slate-800/80 dark:bg-cyber-card/85 dark:shadow-2xl md:p-4">
+          <div className="flex w-full flex-col gap-3 xl:flex-row xl:items-center">
+            <label className="flex h-10 w-full max-w-[390px] items-center gap-2.5 rounded-xl border border-slate-100 bg-slate-50 px-3.5 text-slate-400 transition-colors duration-300 dark:border-slate-800 dark:bg-slate-950/35 dark:text-slate-500">
+              <MagnifyingGlassIcon className="h-4 w-4 shrink-0" />
+              <input
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                className="h-full min-w-0 flex-1 bg-transparent text-sm font-semibold text-slate-700 outline-none placeholder:text-slate-400 dark:text-slate-200 dark:placeholder:text-slate-500"
+                placeholder="Search product, SKU, reference..."
+              />
+            </label>
+
+            <div className="flex min-h-10 flex-1 flex-wrap items-center gap-1 rounded-xl border border-slate-100 bg-slate-100/70 p-1 transition-colors duration-300 dark:border-slate-800 dark:bg-slate-950/30">
+              {filters.map((filter) => (
+                <button
+                  key={filter}
+                  type="button"
+                  onClick={() => setActiveFilter(filter)}
+                  className={`h-8 rounded-lg px-3 text-xs font-extrabold transition ${
+                    filter === activeFilter
+                      ? 'bg-[#7A66F4] text-white shadow-[0_6px_13px_rgba(122,102,244,0.25)] dark:bg-neon-cyan/15 dark:text-neon-cyan dark:ring-1 dark:ring-neon-cyan/30 dark:shadow-[0_0_16px_rgba(0,243,255,0.10)]'
+                      : 'text-slate-500 hover:bg-white/70 dark:text-slate-400 dark:hover:bg-slate-900/70 dark:hover:text-slate-200'
+                  }`}
+                >
+                  {filter}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="px-0 py-6">
-        <div className="overflow-hidden rounded-[18px] border border-[#ECEBFA] bg-white">
-          <div className="w-full overflow-x-auto">
-            <table className="w-full min-w-[980px] border-collapse text-left">
+        <section>
+          <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition-colors duration-300 dark:border-slate-800/80 dark:bg-cyber-card/85 dark:shadow-2xl">
+            <div className="w-full overflow-x-auto">
+              <table className="w-full min-w-[980px] border-collapse text-left">
               <thead>
-                <tr className="h-12 border-b border-[#ECEBFA] bg-[#FBFAFF]">
-                  <th className="w-[140px] px-6 text-xs font-extrabold text-[#7D7CA4]">
+                <tr className="h-11 border-b border-slate-100 bg-slate-50/75 transition-colors duration-300 dark:border-slate-800/80 dark:bg-slate-950/25">
+                  <th className="w-[125px] px-5 text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">
                     Date & Time
                   </th>
-                  <th className="w-[310px] px-5 text-xs font-extrabold text-[#7D7CA4]">
+                  <th className="w-[280px] px-4 text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">
                     Product
                   </th>
-                  <th className="w-[180px] px-5 text-xs font-extrabold text-[#7D7CA4]">
+                  <th className="w-[175px] px-4 text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">
                     Movement Type
                   </th>
-                  <th className="w-[115px] px-4 text-center text-xs font-extrabold text-[#7D7CA4]">
+                  <th className="w-[105px] px-4 text-center text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">
                     Qty Change
                   </th>
-                  <th className="w-[145px] px-4 text-center text-xs font-extrabold text-[#7D7CA4]">
+                  <th className="w-[135px] px-4 text-center text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">
                     Reference
                   </th>
-                  <th className="w-[135px] px-4 text-xs font-extrabold text-[#7D7CA4]">
+                  <th className="w-[125px] px-4 text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">
                     User
                   </th>
-                  <th className="px-5 text-xs font-extrabold text-[#7D7CA4]">
+                  <th className="px-4 text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">
                     Note
                   </th>
                 </tr>
               </thead>
 
-              <tbody className="divide-y divide-[#F0EFF8]">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/70">
                 {filteredMovements.map((movement) => {
                   const meta = typeMeta[movement.type]
                   const Icon = meta.icon
                   const isPositive = movement.qty.startsWith('+')
 
                   return (
-                    <tr key={`${movement.reference}-${movement.product}`} className="h-[92px] bg-white">
-                      <td className="px-6 py-4 align-middle">
-                        <p className="text-base font-extrabold leading-tight text-[#1B1B2F]">
+                    <tr key={`${movement.reference}-${movement.product}`} className="h-[74px] bg-white transition-colors hover:bg-slate-50/50 dark:bg-transparent dark:hover:bg-slate-900/25">
+                      <td className="px-5 py-3 align-middle">
+                        <p className="text-sm font-extrabold leading-tight text-slate-800 dark:text-slate-100">
                           {movement.day}
                         </p>
-                        <p className="mt-1 text-xs font-medium leading-snug text-[#7D7CA4]">
+                        <p className="mt-1 text-xs font-semibold leading-snug text-slate-400 dark:text-slate-500">
                           {movement.date}
                           <br />
                           {movement.time}
                         </p>
                       </td>
 
-                      <td className="px-5 py-4 align-middle">
-                        <p className="text-base font-extrabold leading-tight text-[#1B1B2F]">
+                      <td className="px-4 py-3 align-middle">
+                        <p className="text-sm font-extrabold leading-tight text-slate-800 dark:text-slate-100">
                           {movement.product}
                         </p>
-                        <p className="mt-1 font-mono text-xs font-medium text-[#7D7CA4]">
+                        <p className="mt-1 font-mono text-xs font-semibold text-slate-400 dark:text-slate-500">
                           {movement.sku}
                         </p>
                       </td>
 
-                      <td className="px-5 py-4 align-middle">
+                      <td className="px-4 py-3 align-middle">
                         <div className="flex items-center gap-2">
                           <span className={`flex h-8 w-8 items-center justify-center rounded-full ${meta.iconStyle}`}>
-                            <Icon className="h-4.5 w-4.5 stroke-[2.4]" />
+                            <Icon className="h-4 w-4 stroke-[2.4]" />
                           </span>
-                          <span className={`inline-flex min-h-7 items-center rounded-full border px-3 text-sm font-extrabold leading-tight ${meta.badge}`}>
+                          <span className={`inline-flex min-h-6 items-center rounded-full border px-2.5 text-xs font-extrabold leading-tight ${meta.badge}`}>
                             {movement.type}
                           </span>
                         </div>
                       </td>
 
-                      <td className={`px-4 py-4 text-center text-lg font-extrabold align-middle ${isPositive ? 'text-[#009E73]' : 'text-[#FF1F2D]'}`}>
+                      <td className={`px-4 py-3 text-center text-base font-extrabold align-middle ${isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
                         {movement.qty}
                       </td>
 
-                      <td className="px-4 py-4 text-center align-middle">
-                        <span className="break-words font-mono text-xs font-extrabold leading-relaxed text-[#7467FF]">
+                      <td className="px-4 py-3 text-center align-middle">
+                        <span className="break-words font-mono text-xs font-extrabold leading-relaxed text-[#7467FF] dark:text-neon-cyan">
                           {movement.reference}
                         </span>
                       </td>
 
-                      <td className="px-4 py-4 align-middle text-sm font-medium text-[#1B1B2F]">
+                      <td className="px-4 py-3 align-middle text-sm font-semibold text-slate-700 dark:text-slate-300">
                         {movement.user}
                       </td>
 
-                      <td className="px-5 py-4 align-middle text-sm font-medium leading-6 text-[#7D7CA4]">
+                      <td className="px-4 py-3 align-middle text-xs font-semibold leading-5 text-slate-400 dark:text-slate-500">
                         {movement.note}
                       </td>
                     </tr>
@@ -314,35 +327,38 @@ const StockHistory = () => {
                   <tr>
                     <td
                       colSpan="7"
-                      className="px-6 py-12 text-center text-sm font-medium text-[#7D7CA4]"
+                      className="px-6 py-12 text-center text-sm font-semibold text-slate-400 dark:text-slate-500"
                     >
                       No stock movements match your filters.
                     </td>
                   </tr>
                 )}
               </tbody>
-            </table>
-          </div>
-
-          <footer className="flex flex-col gap-4 border-t border-[#ECEBFA] bg-white px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm font-medium text-[#7D7CA4]">
-              Showing {filteredMovements.length} of {movements.length} movements
-            </p>
-            <div className="flex items-center gap-3 text-sm font-extrabold text-[#7D7CA4]">
-              {[1, 2, 3, 4].map((page) => (
-                <button
-                  key={page}
-                  className={`flex h-9 w-9 items-center justify-center rounded-full ${
-                    page === 1 ? 'bg-[#7A66F4] text-white' : 'hover:bg-[#F0EFF8]'
-                  }`}
-                >
-                  {page}
-                </button>
-              ))}
+              </table>
             </div>
-          </footer>
-        </div>
-      </section>
+
+            <footer className="flex flex-col gap-4 border-t border-slate-100 bg-white px-5 py-3.5 transition-colors duration-300 dark:border-slate-800/80 dark:bg-transparent sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-xs font-semibold text-slate-400 dark:text-slate-500">
+                Showing {filteredMovements.length} of {movements.length} movements
+              </p>
+              <div className="flex items-center gap-2 text-xs font-extrabold text-slate-400 dark:text-slate-500">
+                {[1, 2, 3, 4].map((page) => (
+                  <button
+                    key={page}
+                    className={`flex h-8 w-8 items-center justify-center rounded-full transition ${
+                      page === 1
+                        ? 'bg-[#7A66F4] text-white dark:bg-neon-cyan/15 dark:text-neon-cyan dark:ring-1 dark:ring-neon-cyan/30'
+                        : 'hover:bg-slate-100 dark:hover:bg-slate-900/70 dark:hover:text-slate-200'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
+            </footer>
+          </div>
+        </section>
+      </div>
     </div>
   )
 }
