@@ -88,7 +88,6 @@ const Sidebar = () => {
 
   const SIDEBAR_LINKS = {
     inventory: [
-    inventory: [
       {
         title: "OVERVIEW",
         items: [
