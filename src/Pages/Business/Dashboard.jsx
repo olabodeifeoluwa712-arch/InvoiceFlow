@@ -1,7 +1,15 @@
 import React from 'react'
 import { useState } from 'react'    
 import { useTheme } from '../../Context/ThemeContext'
+import { formatStockValue } from '../../utils/formatter'
+import { getNameInitials } from '../../utils/formatter'
+import { customers as customerActivity, invoices as recent, products } from '../../Database/data.json'
 
+const recentInvoices = recent.slice(0, 5).reverse(); // Get the 5 most recent invoices
+const low = products.filter(product => product.status.toLowerCase() === "low stock" || product.status.toLowerCase() === "out of stock");
+const lowStockProducts = low.slice(0, 5); // Get the first 5 low stock products
+
+console.log(lowStockProducts);
 import {
   AreaChart,
   Area,
@@ -78,7 +86,7 @@ export function RevenueChart() {
               axisLine={false}
               tickLine={false}
               tick={{ fill: isDark ? '#64748B' : '#94A3B8', fontSize: 13, fontWeight: 500 }}
-              tickFormatter={(value) => `$${value / 1000}k`}
+              tickFormatter={(value) => formatStockValue(value)}
               domain={[0, 60000]}
               ticks={[0, 15000, 30000, 45000, 60000]}
               dx={-5}
@@ -94,7 +102,7 @@ export function RevenueChart() {
                 padding: '12px'
               }}
               formatter={(value) => [
-                `$${value.toLocaleString()}`,
+                formatStockValue(value),
                 "Revenue",
               ]}
             />
@@ -116,25 +124,25 @@ export function RevenueChart() {
   );
 }
 
-const recentInvoices = [
-  { id: 1, customer: "Apex Design Co.", amount: 4200, status: "Paid", number: "INV-001", initials: "AD", avatarBg: "bg-purple-100 text-purple-600" },
-  { id: 2, customer: "Brightfield Media", amount: 1850, status: "Pending", number: "INV-002", initials: "BM", avatarBg: "bg-fuchsia-100 text-fuchsia-600" },
-  { id: 3, customer: "ClearPath Systems", amount: 7600, status: "Overdue", number: "INV-003", initials: "CS", avatarBg: "bg-indigo-100 text-indigo-600" },
-  { id: 4, customer: "Delta Logistics", amount: 3300, status: "Paid", number: "INV-004", initials: "DL", avatarBg: "bg-blue-100 text-blue-600" },
-];
+// const recentInvoices = [
+//   { id: 1, customer: "Apex Design Co.", amount: 4200, status: "Paid", number: "INV-001", initials: "AD", avatarBg: "bg-purple-100 text-purple-600" },
+//   { id: 2, customer: "Brightfield Media", amount: 1850, status: "Pending", number: "INV-002", initials: "BM", avatarBg: "bg-fuchsia-100 text-fuchsia-600" },
+//   { id: 3, customer: "ClearPath Systems", amount: 7600, status: "Overdue", number: "INV-003", initials: "CS", avatarBg: "bg-indigo-100 text-indigo-600" },
+//   { id: 4, customer: "Delta Logistics", amount: 3300, status: "Paid", number: "INV-004", initials: "DL", avatarBg: "bg-blue-100 text-blue-600" },
+// ];
 
-const lowStockProducts = [
-  { id: 1, name: "Analytics Add-on", sku: "ANA-001", remaining: 3, status: "Low Stock" },
-  { id: 2, name: "API Access Module", sku: "API-001", remaining: 0, status: "Out of Stock" }
-];
+// const lowStockProducts = [
+//   { id: 1, name: "Analytics Add-on", sku: "ANA-001", remaining: 3, status: "Low Stock" },
+//   { id: 2, name: "API Access Module", sku: "API-001", remaining: 0, status: "Out of Stock" }
+// ];
 
-const customerActivity = [
-  { id: 1, customer: "Apex Design Co.", spend: 18400, initials: "AD", unpaidCount: 0, avatarBg: "bg-purple-100 text-purple-600" },
-  { id: 2, customer: "Brightfield Media", spend: 7200, initials: "BM", unpaidCount: 1, avatarBg: "bg-fuchsia-100 text-fuchsia-600" },
-  { id: 3, customer: "ClearPath Systems", spend: 31500, initials: "CS", unpaidCount: 2, avatarBg: "bg-indigo-100 text-indigo-600" },
-  { id: 4, customer: "Delta Logistics", spend: 12800, initials: "DL", unpaidCount: 0, avatarBg: "bg-blue-100 text-blue-600" },
-  { id: 5, customer: "Ember Analytics", spend: 4600, initials: "EA", unpaidCount: 1, avatarBg: "bg-[#EEF2FF] text-[#4F46E5]" },
-];
+// const customerActivity = [
+//   { id: 1, customer: "Apex Design Co.", spend: 18400, initials: "AD", unpaidCount: 0, avatarBg: "bg-purple-100 text-purple-600" },
+//   { id: 2, customer: "Brightfield Media", spend: 7200, initials: "BM", unpaidCount: 1, avatarBg: "bg-fuchsia-100 text-fuchsia-600" },
+//   { id: 3, customer: "ClearPath Systems", spend: 31500, initials: "CS", unpaidCount: 2, avatarBg: "bg-indigo-100 text-indigo-600" },
+//   { id: 4, customer: "Delta Logistics", spend: 12800, initials: "DL", unpaidCount: 0, avatarBg: "bg-blue-100 text-blue-600" },
+//   { id: 5, customer: "Ember Analytics", spend: 4600, initials: "EA", unpaidCount: 1, avatarBg: "bg-[#EEF2FF] text-[#4F46E5]" },
+// ];
 
 const Dashboard = () => {
   const totalRevenue = 13300;
@@ -166,7 +174,7 @@ const Dashboard = () => {
                 </div>
               </div>
               <h3 className="text-3xl font-extrabold text-slate-800 dark:text-slate-100 mt-4">
-                ${totalRevenue.toLocaleString()}
+                {formatStockValue(totalRevenue)}
               </h3>
             </div>
             <div className="text-emerald-500 text-sm font-semibold flex items-center gap-1 mt-6">
@@ -267,16 +275,16 @@ const Dashboard = () => {
                     
                     {/* Circle initials avatar */}
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs transition-all duration-300 dark:bg-neon-purple/10 dark:border dark:border-neon-purple/30 dark:text-neon-cyan dark:shadow-[0_0_8px_rgba(189,0,255,0.15)] ${invoice.avatarBg}`}>
-                      {invoice.initials}
+                      {getNameInitials(invoice.customerName)}
                     </div>
 
                     {/* Customer information */}
                     <div>
                       <h4 className="text-sm font-bold text-slate-800 dark:text-slate-100 leading-tight">
-                        {invoice.customer}
+                        {invoice.customerName}
                       </h4>
                       <span className="text-xs text-slate-400 dark:text-slate-500 font-semibold">
-                        {invoice.number}
+                        {invoice.invoiceNo}
                       </span>
                     </div>
 
@@ -285,7 +293,7 @@ const Dashboard = () => {
                   {/* Price and Status Badge */}
                   <div className="text-right flex flex-col items-end">
                     <span className="text-sm font-extrabold text-slate-800 dark:text-slate-100">
-                      ${invoice.amount.toLocaleString()}
+                      {invoice.amount.toLocaleString()}
                     </span>
                     <span className={`inline-flex items-center justify-center px-3 py-0.5 rounded-full text-xs font-semibold mt-1 border ${
                       invoice.status === 'Paid'
@@ -374,16 +382,16 @@ const Dashboard = () => {
                     
                     {/* Circular avatar badge */}
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs transition-all duration-300 dark:bg-neon-purple/10 dark:border dark:border-neon-purple/30 dark:text-neon-cyan dark:shadow-[0_0_8px_rgba(189,0,255,0.15)] ${customer.avatarBg}`}>
-                      {customer.initials}
+                      {getNameInitials(customer.name)}
                     </div>
 
                     {/* Spend information */}
                     <div>
                       <h4 className="text-sm font-bold text-slate-800 dark:text-slate-100 leading-tight">
-                        {customer.customer}
+                        {customer.name}
                       </h4>
                       <span className="text-xs text-slate-400 dark:text-slate-500 font-semibold">
-                        ${customer.spend.toLocaleString()} lifetime spend
+                        ${customer.totalSpent.toLocaleString()} lifetime spend
                       </span>
                     </div>
 

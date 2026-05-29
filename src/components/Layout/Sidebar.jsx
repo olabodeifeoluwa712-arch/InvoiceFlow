@@ -26,6 +26,12 @@ import {
   ArrowsUpDownIcon as ArrowUpDownIconOutline,
   ExclamationTriangleIcon as ExclamationTriangleIconOutline,
   ClockIcon as ClockIconOutline,
+  UserGroupIcon as UserGroupIconOutline,
+  ArrowTrendingUpIcon as ArrowTrendingUpIconOutline,
+  ShieldCheckIcon  as permissionsIconOutline,
+  CommandLineIcon     as plugIconOutline,
+ 
+
 } from "@heroicons/react/24/outline";
 
 import {
@@ -53,6 +59,11 @@ import {
   ArrowsUpDownIcon as ArrowUpDownIconSolid,
   ExclamationTriangleIcon as ExclamationTriangleIconSolid,
   ClockIcon as ClockIconSolid,
+  ArrowTrendingUpIcon as ArrowTrendingUpIconSolid,
+   UserGroupIcon as UserGroupIconSolid,
+  ShieldCheckIcon  as permissionsIconSolid,
+  CommandLineIcon     as plugIconSolid,
+
 } from "@heroicons/react/24/solid";
 
 const formatRole = (role) =>
@@ -76,6 +87,7 @@ const Sidebar = () => {
   const displayRole = formatRole(role);
 
   const SIDEBAR_LINKS = {
+    inventory: [
     inventory: [
       {
         title: "OVERVIEW",
@@ -132,7 +144,7 @@ const Sidebar = () => {
         title: "MAIN MENU",
         items: [
           {
-            to: "/",
+            to: "/business-dashboard",
             label: "Dashboard",
             icon: Squares2X2IconOutline,
             activeIcon: Squares2X2IconSolid,
@@ -171,6 +183,13 @@ const Sidebar = () => {
           },
 
           {
+            to: "/business-products",
+            label: "Products",
+            icon: ArchiveBoxIconOutline,
+            activeIcon: ArchiveBoxIconSolid,
+          },
+
+          {
             to: "/business-settings",
             label: "Settings",
             icon: Cog6ToothIconOutline,
@@ -179,19 +198,84 @@ const Sidebar = () => {
         ],
       },
     ],
-admin:[
-  {
-    title:"MAIN MENU",
-    items:[
+    admin: [
       {
+        title: "MAIN MENU",
+        items: [
+          {
+            to: "/admin-dashboard",
+            label: "Dashboard",
+            icon: Squares2X2IconOutline,
+            activeIcon: Squares2X2IconSolid,
+          },
+          {
+            to: "/admin-invoices",
+            label: "Invoices",
+            icon: DocumentTextIconOutline,
+            activeIcon: DocumentTextIconSolid,
+          },
+          {
             to: "/admin-receipts",
             label: "Receipts",
             icon: ReceiptPercentIconOutline,
             activeIcon: ReceiptPercentIconSolid,
           },
-    ]
-  }
-],
+          {
+            to: "/admin-inventory",
+            label: "Inventory",
+            icon: CubeIconOutline,
+            activeIcon: CubeIconSolid,
+          },
+          {
+            to: "/admin-customers",
+            label: "Customers",
+            icon: UsersIconOutline,
+            activeIcon: UsersIconSolid,
+          },
+        ],
+      },
+      {
+        title: "Analytics",
+        items: [
+          {
+            to: "/admin-analytics",
+            label: "Reports",
+            icon: ArrowTrendingUpIconOutline,
+            activeIcon: ArrowTrendingUpIconSolid,
+          }
+        ],
+      },
+      {
+        title: "Admin",
+        items: [
+          {
+            to: "/admin-management",
+            label: "Management",
+            icon: UserGroupIconOutline,
+            activeIcon: UserGroupIconSolid,
+          },
+          {
+            to: "/admin-permissions",
+            label: "Permissions",
+            icon: permissionsIconOutline,
+            activeIcon: permissionsIconSolid,
+          },
+          {
+            to: "/admin-integrations",
+            label: "Integrations",
+            icon: plugIconOutline,
+            activeIcon: plugIconSolid,
+          },
+          {
+            to: '/admin-settings',
+            label: 'Settings',
+            icon: Cog6ToothIconOutline,
+            activeIcon: Cog6ToothIconSolid,
+          }
+        ],
+      }
+    
+    ],
     accountant: [
       {
         title: "MAIN MENU",
@@ -377,10 +461,10 @@ admin:[
   }
 
   return (
-    <aside className="w-[230px] max-w-full h-screen border-r border-[#e8e5f7] bg-white flex flex-col transition-colors duration-300 dark:bg-[#080B11] dark:border-slate-800 dark:text-slate-100 font-mono">
+    <aside className="w-[200px] max-w-full h-screen border-r border-[#e8e5f7] bg-white flex flex-col transition-colors duration-300 dark:bg-[#080B11] dark:border-slate-800 dark:text-slate-100 font-mono" >
 
-      {/* Logo */}
-        <div className="h-10 pb-8 pt-8 flex items-center justify-between border-b border-[#e8e5f7] transition-colors duration-300 dark:border-slate-800">
+      {/* LOGO */}
+      <div className="h-10 pb-8 pt-8 flex items-center justify-between border-b border-[#e8e5f7] transition-colors duration-300 dark:border-slate-800">
         <div className="flex items-center gap-2 ml-3">
           <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center shadow-[0_8px_18px_rgba(124,31,255,0.22)] transition-all duration-300 dark:from-neon-cyan dark:to-neon-purple dark:shadow-[0_0_18px_rgba(0,243,255,0.28)]">
             <svg className="h-5 w-5 text-white dark:text-slate-950" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

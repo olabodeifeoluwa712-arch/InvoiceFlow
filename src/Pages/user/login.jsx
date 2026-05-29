@@ -14,7 +14,7 @@ const Login = () => {
 
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  const { login, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, currentUser } = useAuth();
 
   useEffect(() => {
     if (isAuthenticated) navigate(params.get('from') || '/', { replace: true });
@@ -59,8 +59,23 @@ const Login = () => {
     setLoading(false);
     if (res && res.success) {
       setSuccess('Access granted! Authenticating...');
+      const roleHome = {
+        admin: '/admin-dashboard',
+        business: '/business-dashboard',
+        inventory: '/inventory-dashboard',
+        accountant: '/accountant-dashboard',
+        sales: '/sales-dashboard',
+        solopreneur: '/solopreneur-dashboard',
+        soloprenuer: '/solopreneur-dashboard',
+      };
+      const role = res.user?.role?.toLowerCase().trim().replace(/[\s_-]/g, '') || '';
+      const destination = roleHome[role] || params.get('from') || '/';
+
+      const des = res.user.role === 'admin' ? '/admin-dashboard' : destination;
+      console.log('Login successful. Redirecting to:', des);
+      navigate(des);
       setTimeout(() => {
-        navigate('/');
+        navigate(des);
       }, 1200);
     } else {
       triggerError(res?.error || 'Invalid credentials. Access Denied.');

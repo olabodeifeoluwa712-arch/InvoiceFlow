@@ -1,0 +1,244 @@
+{
+  "products": [
+    {
+      "id": "1",
+      "name": "Bluetooth Headphones Pro",
+      "brand": "SoundTech Co.",
+      "sku": "SKU-1001",
+      "category": "Electronics",
+      "unitCost": 89.99,
+      "unitPrice": 159.99,
+      "qty": 243,
+      "status": "In Stock"
+    },
+    {
+      "id": "2",
+      "name": "USB-C Hub 7-Port",
+      "brand": "ConnectPro Ltd.",
+      "sku": "SKU-1002",
+      "category": "Accessories",
+      "unitCost": 34.5,
+      "unitPrice": 69.99,
+      "qty": 18,
+      "status": "Low Stock"
+    },
+    {
+      "id": "3",
+      "name": "Wireless Ergonomic Mouse",
+      "brand": "HID Solutions",
+      "sku": "SKU-1003",
+      "category": "Peripherals",
+      "unitCost": 42,
+      "unitPrice": 89.99,
+      "qty": 0,
+      "status": "Out of Stock"
+    },
+    {
+      "id": "4",
+      "name": "Mechanical Keyboard TKL",
+      "brand": "KeyCraft Inc.",
+      "sku": "SKU-1004",
+      "category": "Peripherals",
+      "unitCost": 119,
+      "unitPrice": 219,
+      "qty": 67,
+      "status": "In Stock"
+    },
+    {
+      "id": "5",
+      "name": "LED Desk Lamp Smart",
+      "brand": "LumiTech",
+      "sku": "SKU-1005",
+      "category": "Lighting",
+      "unitCost": 45,
+      "unitPrice": 89.99,
+      "qty": 112,
+      "status": "In Stock"
+    },
+    {
+      "id": "6",
+      "name": "HDMI Cable 2m Braided",
+      "brand": "LinkSpeed",
+      "sku": "SKU-1006",
+      "category": "Cables",
+      "unitCost": 8.5,
+      "unitPrice": 19.99,
+      "qty": 5,
+      "status": "Low Stock"
+    },
+    {
+      "id": "7",
+      "name": "USB-A to USB-C Adapter",
+      "brand": "ConnectPro Ltd.",
+      "sku": "SKU-1007",
+      "category": "Accessories",
+      "unitCost": 5.99,
+      "unitPrice": 14.99,
+      "qty": 340,
+      "status": "In Stock"
+    },
+    {
+      "id": "8",
+      "name": "Thunderbolt 4 Cable 1m",
+      "brand": "LinkSpeed",
+      "sku": "SKU-1008",
+      "category": "Cables",
+      "unitCost": 22,
+      "unitPrice": 49.99,
+      "qty": 0,
+      "status": "Out of Stock"
+    },
+    {
+      "id": "9",
+      "name": "4K Webcam Ultra HD",
+      "brand": "VisionPro",
+      "sku": "SKU-1009",
+      "category": "Electronics",
+      "unitCost": 95,
+      "unitPrice": 199.99,
+      "qty": 28,
+      "status": "In Stock"
+    },
+    {
+      "id": "0p6cjkO4bME",
+      "name": "chibuike",
+      "brand": "Human",
+      "sku": "SKU-1002",
+      "category": "Electronics",
+      "unitCost": "3",
+      "unitPrice": "3",
+      "qty": "2",
+      "status": "In Stock"
+    }
+  ],
+  "customers": [
+    {
+      "name": "Apex Design Co.",
+      "email": "billing@apexdesign.co",
+      "totalSpent": 18400,
+      "unPaidInvoices": 0,
+      "Joined": "2022-09-12",
+      "id": "tfN8zRnjSIw"
+    },
+    {
+      "name": "Brightfield Media",
+      "email": "accounts@brightfield.io",
+      "totalSpent": 7200,
+      "unPaidInvoices": 1,
+      "Joined": "2023-07-22",
+      "id": "G1ZKZd-mDNI"
+    },
+    {
+      "name": "ClearPath Systems",
+      "email": "finance@clearpath.com",
+      "totalSpent": 31500,
+      "unPaidInvoices": 2,
+      "Joined": "2022-11-08",
+      "id": "fHt2KGhPYfo"
+    },
+    {
+      "name": "Delta Logistics",
+      "email": "ap@deltalogistics.net",
+      "totalSpent": 12800,
+      "unPaidInvoices": 0,
+      "Joined": "2023-01-31",
+      "id": "c1qOOfWc7fc"
+    },
+    {
+      "name": "Ember Analytics",
+      "email": "billing@emberanalytics.ai",
+      "totalSpent": 4600,
+      "unPaidInvoices": 1,
+      "Joined": "2024-02-16",
+      "id": "VdkDJP8M3zo"
+    },
+    {
+      "name": "Ifeoluwa",
+      "email": "ife@emberanalytics.ai",
+      "totalSpent": 4600,
+      "unPaidInvoices": 1,
+      "Joined": "2024-02-16",
+      "id": "VdkDJP8M3zo"
+    }
+  ],
+  "invoices": [
+    {
+      "id": "2",
+      "invoiceNo": "INV-002",
+      "customerName": "Brightfield Media",
+      "amount": "$1,850",
+      "datePaid": "2024-12-05",
+      "dueDate": "2024-12-20",
+      "status": "Pending",
+      "initials": "BM",
+      "avatarBg": "bg-fuchsia-100 text-fuchsia-600"
+    },
+    {
+      "id": "3",
+      "invoiceNo": "INV-003",
+      "customerName": "ClearPath Systems",
+      "amount": "$7,600",
+      "datePaid": "2024-11-15",
+      "dueDate": "2024-11-30",
+      "status": "Overdue",
+      "initials": "CS",
+      "avatarBg": "bg-indigo-100 text-indigo-600"
+    },
+    {
+      "id": "4",
+      "invoiceNo": "INV-004",
+      "customerName": "Delta Logistics",
+      "amount": "$3,300",
+      "datePaid": "2024-12-08",
+      "dueDate": "2024-12-22",
+      "status": "Paid",
+      "initials": "DL",
+      "avatarBg": "bg-blue-100 text-blue-600"
+    },
+    {
+      "id": "5",
+      "invoiceNo": "INV-005",
+      "customerName": "Ember Analytics",
+      "amount": "$2,100",
+      "datePaid": "2024-12-10",
+      "dueDate": "2024-12-25",
+      "status": "Pending",
+      "initials": "EA",
+      "avatarBg": "bg-[#EEF2FF] text-[#4F46E5]"
+    },
+    {
+      "id": "6",
+      "invoiceNo": "INV-006",
+      "customerName": "Faro Consulting",
+      "amount": "$5,800",
+      "datePaid": "2024-11-28",
+      "dueDate": "2024-12-12",
+      "status": "Paid",
+      "initials": "FC",
+      "avatarBg": "bg-sky-100 text-sky-600"
+    },
+    {
+      "id": "7",
+      "invoiceNo": "INV-007",
+      "customerName": "Soylent Co.",
+      "amount": "$1,500",
+      "datePaid": "2024-11-20",
+      "dueDate": "2024-12-04",
+      "status": "Paid",
+      "initials": "SC",
+      "avatarBg": "bg-emerald-100 text-emerald-600"
+    },
+    {
+      "id": "iByFd2LsMoE",
+      "invoiceNo": "INV-0003",
+      "customerName": "Brightfield Media",
+      "amount": "$1567.83",
+      "datePaid": "5/29/2026",
+      "dueDate": "2026-05-30",
+      "status": "Pending",
+      "initials": "BM",
+      "avatarBg": "bg-orange-100 text-orange-600"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}

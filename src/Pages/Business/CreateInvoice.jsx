@@ -1,4 +1,7 @@
 import React, { useState } from 'react'
+import { customers, invoices, products } from '../../Database/data.json'
+import { generateInvoiceNumber, formatDate, getNameInitials, getRandomColor, formatCurrency } from '../../utils/formatter'
+import { useEffect } from 'react';
 
 const productCatalogue = [
   { name: "Business Starter Kit", price: 299 },
@@ -10,10 +13,11 @@ const productCatalogue = [
 
 const CreateInvoice = () => {
   // Define form states
-  const [customer, setCustomer] = useState('');
-  const [invoiceNo, setInvoiceNo] = useState('INV-008');
-  const [invoiceDate, setInvoiceDate] = useState('2024-12-15');
+  const [customer, setCustomer] = useState([customers]);
+  const [invoiceNo, setInvoiceNo] = useState(generateInvoiceNumber());
+  const [invoiceDate, setInvoiceDate] = useState(formatDate());
   const [dueDate, setDueDate] = useState('2024-12-30');
+  const [newInvoice, setNewInvoice] = useState({id: '', invoiceNo: '', customerName: '', amount: '', datePaid: '', dueDate: '', status: '', initials: '', avatarBg: ''});
   
   // Line items state
   const [lineItems, setLineItems] = useState([
@@ -57,6 +61,30 @@ const CreateInvoice = () => {
   const totalDue = subtotal + tax;
   const itemsCount = lineItems.reduce((acc, item) => acc + Number(item.qty), 0);
 
+
+  const saveInvoice = async () => {
+  fetch('http://localhost:3001/invoices', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    id: newInvoice.id,
+    invoiceNo: invoiceNo,
+    customerName: newInvoice.customerName,
+    amount: formatCurrency(totalDue),
+    datePaid: invoiceDate,
+    dueDate: newInvoice.dueDate,
+    status: 'Pending',
+    initials: getNameInitials(newInvoice.customerName),
+    avatarBg: getRandomColor()
+  })
+})
+  
+    }
+
+
+  
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-[#F8F9FC] p-6 font-sans text-slate-950 transition-colors duration-300 dark:bg-cyber-dark dark:text-slate-100 md:p-10 select-none">
       
@@ -105,16 +133,15 @@ const CreateInvoice = () => {
                 <div className="flex flex-col gap-2">
                   <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Customer *</label>
                   <select
-                    value={customer}
-                    onChange={(e) => setCustomer(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3.5 text-sm text-slate-800 placeholder-slate-400 font-semibold focus:border-[#8B5CF6] focus:outline-none transition-all dark:bg-slate-950/40 dark:border-slate-850 dark:text-slate-100 dark:focus:border-neon-cyan"
+                    value={newInvoice.customerName}
+                    onChange={(e) => setNewInvoice({...newInvoice, customerName: e.target.value})}
+                   
+                    className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3.5 text-sm text-slate-800 placeholder-slate-400 font-semibold focus:border-[#8B5CF6] focus:outline-none transition-all dark:bg-slate-950/40 dark:border-slate-850 dark:text-slate-100 dark:focus:border-neon-cyan scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-transparent dark:scrollbar-thumb-slate-700"
                   >
-                    <option value="">Select a customer...</option>
-                    <option value="Apex Design Co.">Apex Design Co.</option>
-                    <option value="Brightfield Media">Brightfield Media</option>
-                    <option value="ClearPath Systems">ClearPath Systems</option>
-                    <option value="Delta Logistics">Delta Logistics</option>
-                    <option value="Ember Analytics">Ember Analytics</option>
+                    <option value="">Select customer...</option>
+                    {customers.map(c => (
+                      <option key={c.id} value={c.name}>{c.name}</option>
+                    ))}
                   </select>
                 </div>
 
@@ -124,6 +151,7 @@ const CreateInvoice = () => {
                   <input
                     type="text"
                     value={invoiceNo}
+                    readOnly
                     onChange={(e) => setInvoiceNo(e.target.value)}
                     className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3.5 text-sm text-slate-800 placeholder-slate-400 font-semibold focus:border-[#8B5CF6] focus:outline-none transition-all dark:bg-slate-950/40 dark:border-slate-850 dark:text-slate-100 dark:focus:border-neon-cyan"
                   />
@@ -133,8 +161,9 @@ const CreateInvoice = () => {
                 <div className="flex flex-col gap-2">
                   <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Invoice Date</label>
                   <input
-                    type="date"
+                    type="text"
                     value={invoiceDate}
+                    readOnly
                     onChange={(e) => setInvoiceDate(e.target.value)}
                     className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3.5 text-sm text-slate-800 font-semibold focus:border-[#8B5CF6] focus:outline-none transition-all dark:bg-slate-950/40 dark:border-slate-850 dark:text-slate-100 dark:focus:border-neon-cyan"
                   />
@@ -145,11 +174,27 @@ const CreateInvoice = () => {
                   <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Due Date</label>
                   <input
                     type="date"
-                    value={dueDate}
-                    onChange={(e) => setDueDate(e.target.value)}
+                    value={newInvoice.dueDate}
+                    onChange={(e) => setNewInvoice({...newInvoice, dueDate: e.target.value})}
                     className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3.5 text-sm text-slate-800 font-semibold focus:border-[#8B5CF6] focus:outline-none transition-all dark:bg-slate-950/40 dark:border-slate-850 dark:text-slate-100 dark:focus:border-neon-cyan"
                   />
                 </div>
+
+                {/* Initials */}
+                {/* <div className="flex flex-col gap-2">
+                  <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Initials</label>
+                  <input
+                    type="text"
+                    value={newInvoice.initials}
+                    onChange={(e) => setNewInvoice({...newInvoice, initials: e.target.value})}
+                    className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3.5 text-sm text-slate-800 font-semibold focus:border-[#8B5CF6] focus:outline-none transition-all dark:bg-slate-950/40 dark:border-slate-850 dark:text-slate-100 dark:focus:border-neon-cyan"
+                  />
+                </div> */}
+
+            {/* get name initials */}
+          
+             
+            
 
               </div>
 
@@ -295,9 +340,9 @@ const CreateInvoice = () => {
                 {/* Total Due */}
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-extrabold text-slate-800 dark:text-slate-200">Total Due</span>
-                  <span className="text-2xl font-extrabold text-[#6f18ff] dark:text-neon-cyan">
-                    ${totalDue.toLocaleString()}
-                  </span>
+                  <span className="text-lg font-extrabold text-[#7C3AED] dark:text-neon-purple">${totalDue.toLocaleString()}</span>
+                  
+                 
                 </div>
 
               </div>
@@ -308,6 +353,7 @@ const CreateInvoice = () => {
                 {/* Send */}
                 <button
                   type="button"
+                  onClick={() => saveInvoice()}
                   className="w-full flex h-13 items-center justify-center gap-2 rounded-2xl bg-[#7c1fff] text-white hover:bg-[#6817e7] font-bold shadow-[0_10px_20px_rgba(124,31,255,0.2)] hover:shadow-[0_12px_24px_rgba(124,31,255,0.3)] transition-all duration-200 dark:bg-gradient-to-r dark:from-neon-cyan dark:to-neon-purple dark:text-slate-950 cursor-pointer"
                 >
                   Save &amp; Send Invoice

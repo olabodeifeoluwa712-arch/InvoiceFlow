@@ -1,43 +1,10 @@
 import React, { useState } from 'react'
 import { useTheme } from '../../Context/ThemeContext'
+import { formatDate } from '../../utils/formatter';
+import { customers as initialCustomers } from '../../Database/data.json';
+import { getFormattedDate } from '../../utils/formatter';
 
-const initialCustomers = [
-  {
-    name: "Apex Design Co.",
-    email: "billing@apexdesign.co",
-    totalSpent: 18400,
-    unPaidInvoices: 0,
-    Joined: "2023-03-14"
-  },
-  {
-    name: "Brightfield Media",
-    email: "accounts@brightfield.io",
-    totalSpent: 7200,
-    unPaidInvoices: 1,
-    Joined: "2023-07-22"
-  },
-  {
-    name: "ClearPath Systems",
-    email: "finance@clearpath.com",
-    totalSpent: 31500,
-    unPaidInvoices: 2,
-    Joined: "2022-11-08"
-  },
-  {
-    name: "Delta Logistics",
-    email: "ap@deltalogistics.net",
-    totalSpent: 12800,
-    unPaidInvoices: 0,
-    Joined: "2023-01-31"
-  },
-  {
-    name: "Ember Analytics",
-    email: "billing@emberanalytics.ai",
-    totalSpent: 4600,
-    unPaidInvoices: 1,
-    Joined: "2024-02-16"
-  }
-];
+
 
 const getInitials = (name) => {
   const words = name.split(' ');
@@ -168,7 +135,7 @@ const Customers = () => {
 
                         {/* JOINED */}
                         <td className="py-4 px-4 text-slate-500 dark:text-slate-400 font-mono text-sm">
-                          {customer.Joined}
+                          {getFormattedDate(customer.Joined)}
                         </td>
 
                         {/* ACTION / CHEVRON */}

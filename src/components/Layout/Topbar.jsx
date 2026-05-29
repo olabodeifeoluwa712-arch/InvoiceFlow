@@ -8,7 +8,19 @@ const Topbar = () => {
       <div className="absolute -bottom-[1px] left-10 right-10 h-[1.5px] bg-gradient-to-r from-transparent via-neon-purple to-transparent opacity-30 transition-all duration-300 dark:via-neon-cyan dark:opacity-60 pointer-events-none"></div>
 
       <div className="flex items-center gap-3">
-
+        {/* Logo */}
+        {/* <div className="flex items-center gap-2">
+          <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center shadow-[0_8px_18px_rgba(124,31,255,0.22)] transition-all duration-300 dark:from-neon-cyan dark:to-neon-purple dark:shadow-[0_0_18px_rgba(0,243,255,0.28)]">
+            <svg className="h-5 w-5 text-white dark:text-slate-950" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 2L2 7L12 12L22 7L12 2Z" />
+              <path d="M2 17L12 22L22 17" />
+              <path d="M2 12L12 17L22 12" />
+            </svg>
+          </div>
+          <span className="text-lg font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent dark:from-neon-cyan dark:to-neon-purple dark:text-glow-cyan">
+            InvoiceFlow
+          </span>
+        </div> */}
         
         {/* Breadcrumbs */}
         {/* <div className="hidden sm:flex items-center gap-3 ml-6 text-sm font-medium text-slate-400 dark:text-slate-500">
