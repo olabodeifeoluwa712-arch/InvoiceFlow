@@ -65,7 +65,6 @@ const formatRole = (role) =>
 
 const Sidebar = () => {
   const { currentUser, logout, getInitials } = useAuth();
-  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate()
 
   if (currentUser == null) {
@@ -77,7 +76,7 @@ const Sidebar = () => {
   const displayRole = formatRole(role);
 
   const SIDEBAR_LINKS = {
-    inventorymanager: [
+    inventory: [
       {
         title: "OVERVIEW",
         items: [
