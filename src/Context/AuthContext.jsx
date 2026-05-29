@@ -78,7 +78,7 @@ export function AuthProvider({ children }) {
     saveSession(sessionUser);
     setCurrentUser(sessionUser);
     setIsAuthenticated(true);
-    return { success: true };
+    return { success: true, user: sessionUser };
   }, []);
 
   // ── Logout ───────────────────────────────────────────────────────────────────

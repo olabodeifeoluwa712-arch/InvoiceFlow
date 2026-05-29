@@ -233,7 +233,7 @@ const Register = () => {
               <option value="Soloprenuer" className="bg-white text-slate-800 dark:bg-[#0e1320] dark:text-slate-200">Solopreneur</option>
               <option value="Admin" className="bg-white text-slate-800 dark:bg-[#0e1320] dark:text-slate-200">Admin Portal Operator</option>
               <option value="Accountant" className="bg-white text-slate-800 dark:bg-[#0e1320] dark:text-slate-200">Accountant Ledger</option>
-              <option value="Sales" className="bg-white text-slate-800 dark:bg-[#0e1320] dark:text-slate-200">Sales Specialist</option>
+              <option value="inventory" className="bg-white text-slate-800 dark:bg-[#0e1320] dark:text-slate-200">Inventory Manager</option>
               <option value="business" className="bg-white text-slate-800 dark:bg-[#0e1320] dark:text-slate-200">business</option>
             </select>
             {/* Custom chevron arrow */}

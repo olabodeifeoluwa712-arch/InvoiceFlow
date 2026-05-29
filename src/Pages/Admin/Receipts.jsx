@@ -37,8 +37,8 @@ const receipts = [
 
 const ReceiptCard = ({ receipt }) => {
   return (
-    <article className="overflow-hidden rounded-[1.45rem] border border-slate-200/80 bg-white shadow-[0_2px_10px_rgba(15,23,42,0.12)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_38px_rgba(15,23,42,0.16)] dark:border-slate-800/80 dark:bg-cyber-card/85 dark:shadow-2xl">
-      <div className="bg-gradient-to-br from-[#7c1fff] via-[#8b35f7] to-[#8a41f3] px-7 py-8 text-white dark:from-neon-purple dark:via-[#8b2cff] dark:to-neon-cyan">
+    <article className="overflow-hidden rounded-[1.45rem] border border-slate-200/80 bg-white shadow-[0_2px_10px_rgba(15,23,42,0.12)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_38px_rgba(15,23,42,0.16)] dark:border-slate-800/80 dark:bg-cyber-card/85 dark:shadow-2xl ">
+      <div className="bg-gradient-to-br from-[#7c1fff] via-[#8b35f7] to-[#8a41f3] px-5 py-6 text-white dark:from-neon-purple dark:via-[#8b2cff] dark:to-neon-cyan">
         <div className="mb-8 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-white ring-1 ring-white/10">
@@ -59,7 +59,7 @@ const ReceiptCard = ({ receipt }) => {
         <p className="mt-2 text-5xl font-extrabold tracking-tight">${receipt.amount}</p>
       </div>
 
-      <div className="px-7 py-7">
+      <div className="px-5 py-7">
         <dl className="space-y-4">
           <div className="grid grid-cols-[minmax(120px,1fr)_auto] items-center gap-4">
             <dt className="text-lg font-medium text-slate-400 dark:text-slate-500">Receipt No.</dt>
