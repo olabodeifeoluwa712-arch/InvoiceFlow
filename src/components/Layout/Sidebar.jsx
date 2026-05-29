@@ -378,21 +378,26 @@ admin:[
   }
 
   return (
-    <aside className="w-[200px] max-w-full h-screen border-r border-[#e8e5f7] bg-white flex flex-col transition-colors duration-300 dark:bg-[#0D121E] dark:border-slate-800 dark:text-slate-100">
+    <aside className="w-[230px] max-w-full h-screen border-r border-[#e8e5f7] bg-white flex flex-col transition-colors duration-300 dark:bg-[#080B11] dark:border-slate-800 dark:text-slate-100 font-mono">
 
-      {/* LOGO */}
-      <div className="h-10 pb-8 pt-8 flex items-center justify-between border-b border-[#e8e5f7] transition-colors duration-300 dark:border-slate-800">
-        <div className="flex items-center gap-3 min-w-0">
-          <div className="w-6 h-6 rounded-xl ml-5 bg-[var(--color--purple-ish)] text-white flex items-center justify-center shadow-[0_8px_18px_rgba(127,34,254,0.24)] dark:bg-gradient-to-tr dark:from-neon-cyan dark:to-neon-purple dark:text-slate-950 dark:shadow-[0_0_18px_rgba(0,243,255,0.28)]">
-            <BoltIconSolid className="w-4 h-4" />
+      {/* Logo */}
+        <div className="h-10 pb-8 pt-8 flex items-center justify-between border-b border-[#e8e5f7] transition-colors duration-300 dark:border-slate-800">
+        <div className="flex items-center gap-2 ml-3">
+          <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center shadow-[0_8px_18px_rgba(124,31,255,0.22)] transition-all duration-300 dark:from-neon-cyan dark:to-neon-purple dark:shadow-[0_0_18px_rgba(0,243,255,0.28)]">
+            <svg className="h-5 w-5 text-white dark:text-slate-950" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 2L2 7L12 12L22 7L12 2Z" />
+              <path d="M2 17L12 22L22 17" />
+              <path d="M2 12L12 17L22 12" />
+            </svg>
           </div>
-          <h2 className="leading-none text-[#2a2850] font-extrabold truncate dark:bg-gradient-to-r dark:from-neon-cyan dark:to-neon-purple dark:bg-clip-text dark:text-transparent dark:text-glow-cyan">
+          <span className="text-lg font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent dark:from-neon-cyan dark:to-neon-purple dark:text-glow-cyan">
             InvoiceFlow
-          </h2>
+          </span>
         </div>
-
         
       </div>
+        
+
 
       {/* NAV */}
       <nav className="flex-1 px-2 py-3 overflow-y-auto">
@@ -402,7 +407,7 @@ admin:[
 
         {sections.map((section) => (
           <div key={section.title} className="mb-3.5">
-            <h3 className="px-2.5 mb-2.5 font-light text-[15px] tracking-[0.16em] text-[#817da5] transition-colors duration-300 dark:text-slate-500">
+            <h3 className="px-2.5 mb-2.5 font-bold text-[13px] tracking-[0.16em] text-[#817da5] transition-colors duration-300  dark:text-slate-500">
               {section.title}
             </h3>
 
