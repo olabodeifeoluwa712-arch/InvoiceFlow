@@ -17,9 +17,55 @@ import {
   CheckIcon,
   XMarkIcon
 } from '@heroicons/react/24/outline';
+import Register from '../user/Register';
+import { useAuth } from '../../Context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const Management = () => {
   const { theme } = useTheme();
+  const { register } = useAuth();
+  const navigate = useNavigate();
+
+
+const [form, setForm] = useState({
+    fullName: '',
+    email: '',
+    password: '',
+    role: 'Admin',
+  });
+     const handleSubmit = async () => {
+    // e.preventDefault();
+    // setError('');
+    // setSuccess('');
+    // const validationError = validate();
+    // if (validationError) { triggerError(validationError); return; }
+
+    // setLoading(true);
+    // await new Promise(r => setTimeout(r, 600));
+
+    const nameParts = form.fullName.trim().split(/\s+/);
+    const firstName = nameParts[0] || 'User';
+    const lastName = nameParts.slice(1).join(' ') || '';
+
+   register({
+      email: form.email,
+      password: form.password,
+      firstName,
+      lastName,
+      role: form.role,
+    });
+
+    return navigate('/business-management');
+
+    // setLoading(false);
+    // if (res && res.success) {
+    //   setSuccess('Account created successfully! Welcome aboard.');
+    //   setTimeout(() => navigate('/'), 1500);
+    // } else {
+    //   triggerError(res?.error || 'Registration failed. Please try again.');
+    // }
+
+  };
 
   // Toast notification state
   const [toast, setToast] = useState(null);
@@ -80,6 +126,8 @@ const Management = () => {
       triggerToast('Invalid email address!', 'error');
       return;
     }
+  
+
 
     // Role colors mapping
     const avatarStyles = {
@@ -554,8 +602,8 @@ const Management = () => {
                 <input
                   type="text"
                   placeholder="e.g. John Doe"
-                  value={newMember.name}
-                  onChange={(e) => setNewMember(prev => ({ ...prev, name: e.target.value }))}
+                  value={form.name}
+                  onChange={(e) => setForm(prev => ({ ...prev, name: e.target.value }))}
                   className="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder-slate-400 font-medium focus:border-neon-purple focus:outline-none transition-all dark:bg-slate-950/40 dark:border-slate-800 dark:text-slate-100 dark:placeholder-slate-550 dark:focus:border-neon-cyan/80 dark:focus:ring-neon-cyan/40"
                   required
                 />
@@ -566,8 +614,8 @@ const Management = () => {
                 <input
                   type="email"
                   placeholder="e.g. john@acmecorp.com"
-                  value={newMember.email}
-                  onChange={(e) => setNewMember(prev => ({ ...prev, email: e.target.value }))}
+                  value={form.email}
+                  onChange={(e) => setForm(prev => ({ ...prev, email: e.target.value }))}
                   className="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder-slate-400 font-medium focus:border-neon-purple focus:outline-none transition-all dark:bg-slate-950/40 dark:border-slate-800 dark:text-slate-100 dark:placeholder-slate-550 dark:focus:border-neon-cyan/80 dark:focus:ring-neon-cyan/40"
                   required
                 />
@@ -576,8 +624,8 @@ const Management = () => {
               <div>
                 <label className="block text-xs font-bold font-mono tracking-wider uppercase text-slate-400 dark:text-slate-500 mb-2">System Role</label>
                 <select
-                  value={newMember.role}
-                  onChange={(e) => setNewMember(prev => ({ ...prev, role: e.target.value }))}
+                  value={form.role}
+                  onChange={(e) => setForm(prev => ({ ...prev, role: e.target.value }))}
                   className="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 font-medium focus:border-neon-purple focus:outline-none transition-all dark:bg-slate-950/40 dark:border-slate-800 dark:text-slate-100 dark:focus:border-neon-cyan/80 dark:focus:ring-neon-cyan/40"
                 >
                   <option>Admin</option>
@@ -597,6 +645,7 @@ const Management = () => {
                 </button>
                 <button
                   type="submit"
+                  onClick={() => handleSubmit()}
                   className="flex-1 py-3 bg-neon-purple text-white hover:bg-neon-purple/90 dark:bg-gradient-to-r dark:from-neon-cyan dark:to-neon-purple dark:text-slate-950 font-extrabold text-xs tracking-wider rounded-xl transition-all shadow-md dark:shadow-[0_0_15px_rgba(0,243,255,0.2)]"
                 >
                   Send Invitation
