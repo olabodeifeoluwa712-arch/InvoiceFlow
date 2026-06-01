@@ -76,11 +76,10 @@ const formatRole = (role) =>
 
 const Sidebar = () => {
   const { currentUser, logout, getInitials } = useAuth();
-  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate()
 
   if (currentUser == null) {
-    return null;
+    return ;
   }
 
   const role = currentUser.role?.toLowerCase().trim() || 'user';

@@ -1,4 +1,3 @@
-import React from 'react'
 import './index.css'
 import { BrowserRouter as Router, Routes, Route, } from 'react-router-dom'
 import Login from './Pages/user/Login'
@@ -91,7 +90,7 @@ function App() {
     <>
     
       <AuthProvider>
-       
+        <ThemeProvider>
         <Router>
           <Routes>
             <Route element={<MainLayout />}>
@@ -150,6 +149,7 @@ function App() {
           </Routes>
           
         </Router>
+        </ThemeProvider>
        
       </AuthProvider>
     

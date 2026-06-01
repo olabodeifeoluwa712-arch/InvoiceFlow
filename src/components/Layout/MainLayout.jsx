@@ -14,7 +14,7 @@ const MainLayout = () => {
       <div className="flex-1 flex flex-col overflow-hidden">
         
         {/* Topbar */}
-        <Topbar />
+       <Topbar />
 
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-transparent dark:scrollbar-thumb-slate-700">
