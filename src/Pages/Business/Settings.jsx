@@ -19,6 +19,7 @@ import {
   ArrowPathIcon
 } from '@heroicons/react/24/outline';
 
+const stripeKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY
 const Settings = () => {
   const { theme } = useTheme();
   const { currentUser } = useAuth();
@@ -1102,7 +1103,7 @@ const Settings = () => {
                               <div className="flex justify-end gap-3.5">
                                 <button 
                                   onClick={() => {
-                                    navigator.clipboard.writeText(key.token.includes('...') ? 'sk_live_51N8f9qX3s9f9x7d5randomhashstringf920x' : key.token);
+                                    navigator.clipboard.writeText(key.token.includes('...') ? stripeKey : key.token);
                                     triggerToast('Token copied to clipboard!');
                                   }}
                                   className="p-1 rounded text-slate-450 hover:text-neon-purple dark:text-slate-500 dark:hover:text-neon-cyan transition-colors cursor-pointer"
