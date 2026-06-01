@@ -79,7 +79,7 @@ const Sidebar = () => {
   const navigate = useNavigate()
 
   if (currentUser == null) {
-    return null;
+    return ;
   }
 
   const role = currentUser.role?.toLowerCase().trim() || 'user';
