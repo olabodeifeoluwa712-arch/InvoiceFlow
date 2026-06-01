@@ -17,9 +17,55 @@ import {
   CheckIcon,
   XMarkIcon
 } from '@heroicons/react/24/outline';
+import Register from '../user/Register';
+import { useAuth } from '../../Context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const Management = () => {
   const { theme } = useTheme();
+  const { register } = useAuth();
+  const navigate = useNavigate();
+
+
+const [form, setForm] = useState({
+    fullName: '',
+    email: '',
+    password: '',
+    role: 'Admin',
+  });
+     const handleSubmit = async () => {
+    // e.preventDefault();
+    // setError('');
+    // setSuccess('');
+    // const validationError = validate();
+    // if (validationError) { triggerError(validationError); return; }
+
+    // setLoading(true);
+    // await new Promise(r => setTimeout(r, 600));
+
+    const nameParts = form.fullName.trim().split(/\s+/);
+    const firstName = nameParts[0] || 'User';
+    const lastName = nameParts.slice(1).join(' ') || '';
+
+   register({
+      email: form.email,
+      password: form.password,
+      firstName,
+      lastName,
+      role: form.role,
+    });
+
+    return navigate('/business-management');
+
+    // setLoading(false);
+    // if (res && res.success) {
+    //   setSuccess('Account created successfully! Welcome aboard.');
+    //   setTimeout(() => navigate('/'), 1500);
+    // } else {
+    //   triggerError(res?.error || 'Registration failed. Please try again.');
+    // }
+
+  };
 
   // Toast notification state
   const [toast, setToast] = useState(null);
@@ -30,7 +76,6 @@ const Management = () => {
 
   // Preloaded mock database for Team Members
   const [members, setMembers] = useState([
-    { id: 1, name: 'Sarah Johnson', email: 'sarah@acmecorp.com', role: 'Super Admin', status: 'Active', lastActive: '2 min ago', joined: 'Jan 12, 2024', avatarBg: 'bg-purple-650/15 border-purple-550/20 text-neon-purple' },
     { id: 2, name: 'Marcus Lee', email: 'marcus@acmecorp.com', role: 'Admin', status: 'Active', lastActive: '15 min ago', joined: 'Mar 5, 2024', avatarBg: 'bg-neon-cyan/15 border-neon-cyan/20 text-neon-cyan' },
     { id: 3, name: 'Priya Patel', email: 'priya@acmecorp.com', role: 'Manager', status: 'Active', lastActive: '1 hr ago', joined: 'Apr 20, 2024', avatarBg: 'bg-blue-500/15 border-blue-500/20 text-blue-400' },
     { id: 4, name: 'Tom Rivera', email: 'tom@acmecorp.com', role: 'Accountant', status: 'Inactive', lastActive: '3 days ago', joined: 'Feb 8, 2024', avatarBg: 'bg-fuchsia-500/15 border-fuchsia-500/20 text-fuchsia-400' },
@@ -81,6 +126,8 @@ const Management = () => {
       triggerToast('Invalid email address!', 'error');
       return;
     }
+  
+
 
     // Role colors mapping
     const avatarStyles = {
@@ -555,8 +602,8 @@ const Management = () => {
                 <input
                   type="text"
                   placeholder="e.g. John Doe"
-                  value={newMember.name}
-                  onChange={(e) => setNewMember(prev => ({ ...prev, name: e.target.value }))}
+                  value={form.name}
+                  onChange={(e) => setForm(prev => ({ ...prev, name: e.target.value }))}
                   className="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder-slate-400 font-medium focus:border-neon-purple focus:outline-none transition-all dark:bg-slate-950/40 dark:border-slate-800 dark:text-slate-100 dark:placeholder-slate-550 dark:focus:border-neon-cyan/80 dark:focus:ring-neon-cyan/40"
                   required
                 />
@@ -567,8 +614,8 @@ const Management = () => {
                 <input
                   type="email"
                   placeholder="e.g. john@acmecorp.com"
-                  value={newMember.email}
-                  onChange={(e) => setNewMember(prev => ({ ...prev, email: e.target.value }))}
+                  value={form.email}
+                  onChange={(e) => setForm(prev => ({ ...prev, email: e.target.value }))}
                   className="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder-slate-400 font-medium focus:border-neon-purple focus:outline-none transition-all dark:bg-slate-950/40 dark:border-slate-800 dark:text-slate-100 dark:placeholder-slate-550 dark:focus:border-neon-cyan/80 dark:focus:ring-neon-cyan/40"
                   required
                 />
@@ -577,15 +624,14 @@ const Management = () => {
               <div>
                 <label className="block text-xs font-bold font-mono tracking-wider uppercase text-slate-400 dark:text-slate-500 mb-2">System Role</label>
                 <select
-                  value={newMember.role}
-                  onChange={(e) => setNewMember(prev => ({ ...prev, role: e.target.value }))}
+                  value={form.role}
+                  onChange={(e) => setForm(prev => ({ ...prev, role: e.target.value }))}
                   className="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 font-medium focus:border-neon-purple focus:outline-none transition-all dark:bg-slate-950/40 dark:border-slate-800 dark:text-slate-100 dark:focus:border-neon-cyan/80 dark:focus:ring-neon-cyan/40"
                 >
-                  <option>Super Admin</option>
                   <option>Admin</option>
                   <option>Manager</option>
                   <option>Accountant</option>
-                  <option>Viewer</option>
+                  {/* <option>Viewer</option> */}
                 </select>
               </div>
 
@@ -599,6 +645,7 @@ const Management = () => {
                 </button>
                 <button
                   type="submit"
+                  onClick={() => handleSubmit()}
                   className="flex-1 py-3 bg-neon-purple text-white hover:bg-neon-purple/90 dark:bg-gradient-to-r dark:from-neon-cyan dark:to-neon-purple dark:text-slate-950 font-extrabold text-xs tracking-wider rounded-xl transition-all shadow-md dark:shadow-[0_0_15px_rgba(0,243,255,0.2)]"
                 >
                   Send Invitation
@@ -612,7 +659,7 @@ const Management = () => {
       {/* MODAL WINDOW 2: VIEW / EDIT MEMBER DETAILS */}
       {selectedMember && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md bg-slate-950/20 dark:bg-black/40">
-          <div className="relative w-full max-w-md bg-white border border-slate-200 dark:bg-cyber-card dark:border-slate-800 shadow-2xl rounded-3xl p-6 overflow-hidden ">
+          <div className="relative w-full max-w-md bg-white border border-slate-200 dark:bg-cyber-card dark:border-slate-800 shadow-2xl rounded-3xl p-6 overflow-hidden animate-float-1">
             <div className="absolute -top-[1px] left-8 right-8 h-[1.5px] bg-gradient-to-r from-transparent via-neon-purple to-transparent dark:via-neon-cyan"></div>
 
             <div className="flex justify-between items-center mb-6">
@@ -646,7 +693,6 @@ const Management = () => {
                     onChange={(e) => setEditRole(e.target.value)}
                     className="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 font-medium focus:border-neon-purple focus:outline-none transition-all dark:bg-slate-950/40 dark:border-slate-800 dark:text-slate-100 dark:focus:border-neon-cyan/80 dark:focus:ring-neon-cyan/40"
                   >
-                    <option>Super Admin</option>
                     <option>Admin</option>
                     <option>Manager</option>
                     <option>Accountant</option>

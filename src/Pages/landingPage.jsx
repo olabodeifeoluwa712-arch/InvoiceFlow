@@ -851,4 +851,8 @@ const LandingPage = () => {
   );
 };
 
+<<<<<<< HEAD
 export default LandingPage;
+=======
+export default LandingPage;
+>>>>>>> 3c99fc1ac7eecf430c7fe86f21b2ec5c6947fcf8

@@ -95,6 +95,8 @@ export function AuthProvider({ children }) {
   return name.slice(0, 2).toUpperCase();
 };
 
+
+
   return (
   <AuthContext.Provider value={{isAuthenticated, setIsAuthenticated, login, register, logout, currentUser, setCurrentUser,getInitials}}>
     {children}

@@ -239,6 +239,36 @@
       "initials": "BM",
       "avatarBg": "bg-orange-100 text-orange-600"
     }
+    
+  ],
+  "businessProfile": [
+    {
+      "id": "1",
+      "businessName": "InvoFlow",
+      "businessEmail": "[EMAIL_ADDRESS]",
+      "businessPhone": "+2348123456789",
+      "businessAddress": "123 Main St, Lagos, Nigeria",
+      "businessLogo": "https://www.invo-flow.com/logo.png",
+      "businessCurrency": "NGN",
+      "businessLanguage": "English",
+      "businessTimeZone": "Africa/Lagos",
+      "businessTaxRate": 7.5,
+      "businessInvoicePrefix": "INV",
+      "businessInvoiceSuffix": "",
+      "businessInvoiceTemplate": "default",
+      "businessInvoiceLogo": "https://www.invo-flow.com/invoice-logo.png",
+      "businessInvoiceStamp": "https://www.invo-flow.com/invoice-stamp.png",
+      "businessInvoiceStampPosition": "bottom-right",
+      "businessInvoiceStampScale": 1,
+      "businessInvoiceStampOpacity": 1,
+      "businessInvoiceStampRotation": 0,
+      "businessInvoiceStampPositionX": 0,
+      "businessInvoiceStampPositionY": 0,
+      "subscriptionPlan": "Pro",
+      "subscriptionStatus": "Active",
+      "subscriptionStartDate": "2024-01-01",
+      "subscriptionEndDate": "2024-12-31"
+    }
   ],
   "$schema": "./node_modules/json-server/schema.json"
 }
