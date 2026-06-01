@@ -30,7 +30,6 @@ const Management = () => {
 
   // Preloaded mock database for Team Members
   const [members, setMembers] = useState([
-    { id: 1, name: 'Sarah Johnson', email: 'sarah@acmecorp.com', role: 'Super Admin', status: 'Active', lastActive: '2 min ago', joined: 'Jan 12, 2024', avatarBg: 'bg-purple-650/15 border-purple-550/20 text-neon-purple' },
     { id: 2, name: 'Marcus Lee', email: 'marcus@acmecorp.com', role: 'Admin', status: 'Active', lastActive: '15 min ago', joined: 'Mar 5, 2024', avatarBg: 'bg-neon-cyan/15 border-neon-cyan/20 text-neon-cyan' },
     { id: 3, name: 'Priya Patel', email: 'priya@acmecorp.com', role: 'Manager', status: 'Active', lastActive: '1 hr ago', joined: 'Apr 20, 2024', avatarBg: 'bg-blue-500/15 border-blue-500/20 text-blue-400' },
     { id: 4, name: 'Tom Rivera', email: 'tom@acmecorp.com', role: 'Accountant', status: 'Inactive', lastActive: '3 days ago', joined: 'Feb 8, 2024', avatarBg: 'bg-fuchsia-500/15 border-fuchsia-500/20 text-fuchsia-400' },
@@ -581,11 +580,10 @@ const Management = () => {
                   onChange={(e) => setNewMember(prev => ({ ...prev, role: e.target.value }))}
                   className="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 font-medium focus:border-neon-purple focus:outline-none transition-all dark:bg-slate-950/40 dark:border-slate-800 dark:text-slate-100 dark:focus:border-neon-cyan/80 dark:focus:ring-neon-cyan/40"
                 >
-                  <option>Super Admin</option>
                   <option>Admin</option>
                   <option>Manager</option>
                   <option>Accountant</option>
-                  <option>Viewer</option>
+                  {/* <option>Viewer</option> */}
                 </select>
               </div>
 
@@ -612,7 +610,7 @@ const Management = () => {
       {/* MODAL WINDOW 2: VIEW / EDIT MEMBER DETAILS */}
       {selectedMember && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md bg-slate-950/20 dark:bg-black/40">
-          <div className="relative w-full max-w-md bg-white border border-slate-200 dark:bg-cyber-card dark:border-slate-800 shadow-2xl rounded-3xl p-6 overflow-hidden ">
+          <div className="relative w-full max-w-md bg-white border border-slate-200 dark:bg-cyber-card dark:border-slate-800 shadow-2xl rounded-3xl p-6 overflow-hidden animate-float-1">
             <div className="absolute -top-[1px] left-8 right-8 h-[1.5px] bg-gradient-to-r from-transparent via-neon-purple to-transparent dark:via-neon-cyan"></div>
 
             <div className="flex justify-between items-center mb-6">
@@ -646,7 +644,6 @@ const Management = () => {
                     onChange={(e) => setEditRole(e.target.value)}
                     className="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 font-medium focus:border-neon-purple focus:outline-none transition-all dark:bg-slate-950/40 dark:border-slate-800 dark:text-slate-100 dark:focus:border-neon-cyan/80 dark:focus:ring-neon-cyan/40"
                   >
-                    <option>Super Admin</option>
                     <option>Admin</option>
                     <option>Manager</option>
                     <option>Accountant</option>

@@ -183,6 +183,20 @@ const Sidebar = () => {
           },
 
           {
+            to: "/Business-view-invoices",
+            label: "Manage Invoices",
+            icon: DocumentTextIconOutline,
+            activeIcon: DocumentTextIconSolid,
+          },
+
+          {
+            to: '/business-management',
+            label: 'Team Management',
+            icon: UserGroupIconOutline,
+            activeIcon: UserGroupIconSolid,
+          },
+
+          {
             to: "/business-products",
             label: "Products",
             icon: ArchiveBoxIconOutline,
@@ -208,12 +222,12 @@ const Sidebar = () => {
             icon: Squares2X2IconOutline,
             activeIcon: Squares2X2IconSolid,
           },
-          {
-            to: "/admin-invoices",
-            label: "Invoices",
-            icon: DocumentTextIconOutline,
-            activeIcon: DocumentTextIconSolid,
-          },
+          // {
+          //   to: "/admin-invoices",
+          //   label: "Invoices",
+          //   icon: DocumentTextIconOutline,
+          //   activeIcon: DocumentTextIconSolid,
+          // },
           {
             to: "/admin-receipts",
             label: "Receipts",
@@ -226,23 +240,6 @@ const Sidebar = () => {
             icon: CubeIconOutline,
             activeIcon: CubeIconSolid,
           },
-          {
-            to: "/admin-customers",
-            label: "Customers",
-            icon: UsersIconOutline,
-            activeIcon: UsersIconSolid,
-          },
-        ],
-      },
-      {
-        title: "Analytics",
-        items: [
-          {
-            to: "/admin-analytics",
-            label: "Reports",
-            icon: ArrowTrendingUpIconOutline,
-            activeIcon: ArrowTrendingUpIconSolid,
-          }
         ],
       },
       {
@@ -254,12 +251,12 @@ const Sidebar = () => {
             icon: UserGroupIconOutline,
             activeIcon: UserGroupIconSolid,
           },
-          {
-            to: "/admin-permissions",
-            label: "Permissions",
-            icon: permissionsIconOutline,
-            activeIcon: permissionsIconSolid,
-          },
+          // {
+          //   to: "/admin-permissions",
+          //   label: "Permissions",
+          //   icon: permissionsIconOutline,
+          //   activeIcon: permissionsIconSolid,
+          // },
           {
             to: "/admin-integrations",
             label: "Integrations",
