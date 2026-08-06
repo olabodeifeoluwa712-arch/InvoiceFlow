@@ -49,19 +49,6 @@ import EditBusinessInvoice from './Pages/Business/seeInvoices'
 import LandingPage from './Pages/landingPage'
 import {useAuth} from './Context/AuthContext'
 import { Navigate } from 'react-router-dom'
-// import {ProtectedRoute} from './utils/protected'
-
-// const ProtectedRoute = ({ children }) => {
-//   const { isAuthenticated, currentUser } = useAuth()
-//   // if (currentUser.role === 'admin') {
-//   //   return children
-//   // }
-
-//   if (!isAuthenticated) {
-//     return (<Navigate to='/' />)
-//   }
-//   return children
-// }
 
 function ProtectedRoute({ allowedRoles, children }) {
   const { currentUser } = useAuth();
@@ -69,15 +56,13 @@ function ProtectedRoute({ allowedRoles, children }) {
 
   if (!currentUser) {
      return ( 
-     <Navigate to="/" replace />
+     <Navigate to="/login" replace />
     );
-    //  return navigate('/');
     
   }
 
   if (!allowedRoles.includes(currentUser.role)) {
      return <Navigate to="/unauthorized" replace />;
-    // return navigate('/');
   }
 
   return children;
@@ -103,35 +88,24 @@ function App() {
               <Route path="/stock-history" element={<ProtectedRoute allowedRoles={['inventory']}><StockHistory /></ProtectedRoute>} />
               <Route path="/low-stock-alerts" element={<ProtectedRoute allowedRoles={['inventory']}><LowStockAlerts /></ProtectedRoute>} />
               <Route path="/add-products" element={<ProtectedRoute allowedRoles={['inventory']}><AddProducts /></ProtectedRoute>} />
-              {/* Solopreneur */}
-              {/* <Route index path="/solopreneur-dashboard" element={<ProtectedRoute><SolopreneurDashboard /></ProtectedRoute>} />
-              <Route path="/catalogue" element={<ProtectedRoute><Catalogue /></ProtectedRoute>} />
-              <Route path="/customers" element={<ProtectedRoute><Customers /></ProtectedRoute>} />
-              <Route path="/invoice" element={<ProtectedRoute><Invoice /></ProtectedRoute>} />
-              <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
-              <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} /> */}
+             
               {/* Business */}
-              <Route index path="/business-dashboard" element={<ProtectedRoute allowedRoles={['business']}><BusinessDashboard /></ProtectedRoute>} />
-              <Route path="/business-customers" element={<ProtectedRoute allowedRoles={['business']}><BusinessCustomers /></ProtectedRoute>} />
-              <Route path="/business-invoices" element={<ProtectedRoute allowedRoles={['business']}><BusinessInvoices /></ProtectedRoute>} />
-              <Route path="/business-create-receipt" element={<ProtectedRoute allowedRoles={['business']}><BusinessCreateReceipt /></ProtectedRoute>} />
-              <Route path="/business-settings" element={<ProtectedRoute allowedRoles={['business']}><BusinessSettings /></ProtectedRoute>} />
-              <Route path="/create-invoice" element={<ProtectedRoute allowedRoles={['business']}><CreateInvoice /></ProtectedRoute>} />
-              <Route path="/business-products" element={<ProtectedRoute allowedRoles={['business']}><BusinessProducts /></ProtectedRoute>} />
-              <Route path="/business-management" element={<ProtectedRoute allowedRoles={['business']}><BusinessManagement /></ProtectedRoute>} />
-              <Route path="/business-view-invoices" element={<ProtectedRoute allowedRoles={['business']}><EditBusinessInvoice /></ProtectedRoute>} />
+              <Route index path="/business-dashboard" element={<ProtectedRoute allowedRoles={['admin']}><BusinessDashboard /></ProtectedRoute>} />
+              <Route path="/business-customers" element={<ProtectedRoute allowedRoles={['admin']}><BusinessCustomers /></ProtectedRoute>} />
+              <Route path="/business-invoices" element={<ProtectedRoute allowedRoles={['admin']}><BusinessInvoices /></ProtectedRoute>} />
+              <Route path="/business-create-receipt" element={<ProtectedRoute allowedRoles={['admin']}><BusinessCreateReceipt /></ProtectedRoute>} />
+              <Route path="/business-settings" element={<ProtectedRoute allowedRoles={['admin']}><BusinessSettings /></ProtectedRoute>} />
+              <Route path="/create-invoice" element={<ProtectedRoute allowedRoles={['admin']}><CreateInvoice /></ProtectedRoute>} />
+              <Route path="/business-products" element={<ProtectedRoute allowedRoles={['admin']}><BusinessProducts /></ProtectedRoute>} />
+              <Route path="/business-management" element={<ProtectedRoute allowedRoles={['admin']}><BusinessManagement /></ProtectedRoute>} />
+              <Route path="/business-view-invoices" element={<ProtectedRoute allowedRoles={['admin']}><EditBusinessInvoice /></ProtectedRoute>} />
               {/* Accountant */}
               <Route index path="/accountant-dashboard" element={<ProtectedRoute allowedRoles={['accountant']}><AccountantDashboard /></ProtectedRoute>} />
               <Route path="/audit" element={<ProtectedRoute allowedRoles={['accountant']}><Audit /></ProtectedRoute>} />
               <Route path="/payments" element={<ProtectedRoute allowedRoles={['accountant']}><Payments /></ProtectedRoute>} />
               <Route path="/reports" element={<ProtectedRoute allowedRoles={['accountant']}><Reports /></ProtectedRoute>} />
               <Route path="/records" element={<ProtectedRoute allowedRoles={['accountant']}><Records /></ProtectedRoute>} />
-              {/* Sales */}
-              {/* <Route index path="/sales-dashboard" element={<SalesDashboard />} />
-              <Route path="/notifications" element={<Notifications />} />
-              <Route path="/sales-receipt" element={<Receipt />} />
-              <Route path="/sales-sales" element={<Sales />} />
-              <Route path="/sales-stocks" element={<Stocks />} /> */}
+
               {/* Admin */}
               <Route index path="/admin-dashboard" element={<ProtectedRoute allowedRoles={['admin']}><AdminDashboard /></ProtectedRoute>} />
               <Route path="/admin-inventory" element={<ProtectedRoute allowedRoles={['admin']}><AdminInventory /></ProtectedRoute>} />
