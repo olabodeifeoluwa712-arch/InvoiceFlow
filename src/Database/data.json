@@ -34,28 +34,6 @@
       "status": "Out of Stock"
     },
     {
-      "id": "4",
-      "name": "Mechanical Keyboard TKL",
-      "brand": "KeyCraft Inc.",
-      "sku": "SKU-1004",
-      "category": "Peripherals",
-      "unitCost": 119,
-      "unitPrice": 219,
-      "qty": 67,
-      "status": "In Stock"
-    },
-    {
-      "id": "5",
-      "name": "LED Desk Lamp Smart",
-      "brand": "LumiTech",
-      "sku": "SKU-1005",
-      "category": "Lighting",
-      "unitCost": 45,
-      "unitPrice": 89.99,
-      "qty": 112,
-      "status": "In Stock"
-    },
-    {
       "id": "6",
       "name": "HDMI Cable 2m Braided",
       "brand": "LinkSpeed",
@@ -89,26 +67,15 @@
       "status": "Out of Stock"
     },
     {
-      "id": "9",
-      "name": "4K Webcam Ultra HD",
-      "brand": "VisionPro",
-      "sku": "SKU-1009",
-      "category": "Electronics",
-      "unitCost": 95,
-      "unitPrice": 199.99,
-      "qty": 28,
-      "status": "In Stock"
-    },
-    {
-      "id": "0p6cjkO4bME",
-      "name": "chibuike",
-      "brand": "Human",
-      "sku": "SKU-1002",
-      "category": "Electronics",
-      "unitCost": "3",
-      "unitPrice": "3",
-      "qty": "2",
-      "status": "In Stock"
+      "id": "DME2XKClxpQ",
+      "name": "Tomisin",
+      "brand": "togo",
+      "sku": "101",
+      "category": "Human",
+      "unitCost": "100",
+      "unitPrice": "200",
+      "qty": "1",
+      "status": "Low Stock"
     }
   ],
   "customers": [
@@ -239,7 +206,6 @@
       "initials": "BM",
       "avatarBg": "bg-orange-100 text-orange-600"
     }
-    
   ],
   "businessProfile": [
     {

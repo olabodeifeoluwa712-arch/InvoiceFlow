@@ -31,7 +31,7 @@ const [form, setForm] = useState({
     fullName: '',
     email: '',
     password: '',
-    role: 'Admin',
+    role: '',
   });
      const handleSubmit = async () => {
     // e.preventDefault();
@@ -50,7 +50,7 @@ const [form, setForm] = useState({
    register({
       email: form.email,
       password: form.password,
-      firstName,
+      firstName: form.firstName,
       lastName,
       role: form.role,
     });
@@ -77,7 +77,7 @@ const [form, setForm] = useState({
   // Preloaded mock database for Team Members
   const [members, setMembers] = useState([
     { id: 2, name: 'Marcus Lee', email: 'marcus@acmecorp.com', role: 'Admin', status: 'Active', lastActive: '15 min ago', joined: 'Mar 5, 2024', avatarBg: 'bg-neon-cyan/15 border-neon-cyan/20 text-neon-cyan' },
-    { id: 3, name: 'Priya Patel', email: 'priya@acmecorp.com', role: 'Manager', status: 'Active', lastActive: '1 hr ago', joined: 'Apr 20, 2024', avatarBg: 'bg-blue-500/15 border-blue-500/20 text-blue-400' },
+    { id: 3, name: 'Priya Patel', email: 'priya@acmecorp.com', role: 'inventory', status: 'Active', lastActive: '1 hr ago', joined: 'Apr 20, 2024', avatarBg: 'bg-blue-500/15 border-blue-500/20 text-blue-400' },
     { id: 4, name: 'Tom Rivera', email: 'tom@acmecorp.com', role: 'Accountant', status: 'Inactive', lastActive: '3 days ago', joined: 'Feb 8, 2024', avatarBg: 'bg-fuchsia-500/15 border-fuchsia-500/20 text-fuchsia-400' },
     { id: 5, name: 'Aisha Okonkwo', email: 'aisha@acmecorp.com', role: 'Viewer', status: 'Active', lastActive: '30 min ago', joined: 'May 1, 2024', avatarBg: 'bg-emerald-500/15 border-emerald-500/20 text-emerald-450' },
     { id: 6, name: 'Dev Sharma', email: 'dev@acmecorp.com', role: 'Accountant', status: 'Pending', lastActive: 'Never', joined: 'May 27, 2026', avatarBg: 'bg-amber-500/15 border-amber-500/20 text-amber-450' }
@@ -133,7 +133,7 @@ const [form, setForm] = useState({
     const avatarStyles = {
       'Super Admin': 'bg-purple-650/15 border-purple-550/20 text-neon-purple',
       'Admin': 'bg-neon-cyan/15 border-neon-cyan/20 text-neon-cyan',
-      'Manager': 'bg-blue-500/15 border-blue-500/20 text-blue-400',
+      'inventory': 'bg-blue-500/15 border-blue-500/20 text-blue-400',
       'Accountant': 'bg-fuchsia-500/15 border-fuchsia-500/20 text-fuchsia-400',
       'Viewer': 'bg-emerald-500/15 border-emerald-500/20 text-emerald-450'
     };
@@ -344,7 +344,7 @@ const [form, setForm] = useState({
 
                 {showRoleDropdown && (
                   <div className="absolute right-0 mt-2 z-40 w-44 rounded-2xl bg-white border border-slate-200 dark:bg-cyber-card dark:border-slate-800 shadow-xl py-2 animate-fade-in">
-                    {['All Roles', 'Super Admin', 'Admin', 'Manager', 'Accountant', 'Viewer'].map(role => (
+                    {['All Roles', 'Super Admin', 'Admin', 'inventory', 'Accountant', 'Viewer'].map(role => (
                       <button
                         key={role}
                         onClick={() => {
@@ -390,7 +390,7 @@ const [form, setForm] = useState({
                     const roleBadgeStyles = {
                       'Super Admin': 'bg-neon-purple/10 border-neon-purple/30 text-neon-purple dark:shadow-[0_0_8px_rgba(189,0,255,0.08)]',
                       'Admin': 'bg-neon-cyan/10 border-neon-cyan/30 text-neon-cyan dark:shadow-[0_0_8px_rgba(0,243,255,0.08)]',
-                      'Manager': 'bg-blue-500/10 border-blue-500/30 text-blue-500 dark:text-blue-400',
+                      'inventory': 'bg-blue-500/10 border-blue-500/30 text-blue-500 dark:text-blue-400',
                       'Accountant': 'bg-fuchsia-500/10 border-fuchsia-500/30 text-fuchsia-500 dark:text-fuchsia-400',
                       'Viewer': 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
                     };
@@ -620,6 +620,17 @@ const [form, setForm] = useState({
                   required
                 />
               </div>
+              <div>
+                <label className="block text-xs font-bold font-mono tracking-wider uppercase text-slate-400 dark:text-slate-500 mb-2">Member Email</label>
+                <input
+                  type="password"
+                  placeholder="password"
+                  value={form.password}
+                  onChange={(e) => setForm(prev => ({ ...prev, password: e.target.value }))}
+                  className="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder-slate-400 font-medium focus:border-neon-purple focus:outline-none transition-all dark:bg-slate-950/40 dark:border-slate-800 dark:text-slate-100 dark:placeholder-slate-550 dark:focus:border-neon-cyan/80 dark:focus:ring-neon-cyan/40"
+                  required
+                />
+              </div>
 
               <div>
                 <label className="block text-xs font-bold font-mono tracking-wider uppercase text-slate-400 dark:text-slate-500 mb-2">System Role</label>
@@ -629,7 +640,7 @@ const [form, setForm] = useState({
                   className="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 font-medium focus:border-neon-purple focus:outline-none transition-all dark:bg-slate-950/40 dark:border-slate-800 dark:text-slate-100 dark:focus:border-neon-cyan/80 dark:focus:ring-neon-cyan/40"
                 >
                   <option>Admin</option>
-                  <option>Manager</option>
+                  <option>inventory</option>
                   <option>Accountant</option>
                   {/* <option>Viewer</option> */}
                 </select>
@@ -694,7 +705,7 @@ const [form, setForm] = useState({
                     className="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 font-medium focus:border-neon-purple focus:outline-none transition-all dark:bg-slate-950/40 dark:border-slate-800 dark:text-slate-100 dark:focus:border-neon-cyan/80 dark:focus:ring-neon-cyan/40"
                   >
                     <option>Admin</option>
-                    <option>Manager</option>
+                    <option>inventory</option>
                     <option>Accountant</option>
                     <option>Viewer</option>
                   </select>
