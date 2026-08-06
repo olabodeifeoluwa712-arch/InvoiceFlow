@@ -79,7 +79,7 @@ const Sidebar = () => {
   const navigate = useNavigate()
 
   if (currentUser == null) {
-    return ;
+    return navigate('/login');
   }
 
   const role = currentUser.role?.toLowerCase().trim() || 'user';
@@ -138,7 +138,7 @@ const Sidebar = () => {
      
     ],
 
-    business: [
+    admin: [
       {
         title: "MAIN MENU",
         items: [
@@ -211,7 +211,7 @@ const Sidebar = () => {
         ],
       },
     ],
-    admin: [
+    super_admin: [
       {
         title: "MAIN MENU",
         items: [
@@ -319,106 +319,7 @@ const Sidebar = () => {
       },
     ],
 
-    sales: [
-      {
-        title: "SALES",
-        items: [
-          {
-            to: "/sales-dashboard",
-            label: "Dashboard",
-            icon: Squares2X2IconOutline,
-            activeIcon: Squares2X2IconSolid,
-          },
-
-          {
-            to: "/notifications",
-            label: "Notifications",
-            icon: BellIconOutline,
-            activeIcon: BellIconSolid,
-          },
-        ],
-      },
-
-      {
-        title: "OPERATIONS",
-        items: [
-          {
-            to: "/sales-sales",
-            label: "Sales",
-            icon: ShoppingCartIconOutline,
-            activeIcon: ShoppingCartIconSolid,
-          },
-
-          {
-            to: "/sales-stocks",
-            label: "Stocks",
-            icon: ArchiveBoxIconOutline,
-            activeIcon: ArchiveBoxIconSolid,
-          },
-
-          {
-            to: "/sales-receipt",
-            label: "Receipt",
-            icon: ReceiptPercentIconOutline,
-            activeIcon: ReceiptPercentIconSolid,
-          },
-        ],
-      },
-    ],
-
-    solopreneur: [
-      {
-        title: "BUSINESS",
-        items: [
-          {
-            to: "/solopreneur-dashboard",
-            label: "Dashboard",
-            icon: Squares2X2IconOutline,
-            activeIcon: Squares2X2IconSolid,
-          },
-
-          {
-            to: "/customers",
-            label: "Customers",
-            icon: UsersIconOutline,
-            activeIcon: UsersIconSolid,
-          },
-
-          {
-            to: "/catalogue",
-            label: "Catalogue",
-            icon: BookOpenIconOutline,
-            activeIcon: BookOpenIconSolid,
-          },
-        ],
-      },
-
-      {
-        title: "OPERATIONS",
-        items: [
-          {
-            to: "/orders",
-            label: "Orders",
-            icon: ClipboardDocumentCheckIconOutline,
-            activeIcon: ClipboardDocumentCheckIconSolid,
-          },
-
-          {
-            to: "/profile",
-            label: "Profile",
-            icon: UserCircleIconOutline,
-            activeIcon: UserCircleIconSolid,
-          },
-
-          {
-            to: "/invoice",
-            label: "Invoice",
-            icon: DocumentDuplicateIconOutline,
-            activeIcon: DocumentDuplicateIconSolid,
-          },
-        ],
-      },
-    ],
+   
 
     user: [
       {

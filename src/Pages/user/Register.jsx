@@ -6,8 +6,9 @@ import heroImg from '../../assets/chart.png';
 
 const Register = () => {
   const { theme, toggleTheme } = useTheme();
+  // const superAdmin = form.email === 'michaelanazodo2024@gmail.com'? form.role === 'admin' : 'business';
   const [form, setForm] = useState({
-    fullName: '',
+    name: '',
     email: '',
     password: '',
     companyName: '',
@@ -23,9 +24,11 @@ const Register = () => {
   const { register, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (isAuthenticated) navigate(params.get('from') || '/', { replace: true });
-  }, [isAuthenticated]);
+  // useEffect(() => {
+  //   if (isAuthenticated) navigate(params.get('from') || '/', { replace: true });
+  // }, [isAuthenticated]);
+
+
 
   const set = (k, v) => {
     setForm(p => ({ ...p, [k]: v }));
@@ -40,17 +43,18 @@ const Register = () => {
   };
 
   const validate = () => {
-    if (!form.fullName.trim()) return 'Full Name is required.';
+    if (!form.name.trim()) return 'Name is required.';
     if (!form.email.trim()) return 'Email is required.';
     if (!/\S+@\S+\.\S+/.test(form.email)) return 'Enter a valid email address.';
     if (!form.password) return 'Password is required.';
     if (form.password.length < 6) return 'Password must be at least 6 characters.';
-    if (!form.role) return 'Please select an account type.';
     return null;
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    
+    try {
+        e.preventDefault();
     setError('');
     setSuccess('');
     const validationError = validate();
@@ -59,26 +63,60 @@ const Register = () => {
     setLoading(true);
     await new Promise(r => setTimeout(r, 600));
 
-    const nameParts = form.fullName.trim().split(/\s+/);
-    const firstName = nameParts[0] || 'User';
-    const lastName = nameParts.slice(1).join(' ') || '';
+    // const nameParts = form.fullName.trim().split(/\s+/);
+    // const firstName = nameParts[0] || 'User';
+    // const lastName = nameParts.slice(1).join(' ') || '';
 
-    const res = register({
-      email: form.email,
-      password: form.password,
-      firstName,
-      lastName,
-      role: form.role,
-    });
+        const response = await fetch('http://localhost:7000/api/auth/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: form.email,
+            password: form.password,
+            name: form.name,
+            companyName: form.companyName
+          })
+        
+        });
+
+        // response.cookie("refreshToken", response.data.refreshToken, {
+        //   httpOnly: true,
+        //   secure: true,
+        //   sameSite: 'Strict',
+          
+        // })
+
+         const data = await response.json();
+       console.log('Registration response:', data);
+
+         const roleHome = {
+      super_admin: '/admin-dashboard',
+      admin: '/business-dashboard',
+      inventory: '/inventory-dashboard',
+      accountant: '/accountant-dashboard'
+    };
+
+       const role = data.user?.role?.toLowerCase().trim().replace(/[\s_-]/g, '') || '';
+       console.log('User role:', role);
+      const destination = roleHome[role] || params.get('from') || '/';
+      console.log('Navigation destination:', destination);
 
     setLoading(false);
-    if (res && res.success) {
+    if (response && response.ok) {
       setSuccess('Account created successfully! Welcome aboard.');
-      setTimeout(() => navigate('/'), 1500);
+      navigate(destination);
     } else {
-      triggerError(res?.error || 'Registration failed. Please try again.');
+      triggerError(data?.error || 'Registration failed. Please try again.');
     }
-  };
+    } catch (err) {
+      console.error('Registration error:', err);
+    }
+   
+    }
+
+   
 
   return (
     <div className="min-h-screen bg-[#EEEEF3] dark:bg-cyber-dark text-slate-800 dark:text-slate-100 flex flex-col font-sans transition-colors duration-300 select-none">
@@ -243,9 +281,9 @@ const Register = () => {
 
               <form onSubmit={handleSubmit} className="space-y-3.5">
 
-                {/* Full Name */}
+                {/* First Name */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5">Full Name</label>
+                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5">Name</label>
                   <div className="relative group">
                     <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 dark:text-slate-500 group-focus-within:text-[#7F22FE] dark:group-focus-within:text-neon-cyan transition-colors pointer-events-none">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -253,11 +291,11 @@ const Register = () => {
                       </svg>
                     </span>
                     <input
-                      id="register-fullname"
+                      id="register-name"
                       type="text"
-                      placeholder="Jane Smith"
-                      value={form.fullName}
-                      onChange={e => set('fullName', e.target.value)}
+                      placeholder="Jane"
+                      value={form.name}
+                      onChange={e => set('name', e.target.value)}
                       className="w-full bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-[#7F22FE] dark:focus:border-neon-cyan focus:ring-2 focus:ring-[#7F22FE]/10 dark:focus:ring-neon-cyan/15 transition-all font-medium"
                     />
                   </div>
@@ -460,6 +498,6 @@ const Register = () => {
 
     </div>
   );
-};
+}
 
 export default Register;

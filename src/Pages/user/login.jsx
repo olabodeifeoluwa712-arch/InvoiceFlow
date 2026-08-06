@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../Context/AuthContext';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useTheme } from '../../Context/ThemeContext';
+import ApiError from '../../api/apiError';
 import heroImg from '../../assets/chart.png';
 
 const Login = () => {
@@ -16,11 +17,12 @@ const Login = () => {
 
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  const { login, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, currentUser } = useAuth();
+  
 
-  useEffect(() => {
-    if (isAuthenticated) navigate(params.get('from') || '/', { replace: true });
-  }, [isAuthenticated]);
+  // useEffect(() => {
+  //   if (isAuthenticated) navigate(params.get('from') || '/', { replace: true });
+  // }, [isAuthenticated]);
 
   const set = (k, v) => {
     setForm(p => ({ ...p, [k]: v }));
@@ -41,7 +43,8 @@ const Login = () => {
   };
 
   const handleLogin = async (e) => {
-    e.preventDefault();
+    try {
+      e.preventDefault();
     setError('');
     setSuccess('');
     const validationError = validate();
@@ -49,28 +52,32 @@ const Login = () => {
 
     setLoading(true);
     await new Promise(r => setTimeout(r, 600));
-    const res = login({ email: form.email, password: form.password });
+    const res = await login({ email: form.email, password: form.password });
+    // const data = await res.json();
+    console.log('fifi:', res);
     setLoading(false);
+    console.log('Current User:', currentUser);
 
-    if (res && res.success) {
+    if (res?.ok) {
       setSuccess('Access granted! Redirecting...');
       const roleHome = {
-        admin: '/admin-dashboard',
-        business: '/business-dashboard',
+        super_admin: '/admin-dashboard',
+        admin: '/business-dashboard',
         inventory: '/inventory-dashboard',
-        accountant: '/accountant-dashboard',
-        sales: '/sales-dashboard',
-        solopreneur: '/solopreneur-dashboard',
-        soloprenuer: '/solopreneur-dashboard',
+        accountant: '/accountant-dashboard'
       };
-      const role = res.user?.role?.toLowerCase().trim().replace(/[\s_-]/g, '') || '';
+      const role = res.data.User?.role?.toLowerCase().trim().replace(/[\s_-]/g, '') || '';
+      console.log('Role:', role);
       const destination = roleHome[role] || params.get('from') || '/';
-      const des = res.user.role === 'admin' ? '/admin-dashboard' : destination;
-      navigate(des);
-      setTimeout(() => navigate(des), 1200);
+      navigate(destination);
     } else {
-      triggerError(res?.error || 'Invalid credentials. Please try again.');
+       return triggerError(res.error)
     }
+    } catch (err) {
+     console.log('error', res.error)
+     if(err instanceof ApiError) return triggerError(err)
+    }
+    
   };
 
   return (
@@ -252,8 +259,9 @@ const Login = () => {
                       id="login-email"
                       type="text"
                       placeholder="you@company.com"
-                      onChange={e => set('email', e.target.value)}
                       value={form.email}
+                      onChange={e => set('email', e.target.value)}
+                      
                       className="w-full bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-[#7F22FE] dark:focus:border-neon-cyan focus:ring-2 focus:ring-[#7F22FE]/10 dark:focus:ring-neon-cyan/15 transition-all font-medium"
                     />
                   </div>
@@ -272,8 +280,9 @@ const Login = () => {
                       id="login-password"
                       type={showPassword ? 'text' : 'password'}
                       placeholder="••••••••"
+                       value={form.password}
                       onChange={e => set('password', e.target.value)}
-                      value={form.password}
+                     
                       className="w-full bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-700 rounded-xl pl-10 pr-10 py-2.5 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-[#7F22FE] dark:focus:border-neon-cyan focus:ring-2 focus:ring-[#7F22FE]/10 dark:focus:ring-neon-cyan/15 transition-all font-medium"
                     />
                     <button

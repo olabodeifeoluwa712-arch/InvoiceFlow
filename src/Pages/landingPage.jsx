@@ -8,6 +8,19 @@ function useCountUp(target, duration = 2000, startOnView = true) {
   const ref = useRef(null);
   const started = useRef(false);
 
+  // const call = async () => {
+  //   const response = await fetch('http://localhost:8000/api/v1/products', {
+  //   method: 'get',
+  //   headers: {
+  //     'Content-Type': 'application/json'
+  //   },
+  //   })
+ 
+  //   const data = await response.json()
+  //   console.log(data)
+  // }
+  // call()
+
   useEffect(() => {
     if (!startOnView) return;
     const observer = new IntersectionObserver(

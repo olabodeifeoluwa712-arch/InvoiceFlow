@@ -10,35 +10,37 @@
   --color--focus-lightpurple: #F5F3FF;
 }
 @theme {
-  --color-neon-cyan: #00f3ff;
-  --color-neon-purple: #bd00ff;
-  --color-neon-pink: #ff007f;
-  --color-cyber-dark: #080b11;
-  --color-cyber-card: #0e1320;
+  /* Softened from pure neons → calm, muted accents */
+  --color-neon-cyan: #38bdf8;       /* was #00f3ff — now soft sky blue */
+  --color-neon-purple: #818cf8;     /* was #bd00ff — now muted indigo */
+  --color-neon-pink: #fb7185;       /* was #ff007f — now muted rose */
+  /* Backgrounds lifted from near-black → warmer dark slate */
+  --color-cyber-dark: #0f1623;      /* was #080b11 — less harsh */
+  --color-cyber-card: #1a2435;      /* was #0e1320 — warmer, lighter */
 }
 
 @utility neon-glow-cyan {
-  box-shadow: 0 0 20px rgba(0, 243, 255, 0.45);
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);   /* reduced from 0.45 */
 }
 
 @utility neon-glow-purple {
-  box-shadow: 0 0 20px rgba(189, 0, 255, 0.45);
+  box-shadow: 0 0 16px rgba(129, 140, 248, 0.25);  /* reduced from 0.45 */
 }
 
 @utility neon-glow-pink {
-  box-shadow: 0 0 20px rgba(255, 0, 127, 0.45);
+  box-shadow: 0 0 16px rgba(251, 113, 133, 0.25);  /* reduced from 0.45 */
 }
 
 @utility text-glow-cyan {
-  text-shadow: 0 0 10px rgba(0, 243, 255, 0.6);
+  text-shadow: 0 0 8px rgba(56, 189, 248, 0.35);   /* reduced from 0.6 */
 }
 
 @utility text-glow-purple {
-  text-shadow: 0 0 10px rgba(189, 0, 255, 0.6);
+  text-shadow: 0 0 8px rgba(129, 140, 248, 0.35);  /* reduced from 0.6 */
 }
 
 @utility text-glow-pink {
-  text-shadow: 0 0 10px rgba(255, 0, 127, 0.6);
+  text-shadow: 0 0 8px rgba(251, 113, 133, 0.35);  /* reduced from 0.6 */
 }
 
 @keyframes float-slow-1 {

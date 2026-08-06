@@ -10,6 +10,7 @@ import {
   TrashIcon,
 } from '@heroicons/react/24/outline'
 import { products } from '../../Database/data.json'
+import { getProducts } from '../../api/inventory.api'
 
 // { id: 10, name: 'Ring Light 12-inch', brand: 'LumiTech', sku: 'SKU-1010', category: 'Lighting', unitCost: 29.99, unitPrice: 59.99, qty: 9, status: 'Low Stock' },
 
@@ -76,13 +77,21 @@ const addProducts = () => {
 
   useEffect(() => {
 
-    const fetchProducts = async () => {
-      const res = await fetch('http://localhost:3001/products');
-      const data = await res.json();
-      //setProducts(data);
-      console.log(data);
-    };
-    fetchProducts();
+    // const fetchProducts = async () => {
+    //   const res = await fetch('http://localhost:3001/products');
+    //   const data = await res.json();
+    //   //setProducts(data);
+    //   console.log(data);
+    // };
+    // fetchProducts();
+    const getProducts = async () => {
+      try {
+        const response = getProducts()
+      } catch (err) {
+        console.log(err)
+      }
+    }
+    
   }, []);
 
 
