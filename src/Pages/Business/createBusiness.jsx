@@ -1,21 +1,46 @@
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import Input from "../../ui/Input";
+import { useAuth } from "../../Context/AuthContext"
+import { useNavigate } from "react-router-dom";
 const steps = [
     "Business Info",
-    "Address",
     "Owner Details",
+    "Documents",
 ];
 
+
 export default function CreateBusiness() {
+    const { createBusiness, uploadDocument } = useAuth()
     const [currentStep, setCurrentStep] = useState(1);
     const [currencies, setCurrencies] = useState([]);
+    const [documents, setDocuments] = useState({
+        passportPhoto: null,
+        idDocument: null,
+        proofOfAddress: null
+    });
+    const [success, setSuccess] = useState('')
+    const [error, setError] = useState('')
+    const [loading, setLoading] = useState(false)
+    const navigate = useNavigate();
     useEffect(() => {
-        fetch("http://localhost:5000/api/currencies/")
-            .then(res => res.json())
-            .then(data => setCurrencies(data));
+        fetch("http://localhost:7000/api/currencies/")
+            .then(res => {
+                console.log("status:", res.status);
+                return res.json();
+            })
+            .then(data => {
+                console.log("currency data:", JSON.stringify(data, null, 2));
+
+                // Adjust this depending on your backend response
+
+                setCurrencies(data.currencies);;
+            })
+            .catch(error => {
+                console.error("currency error:", error);
+            });
     }, []);
     const [formData, setFormData] = useState({
-        businessName: "",
+        name: "",
         email: "",
         contactNumber: "",
         rcNumber: "",
@@ -26,28 +51,32 @@ export default function CreateBusiness() {
             street: "",
             city: "",
             state: "",
-            country: "Nigeria",
+            country: "",
         },
-        proofOfAddressUrl: "",
         owner: {
-            fullName: "",
-            email: "",
+
             phoneNumber: "",
             idType: "",
             idNumber: "",
-            idDocumentUrl: "",
-            passportPhotoUrl: "",
 
             address: {
                 street: "",
                 city: "",
                 state: "",
-                country: "Nigeria",
+                country: "",
             }
         },
     });
 
-
+    const handleFileChange = (e) => {
+        const { name, files } = e.target;
+        setDocuments(prev => {
+            return {
+                ...prev,
+                [name]: files[0]
+            }
+        })
+    }
     const handleChange = (e) => {
         const { name, value } = e.target;
 
@@ -85,13 +114,58 @@ export default function CreateBusiness() {
     };
 
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        console.log(formData);
+        try {
+            setLoading(true);
+            setError('');
+            setSuccess('');
 
-        // send data to backend here
+            // 1. Create business
+            const businessResponse = await createBusiness(formData);
+
+            if (!businessResponse.ok) {
+                throw new Error(businessResponse.message);
+            }
+
+            // // 2. Prepare documents
+            // const documentFormData = new FormData();
+
+            // documentFormData.append(
+            //     "passportPhoto",
+            //     documents.passportPhoto
+            // );
+
+            // documentFormData.append(
+            //     "idDocument",
+            //     documents.idDocument
+            // );
+
+            // documentFormData.append(
+            //     "proofOfAddress",
+            //     documents.proofOfAddress
+            // );
+
+            // 3. Upload documents
+            const documentResponse = await uploadDocument(documents);
+
+            if (!documentResponse.ok) {
+                throw new Error(documentResponse.message);
+            }
+
+            // 4. Everything succeeded
+            setSuccess(documentResponse.message);
+            setTimeout(() => {
+                navigate("/dashboard")
+            }, 2000);
+        } catch (error) {
+            setError(error.message);
+        } finally {
+            setLoading(false);
+        }
     };
+
     return (
         <div className="min-h-screen bg-gray-50 flex justify-center px-4 py-10">
 
@@ -103,6 +177,23 @@ export default function CreateBusiness() {
         border border-gray-100
         p-8
       ">
+                {error && (
+                    <div className="mb-4 border border-red-300/50 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 px-4 py-2.5 rounded-xl text-sm flex items-center gap-2.5 animate-fade-in">
+                        <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        <span className="font-semibold">{error}</span>
+                    </div>
+                )}
+                {success && (
+                    <div className="mb-4 border border-emerald-300/50 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-4 py-2.5 rounded-xl text-sm flex items-center gap-2.5 animate-fade-in">
+                        <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span className="font-semibold">{success}</span>
+                    </div>
+                )}
+
 
                 <h1 className="
           text-2xl
@@ -194,9 +285,9 @@ export default function CreateBusiness() {
 
                             <Input
                                 label="Business Name"
-                                name="businessName"
+                                name="name"
                                 placeholder="Enter business name"
-                                value={formData.businessName}
+                                value={formData.name}
                                 onChange={handleChange}
                             />
 
@@ -233,24 +324,64 @@ export default function CreateBusiness() {
                                 placeholder="Technology, Retail..."
                                 value={formData.industry}
                                 onChange={handleChange}
-                            />
+                            />  <div className="space-y-5">
+
+
+                                <Input
+                                    label="Street"
+                                    name="address.street"
+                                    placeholder="Business street address"
+                                    value={formData.address.street}
+                                    onChange={handleChange}
+                                />
+
+
+                                <Input
+                                    label="City"
+                                    name="address.city"
+                                    placeholder="City"
+                                    value={formData.address.city}
+                                    onChange={handleChange}
+                                />
+
+
+                                <Input
+                                    label="State"
+                                    name="address.state"
+                                    placeholder="State"
+                                    value={formData.address.state}
+                                    onChange={handleChange}
+                                />
+
+
+                                <Input
+                                    label="Country"
+                                    name="address.country"
+                                    placeholder="Nigeria" value={formData.address.country}
+                                    onChange={handleChange}
+                                />
+                            </div>
 
 
 
-                            <select
-                                label="defaultCurrency"
-                                name="defaultCurrency"
-                                value={formData.defaultCurrency}
-                                onChange={handleChange}>
-                                {
-                                    currencies.map((currency) => (
-                                        <option key={currency.code} value={currency.code}>
-                                            {currency.symbol} {currency.code}
+                            <div>
+                                <label className="block text-xs font-bold text-slate-600 mb-1.5">
+                                    Default Currency
+                                </label>
+
+                                <select
+                                    name="defaultCurrency"
+                                    value={formData.defaultCurrency}
+                                    onChange={handleChange}
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-[#7F22FE] focus:ring-2 focus:ring-[#7F22FE]/10 transition-all font-medium"
+                                >
+                                    {currencies.map((currency) => (
+                                        <option key={currency} value={currency}>
+                                            {currency}
                                         </option>
-                                    ))
-                                }
-                            </select>
-
+                                    ))}
+                                </select>
+                            </div>
 
                         </div>
                     }
@@ -261,84 +392,7 @@ export default function CreateBusiness() {
 
                     {
                         currentStep === 2 &&
-
                         <div className="space-y-5">
-
-
-                            <Input
-                                label="Street"
-                                name="address.street"
-                                placeholder="Business street address"
-                                value={formData.address.street}
-                                onChange={handleChange}
-                            />
-
-
-                            <Input
-                                label="City"
-                                name="address.city"
-                                placeholder="City"
-                                value={formData.address.city}
-                                onChange={handleChange}
-                            />
-
-
-                            <Input
-                                label="State"
-                                name="address.state"
-                                placeholder="State"
-                                value={formData.address.state}
-                                onChange={handleChange}
-                            />
-
-
-                            <Input
-                                label="Country"
-                                name="address.country"
-                                placeholder="Nigeria" value={formData.address.country}
-                                onChange={handleChange}
-                            />
-
-
-                            <Input
-                                label="Proof Of Address URL"
-                                name="proofOfAddressUrl"
-                                placeholder="Upload document URL"
-                                value={formData.proofOfAddressUrl}
-                                onChange={handleChange}
-                            />
-
-                        </div>
-                    }
-
-
-
-
-                    {/* STEP 3 */}
-
-                    {
-                        currentStep === 3 &&
-
-                        <div className="space-y-5">
-
-
-                            <Input
-                                label="Owner Full Name"
-                                name="owner.fullName"
-                                placeholder="Full name"
-                                value={formData.owner.fullName}
-                                onChange={handleChange}
-                            />
-
-
-                            <Input
-                                label="Owner Email"
-                                name="owner.email"
-                                type="email"
-                                placeholder="owner@email.com" value={formData.owner.email}
-                                onChange={handleChange}
-                            />
-
 
                             <Input
                                 label="Owner Phone Number"
@@ -349,13 +403,25 @@ export default function CreateBusiness() {
                             />
 
 
-                            <Input
-                                label="ID Type"
-                                name="owner.idType"
-                                placeholder="national_id"
-                                value={formData.owner.idType}
-                                onChange={handleChange}
-                            />
+                            <div>
+                                <label className="block text-xs font-bold text-slate-600 mb-1.5">
+                                    ID Type
+                                </label>
+
+                                <select
+                                    name="owner.idType"
+                                    value={formData.owner.idType}
+                                    onChange={handleChange}
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-[#7F22FE] focus:ring-2 focus:ring-[#7F22FE]/10 transition-all font-medium"
+                                >
+                                    <option value="">Select ID type</option>
+                                    <option value="national_id">National ID</option>
+                                    <option value="drivers_license">Driver's License</option>
+                                    <option value="passport">Passport</option>
+                                    <option value="voters_card">Voter's Card</option>
+                                </select>
+                            </div>
+
 
 
                             <Input
@@ -365,26 +431,6 @@ export default function CreateBusiness() {
                                 value={formData.owner.idNumber}
                                 onChange={handleChange}
                             />
-
-
-                            <Input
-                                label="ID Document URL"
-                                name="owner.idDocumentUrl"
-                                placeholder="Document URL"
-                                value={formData.owner.idDocumentUrl}
-                                onChange={handleChange}
-                            />
-
-
-                            <Input
-                                label="Passport Photo URL"
-                                name="owner.passportPhotoUrl"
-                                placeholder="Photo URL"
-                                value={formData.owner.passportPhotoUrl}
-                                onChange={handleChange}
-                            />
-
-
                             <h3 className="
           text-sm 
           font-semibold
@@ -432,6 +478,60 @@ export default function CreateBusiness() {
                         </div>
                     }
 
+                    {/* STEP 3 */}
+
+                    {
+                        currentStep === 3 &&
+
+                        <div className="space-y-5">
+
+                            <div>
+                                <label className="block text-xs font-bold text-slate-600 mb-1.5">
+                                    ID Document
+                                </label>
+
+                                <input
+                                    type="file"
+                                    name="idDocument"
+                                    accept="image/*"
+                                    onChange={handleFileChange}
+                                    placeholder="Upload business owner's ID document."
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-[#7F22FE] file:text-white file:text-sm file:font-medium hover:file:opacity-90"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-slate-600 mb-1.5">
+                                    Proof Of Address
+                                </label>
+
+                                <input
+                                    type="file"
+                                    name="proofOfAddress"
+                                    accept="image/*"
+                                    onChange={handleFileChange}
+                                    placeholder="Upload an evidence of address e.g Utility bill"
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-[#7F22FE] file:text-white file:text-sm file:font-medium hover:file:opacity-90"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-slate-600 mb-1.5">
+                                    Passport Photo
+                                </label>
+
+                                <input
+                                    type="file"
+                                    name="passportPhoto"
+                                    accept="image/*"
+                                    onChange={handleFileChange}
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-[#7F22FE] file:text-white file:text-sm file:font-medium hover:file:opacity-90"
+                                />
+                            </div>
+
+                        </div>
+                    }
+
 
 
                     {/* BUTTONS */}
@@ -467,15 +567,7 @@ export default function CreateBusiness() {
                                 <button
                                     type="button"
                                     onClick={nextStep}
-                                    className="
-          ml-auto
-          px-6 py-3
-          rounded-xl
-          bg-[#7F22FE]
-          text-white
-          text-sm
-          hover:opacity-90
-          "
+                                    className="ml-auto px-6 py-3 rounded-xl bg-[#7F22FE] text-white text-sm hover:opacity-90"
                                 >
                                     Continue
                                 </button>
@@ -484,21 +576,12 @@ export default function CreateBusiness() {
 
                                 <button
                                     type="submit"
-                                    className="
-          ml-auto
-          px-6 py-3
-          rounded-xl
-          bg-[#7F22FE]
-          text-white
-          text-sm
-          hover:opacity-90
-          "
+                                    disabled={loading}
+                                    className="ml-auto px-6 py-3 rounded-xl bg-[#7F22FE] text-white text-sm hover:opacity-90"
                                 >
-                                    Create Business
+                                    {loading ? "Creating Business..." : "Create Business"}
                                 </button>
-
                         }
-
 
                     </div>
 

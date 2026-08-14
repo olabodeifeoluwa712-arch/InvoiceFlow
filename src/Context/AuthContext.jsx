@@ -21,21 +21,21 @@ export function AuthProvider({ children }) {
 
   // login
   const login = async ({ email, password }) => {
-    try {      
+    try {
       const response = await api.post("/auth/login", { email, password });
       const data = response.data;
       const { token, User } = data;
 
-  
-    setAccessToken(token)
-    setCurrentUser(User)
-    console.log(currentUser, token)
+
+      setAccessToken(token)
+      setCurrentUser(User)
+      console.log(currentUser, token)
       setIsAuthenticated(true);
 
       return { data, response, success: true, ok: true };
     } catch (error) {
-    
-      if (error instanceof ApiError) return { success: false, error: error.message };   
+
+      if (error instanceof ApiError) return { success: false, error: error.message };
       console.log(error)
     }
   };
@@ -44,14 +44,14 @@ export function AuthProvider({ children }) {
   const user = async () => {
     try {
       const accessToken = useAuthStore((state) => state.accessToken);
-    const setAccessToken = useAuthStore((state) => state.setAccessToken);
+      const setAccessToken = useAuthStore((state) => state.setAccessToken);
 
       const response = await api.get("/auth/profile");
       console.log(response)
       return response;
     } catch (error) {
       console.error("Error fetching current user:", error);
-      return null;
+      throw error;
     }
   }
   // console.log(user())
@@ -74,9 +74,38 @@ export function AuthProvider({ children }) {
     return res;
   };
   const currentUser = useAuthStore((state) => state.currentUser)
+  const createBusiness = async (data) => {
+    try {
+      const userId = currentUser._id;
+      const res = await api.post(`/business/${userId}`, data);
+      console.log(res)
+      return { res, ok: true, success: true };
+    } catch (error) {
+      if (error instanceof ApiError) return { success: false, error: `Error creating businessProfile:${error.message}` }
+      console.error(error);
+      return null;
+    }
+  }
+  const uploadDocument = async (documents) => {
+    try {
+      const formData = new FormData();
 
+      formData.append("passportPhoto", documents.passportPhoto);
+      formData.append("idDocument", documents.idDocument);
+      formData.append("proofOfAddress", documents.proofOfAddress);
+ console.log("FILES BEING SENT:", documents);
+      const res = await api.patch("business/documents", formData);
+
+      console.log("UPLOAD RESPONSE:", res);
+
+      return res;
+    } catch (error) {
+      console.error("Error uploading documents:", error);
+      throw error;
+    }
+  };
   return (
-    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, login, getInitials, currentUser, logout}}>
+    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, login, getInitials, currentUser, createBusiness, uploadDocument, user, logout }}>
       {children}
     </AuthContext.Provider>
   )

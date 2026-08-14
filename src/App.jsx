@@ -10,6 +10,7 @@ import Payments from './Pages/Accountant/Payments'
 import Reports from './Pages/Accountant/Reports'
 import Records from './Pages/Accountant/Records'
 import CreateInvoice from './Pages/Business/CreateInvoice'
+import CreateBusiness from './Pages/Business/createBusiness'
 import BusinessDashboard from './Pages/Business/Dashboard'
 import BusinessCustomers from './Pages/Business/Customers'
 import BusinessInvoices from './Pages/Business/Invoices'
@@ -47,22 +48,22 @@ import AdminReports from './Pages/Admin/Reports'
 import BusinessManagement from './Pages/Business/Management'
 import EditBusinessInvoice from './Pages/Business/seeInvoices'
 import LandingPage from './Pages/landingPage'
-import {useAuth} from './Context/AuthContext'
+import { useAuth } from './Context/AuthContext'
 import { Navigate } from 'react-router-dom'
-
+import ProtectedRoutes from '../src/Context/ProtectedRoutes'
 function ProtectedRoute({ allowedRoles, children }) {
   const { currentUser } = useAuth();
   // const navigate = useNavigate();
 
   if (!currentUser) {
-     return ( 
-     <Navigate to="/login" replace />
+    return (
+      <Navigate to="/login" replace />
     );
-    
+
   }
 
   if (!allowedRoles.includes(currentUser.role)) {
-     return <Navigate to="/unauthorized" replace />;
+    return <Navigate to="/unauthorized" replace />;
   }
 
   return children;
@@ -73,60 +74,65 @@ function App() {
 
   return (
     <>
-    
+
       <AuthProvider>
         <ThemeProvider>
-        <Router>
-          <Routes>
-            <Route element={<MainLayout />}>
-            
-              {/* Inventory Manager */}
-              <Route index path="/inventory-dashboard" element={<ProtectedRoute allowedRoles={['inventory']}><InventoryDashboard /></ProtectedRoute>} />
-              <Route path="/inventory" element={<ProtectedRoute allowedRoles={['inventory']}><Inventory /></ProtectedRoute>} />
-              <Route path="/inventory-products" element={<ProtectedRoute allowedRoles={['inventory']}><Products /></ProtectedRoute>} />
-              <Route path="/stock-adjustments" element={<ProtectedRoute allowedRoles={['inventory']}><StockAdjustment /></ProtectedRoute>} />
-              <Route path="/stock-history" element={<ProtectedRoute allowedRoles={['inventory']}><StockHistory /></ProtectedRoute>} />
-              <Route path="/low-stock-alerts" element={<ProtectedRoute allowedRoles={['inventory']}><LowStockAlerts /></ProtectedRoute>} />
-              <Route path="/add-products" element={<ProtectedRoute allowedRoles={['inventory']}><AddProducts /></ProtectedRoute>} />
-             
-              {/* Business */}
-              <Route index path="/business-dashboard" element={<ProtectedRoute allowedRoles={['admin']}><BusinessDashboard /></ProtectedRoute>} />
-              <Route path="/business-customers" element={<ProtectedRoute allowedRoles={['admin']}><BusinessCustomers /></ProtectedRoute>} />
-              <Route path="/business-invoices" element={<ProtectedRoute allowedRoles={['admin']}><BusinessInvoices /></ProtectedRoute>} />
-              <Route path="/business-create-receipt" element={<ProtectedRoute allowedRoles={['admin']}><BusinessCreateReceipt /></ProtectedRoute>} />
-              <Route path="/business-settings" element={<ProtectedRoute allowedRoles={['admin']}><BusinessSettings /></ProtectedRoute>} />
-              <Route path="/create-invoice" element={<ProtectedRoute allowedRoles={['admin']}><CreateInvoice /></ProtectedRoute>} />
-              <Route path="/business-products" element={<ProtectedRoute allowedRoles={['admin']}><BusinessProducts /></ProtectedRoute>} />
-              <Route path="/business-management" element={<ProtectedRoute allowedRoles={['admin']}><BusinessManagement /></ProtectedRoute>} />
-              <Route path="/business-view-invoices" element={<ProtectedRoute allowedRoles={['admin']}><EditBusinessInvoice /></ProtectedRoute>} />
-              {/* Accountant */}
-              <Route index path="/accountant-dashboard" element={<ProtectedRoute allowedRoles={['accountant']}><AccountantDashboard /></ProtectedRoute>} />
-              <Route path="/audit" element={<ProtectedRoute allowedRoles={['accountant']}><Audit /></ProtectedRoute>} />
-              <Route path="/payments" element={<ProtectedRoute allowedRoles={['accountant']}><Payments /></ProtectedRoute>} />
-              <Route path="/reports" element={<ProtectedRoute allowedRoles={['accountant']}><Reports /></ProtectedRoute>} />
-              <Route path="/records" element={<ProtectedRoute allowedRoles={['accountant']}><Records /></ProtectedRoute>} />
+          <Router>
+            <Routes>
+              <Route element={<MainLayout />}>
 
-              {/* Admin */}
-              <Route index path="/admin-dashboard" element={<ProtectedRoute allowedRoles={['admin']}><AdminDashboard /></ProtectedRoute>} />
-              <Route path="/admin-inventory" element={<ProtectedRoute allowedRoles={['admin']}><AdminInventory /></ProtectedRoute>} />
-              <Route path="/admin-receipts" element={<ProtectedRoute allowedRoles={['admin']}><AdminReceipt /></ProtectedRoute>} />
-              <Route path="/admin-management" element={<ProtectedRoute allowedRoles={['admin']}><AdminManagement /></ProtectedRoute>} />
-              <Route path="/admin-permissions" element={<ProtectedRoute allowedRoles={['admin']}><AdminPermissions /></ProtectedRoute>} />
-              <Route path="/admin-integrations" element={<ProtectedRoute allowedRoles={['admin']}><AdminIntegrations /></ProtectedRoute>} />
-              <Route path="/admin-settings" element={<ProtectedRoute allowedRoles={['admin']}><AdminSettings /></ProtectedRoute>} />
-              <Route path="/admin-analytics" element={<ProtectedRoute allowedRoles={['admin']}><AdminReports /></ProtectedRoute>} />
-            </Route>
-      {/* user */}
+                {/* Inventory Manager */}
+                <Route index path="/inventory-dashboard" element={<ProtectedRoute allowedRoles={['inventory']}><InventoryDashboard /></ProtectedRoute>} />
+                <Route path="/inventory" element={<ProtectedRoute allowedRoles={['inventory']}><Inventory /></ProtectedRoute>} />
+                <Route path="/inventory-products" element={<ProtectedRoute allowedRoles={['inventory']}><Products /></ProtectedRoute>} />
+                <Route path="/stock-adjustments" element={<ProtectedRoute allowedRoles={['inventory']}><StockAdjustment /></ProtectedRoute>} />
+                <Route path="/stock-history" element={<ProtectedRoute allowedRoles={['inventory']}><StockHistory /></ProtectedRoute>} />
+                <Route path="/low-stock-alerts" element={<ProtectedRoute allowedRoles={['inventory']}><LowStockAlerts /></ProtectedRoute>} />
+                <Route path="/add-products" element={<ProtectedRoute allowedRoles={['inventory']}><AddProducts /></ProtectedRoute>} />
+
+                {/* Business */}
+                {/* <Route element={<ProtectedRoutes />}> */}
+                  <Route index path="/business-dashboard" element={<ProtectedRoute allowedRoles={['admin']}><BusinessDashboard /></ProtectedRoute>} />
+                  <Route path="/business-customers" element={<ProtectedRoute allowedRoles={['admin']}><BusinessCustomers /></ProtectedRoute>} />
+                  <Route path="/business-invoices" element={<ProtectedRoute allowedRoles={['admin']}><BusinessInvoices /></ProtectedRoute>} />
+                  <Route path="/business-create-receipt" element={<ProtectedRoute allowedRoles={['admin']}><BusinessCreateReceipt /></ProtectedRoute>} />
+                  <Route path="/business-settings" element={<ProtectedRoute allowedRoles={['admin']}><BusinessSettings /></ProtectedRoute>} />
+                  <Route path="/create-invoice" element={<ProtectedRoute allowedRoles={['admin']}><CreateInvoice /></ProtectedRoute>} />
+                  <Route path="/business-products" element={<ProtectedRoute allowedRoles={['admin']}><BusinessProducts /></ProtectedRoute>} />
+                  <Route path="/business-management" element={<ProtectedRoute allowedRoles={['admin']}><BusinessManagement /></ProtectedRoute>} />
+                   <Route path="/business-view-invoices" element={<ProtectedRoute allowedRoles={['admin']}><EditBusinessInvoice /></ProtectedRoute>} />
+                {/* </Route> */}
+
+                <Route path="/business-create-business" element={<ProtectedRoute allowedRoles={['admin']}><CreateBusiness /></ProtectedRoute>} />
+               
+                {/* Accountant */}
+                <Route index path="/accountant-dashboard" element={<ProtectedRoute allowedRoles={['accountant']}><AccountantDashboard /></ProtectedRoute>} />
+                <Route path="/audit" element={<ProtectedRoute allowedRoles={['accountant']}><Audit /></ProtectedRoute>} />
+                <Route path="/payments" element={<ProtectedRoute allowedRoles={['accountant']}><Payments /></ProtectedRoute>} />
+                <Route path="/reports" element={<ProtectedRoute allowedRoles={['accountant']}><Reports /></ProtectedRoute>} />
+                <Route path="/records" element={<ProtectedRoute allowedRoles={['accountant']}><Records /></ProtectedRoute>} />
+
+                {/* Admin */}
+                <Route index path="/admin-dashboard" element={<ProtectedRoute allowedRoles={['admin']}><AdminDashboard /></ProtectedRoute>} />
+                <Route path="/admin-inventory" element={<ProtectedRoute allowedRoles={['admin']}><AdminInventory /></ProtectedRoute>} />
+                <Route path="/admin-receipts" element={<ProtectedRoute allowedRoles={['admin']}><AdminReceipt /></ProtectedRoute>} />
+                <Route path="/admin-management" element={<ProtectedRoute allowedRoles={['admin']}><AdminManagement /></ProtectedRoute>} />
+                <Route path="/admin-permissions" element={<ProtectedRoute allowedRoles={['admin']}><AdminPermissions /></ProtectedRoute>} />
+                <Route path="/admin-integrations" element={<ProtectedRoute allowedRoles={['admin']}><AdminIntegrations /></ProtectedRoute>} />
+                <Route path="/admin-settings" element={<ProtectedRoute allowedRoles={['admin']}><AdminSettings /></ProtectedRoute>} />
+                <Route path="/admin-analytics" element={<ProtectedRoute allowedRoles={['admin']}><AdminReports /></ProtectedRoute>} />
+              </Route>
+              {/* user */}
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-                 <Route path="/" element={<LandingPage />} />
-          </Routes>
-          
-        </Router>
+              <Route path="/" element={<LandingPage />} />
+            </Routes>
+
+          </Router>
         </ThemeProvider>
-       
+
       </AuthProvider>
-    
+
     </>
   )
 }

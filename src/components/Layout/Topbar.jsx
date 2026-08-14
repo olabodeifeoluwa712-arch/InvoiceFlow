@@ -36,6 +36,7 @@ const PAGE_TITLES = {
   '/business-settings': 'Settings',
   '/create-invoice': 'Create Invoice',
   '/business-products': 'Products',
+  '/business-create-business':'Profile',
   '/accountant-dashboard': 'Dashboard',
   '/audit': 'Audit',
   '/payments': 'Payments',
