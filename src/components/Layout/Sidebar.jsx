@@ -1,6 +1,7 @@
 import { useAuth } from '../../Context/AuthContext'
 import { useTheme } from '../../Context/ThemeContext'
 import { NavLink, useNavigate } from 'react-router-dom'
+import { useBusiness } from "../../context/BusinessContext";
 import {
   ChevronLeftIcon as ChevronLeftIconOutline,
   Squares2X2Icon as Squares2X2IconOutline,
@@ -14,7 +15,7 @@ import {
   ClipboardDocumentListIcon as ClipboardDocumentListIconOutline,
   ChartBarIcon as ChartBarIconOutline,
   ShieldCheckIcon as ShieldCheckIconOutline,
-   BuildingOffice2Icon as BuildingOffice2IconOutline,
+  BuildingOffice2Icon as BuildingOffice2IconOutline,
   BellIcon as BellIconOutline,
   ShoppingCartIcon as ShoppingCartIconOutline,
   ArchiveBoxIcon as ArchiveBoxIconOutline,
@@ -29,9 +30,9 @@ import {
   ClockIcon as ClockIconOutline,
   UserGroupIcon as UserGroupIconOutline,
   ArrowTrendingUpIcon as ArrowTrendingUpIconOutline,
-  ShieldCheckIcon  as permissionsIconOutline,
-  CommandLineIcon     as plugIconOutline,
- 
+  ShieldCheckIcon as permissionsIconOutline,
+  CommandLineIcon as plugIconOutline,
+
 
 } from "@heroicons/react/24/outline";
 
@@ -62,9 +63,9 @@ import {
   ExclamationTriangleIcon as ExclamationTriangleIconSolid,
   ClockIcon as ClockIconSolid,
   ArrowTrendingUpIcon as ArrowTrendingUpIconSolid,
-   UserGroupIcon as UserGroupIconSolid,
-  ShieldCheckIcon  as permissionsIconSolid,
-  CommandLineIcon     as plugIconSolid,
+  UserGroupIcon as UserGroupIconSolid,
+  ShieldCheckIcon as permissionsIconSolid,
+  CommandLineIcon as plugIconSolid,
 
 } from "@heroicons/react/24/solid";
 
@@ -77,14 +78,16 @@ const formatRole = (role) =>
     .toUpperCase();
 
 const Sidebar = () => {
+  
   const { currentUser, logout, getInitials } = useAuth();
+ const { business } = useBusiness();
   const navigate = useNavigate()
 
   if (currentUser == null) {
     return navigate('/login');
   }
-
-  const role = currentUser.role?.toLowerCase().trim() || 'user';
+ 
+  const role = currentUser.role?.toLowerCase().trim() || 'Business Owner';
   const normalizedRole = role.replace(/[\s_-]/g, '');
   const displayRole = formatRole(role);
 
@@ -137,7 +140,7 @@ const Sidebar = () => {
           },
         ],
       },
-     
+
     ],
 
     admin: [
@@ -184,7 +187,7 @@ const Sidebar = () => {
           },
 
           {
-            to: "/Business-view-invoices",
+            to: "/business-view-invoices/:id",
             label: "Manage Invoices",
             icon: DocumentTextIconOutline,
             activeIcon: DocumentTextIconSolid,
@@ -213,7 +216,7 @@ const Sidebar = () => {
           {
             to: "/business-create-business",
             label: "Profile",
-            icon:  BuildingOffice2IconOutline,
+            icon: BuildingOffice2IconOutline,
             activeIcon: BuildingOffice2IconSolid,
           },
         ],
@@ -278,7 +281,7 @@ const Sidebar = () => {
           }
         ],
       }
-    
+
     ],
     accountant: [
       {
@@ -327,7 +330,7 @@ const Sidebar = () => {
       },
     ],
 
-   
+
 
     user: [
       {
@@ -364,12 +367,16 @@ const Sidebar = () => {
     logout();
     navigate('/login');
   }
+  const nameParts = currentUser?.name?.trim().split(" ") || 'User';
+
+  const firstName = nameParts[0] || "";
+  const lastName = nameParts.slice(1).join(" ") || "";
 
   return (
     <aside className="w-[230px] max-w-full h-screen border-r border-[#e8e5f7] bg-white flex flex-col transition-colors duration-300 dark:bg-[#080B11] dark:border-slate-800 dark:text-slate-100 font-mono">
-   
+
       {/* Logo */}
-        <div className="h-10 pb-8 pt-8 flex items-center justify-between border-b border-[#e8e5f7] transition-colors duration-300 dark:border-slate-800">
+      <div className="h-10 pb-8 pt-8 flex items-center justify-between border-b border-[#e8e5f7] transition-colors duration-300 dark:border-slate-800">
         <div className="flex items-center gap-2 ml-3">
           <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center shadow-[0_8px_18px_rgba(124,31,255,0.22)] transition-all duration-300 dark:from-neon-cyan dark:to-neon-purple dark:shadow-[0_0_18px_rgba(0,243,255,0.28)]">
             <svg className="h-5 w-5 text-white dark:text-slate-950" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -382,9 +389,9 @@ const Sidebar = () => {
             InvoiceFlow
           </span>
         </div>
-        
+
       </div>
-        
+
 
 
       {/* NAV */}
@@ -400,7 +407,7 @@ const Sidebar = () => {
             </h3>
 
             <div className="space-y-3">
-             
+
               {section.items.map((item) => (
                 <NavLink
                   key={item.to}
@@ -427,18 +434,35 @@ const Sidebar = () => {
           </div>
         ))}
       </nav>
+   
 
       {/* USER INFO */}
       <div className="border-t border-[#e8e5f7] px-3 py-3 flex items-center gap-4 transition-colors duration-300 dark:border-slate-800 dark:bg-slate-950/20">
-        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#7f5cff] to-[#a45cff] text-white flex items-center justify-center font-normal dark:from-neon-cyan dark:to-neon-purple dark:text-slate-950">
-          {getInitials(currentUser?.firstName || 'User')}
+        <div className="w-6 h-6 rounded-full overflow-hidden bg-gradient-to-br from-[#7f5cff] to-[#a45cff] text-white flex items-center justify-center font-normal dark:from-neon-cyan dark:to-neon-purple dark:text-slate-950">
+          {business?.owner?.passportPhotoUrl ? (
+            <img
+              src={`http://localhost:7000/${business.owner.passportPhotoUrl.replace(
+                /\\/g,
+                "/"
+              )}`}
+              alt={business?.owner?.fullName || "Business Owner"}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            getInitials(business?.owner?.fullName || "Business Owner")
+          )}
         </div>
+
         <div className="min-w-0 flex-1">
           <p className="leading-tight text-[#08071a] truncate dark:text-slate-100">
-            {[currentUser?.firstName, currentUser?.lastName].filter(Boolean).join(' ') || 'User'}
+            {business?.owner?.fullName || "Business Owner"}
           </p>
-          <p className="font-normal leading-tight text-[#7f7da5] truncate capitalize dark:text-slate-500">{role}</p>
+
+          <p className="font-normal leading-tight text-[#7f7da5] truncate capitalize dark:text-slate-500">
+            {role}
+          </p>
         </div>
+
         <button
           type="button"
           onClick={handleLogout}

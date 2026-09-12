@@ -73,39 +73,9 @@ export function AuthProvider({ children }) {
     console.log(res)
     return res;
   };
-  const currentUser = useAuthStore((state) => state.currentUser)
-  const createBusiness = async (data) => {
-    try {
-      const userId = currentUser._id;
-      const res = await api.post(`/business/${userId}`, data);
-      console.log(res)
-      return { res, ok: true, success: true };
-    } catch (error) {
-      if (error instanceof ApiError) return { success: false, error: `Error creating businessProfile:${error.message}` }
-      console.error(error);
-      return null;
-    }
-  }
-  const uploadDocument = async (documents) => {
-    try {
-      const formData = new FormData();
-
-      formData.append("passportPhoto", documents.passportPhoto);
-      formData.append("idDocument", documents.idDocument);
-      formData.append("proofOfAddress", documents.proofOfAddress);
- console.log("FILES BEING SENT:", documents);
-      const res = await api.patch("business/documents", formData);
-
-      console.log("UPLOAD RESPONSE:", res);
-
-      return res;
-    } catch (error) {
-      console.error("Error uploading documents:", error);
-      throw error;
-    }
-  };
+ const currentUser = useAuthStore((state) => state.currentUser)
   return (
-    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, login, getInitials, currentUser, createBusiness, uploadDocument, user, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, login, getInitials,user, logout, currentUser }}>
       {children}
     </AuthContext.Provider>
   )

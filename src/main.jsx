@@ -4,12 +4,18 @@ import ReactDom from 'react-dom'
 import './index.css'
 import App from './App.jsx'
 import { ThemeProvider } from './Context/ThemeContext'
+import { BusinessProvider } from './context/BusinessContext.jsx'
+import { AuthProvider } from './Context/AuthContext.jsx'
 
 createRoot(document.getElementById('root')).render(
-      <StrictMode>
+  <StrictMode>
+    <AuthProvider>
+      <BusinessProvider>
         <ThemeProvider>
           <App />
         </ThemeProvider>
-      </StrictMode>,
+      </BusinessProvider>
+    </AuthProvider>
+  </StrictMode>
 
 )
