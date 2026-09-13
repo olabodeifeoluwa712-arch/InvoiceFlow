@@ -16,6 +16,7 @@ import Records from './Pages/Accountant/Records'
 
 // Business Pages
 import CreateInvoice from './Pages/Business/CreateInvoice'
+import CreateBusiness from './Pages/Business/createBusiness'
 import BusinessDashboard from './Pages/Business/Dashboard'
 import BusinessCustomers from './Pages/Business/Customers'
 import BusinessInvoices from './Pages/Business/Invoices'
@@ -42,6 +43,8 @@ import AdminManagement from './Pages/Admin/Management'
 import AdminPermissions from './Pages/Admin/Permissions'
 import AdminIntegrations from './Pages/Admin/integrations'
 import AdminReports from './Pages/Admin/Reports'
+import BusinessManagement from './Pages/Business/Management'
+import SeeInvoices from './Pages/Business/seeInvoices'
 import AdminProfile from './Pages/Admin/admin-profile'
 
 // Shared Pages
@@ -56,7 +59,7 @@ function ProtectedRoute({ allowedRoles, children }) {
   }
 
   if (!allowedRoles.includes(currentUser.role)) {
-     return <Navigate to="/unauthorized" replace />;
+    return <Navigate to="/unauthorized" replace />;
   }
 
   return children;
@@ -120,18 +123,18 @@ function App() {
                 <Route path="/reports" element={<ProtectedRoute allowedRoles={['accountant']}><Reports /></ProtectedRoute>} />
                 <Route path="/records" element={<ProtectedRoute allowedRoles={['accountant']}><Records /></ProtectedRoute>} />
 
-                {/* Admin / Superadmin */}
-                <Route index path="/admin-dashboard" element={<ProtectedRoute allowedRoles={['superadmin']}><AdminDashboard /></ProtectedRoute>} />
-                <Route path="/admin-management" element={<ProtectedRoute allowedRoles={['superadmin']}><AdminManagement /></ProtectedRoute>} />
-                <Route path="/admin-permissions" element={<ProtectedRoute allowedRoles={['admin', 'superadmin']}><AdminPermissions /></ProtectedRoute>} />
-                <Route path="/permissions" element={<ProtectedRoute allowedRoles={['admin', 'superadmin']}><AdminPermissions /></ProtectedRoute>} />
+                  {/* Admin / Superadmin */}
+                  <Route index path="/admin-dashboard" element={<ProtectedRoute allowedRoles={['superadmin']}><AdminDashboard /></ProtectedRoute>} />
+                  <Route path="/admin-management" element={<ProtectedRoute allowedRoles={['superadmin']}><AdminManagement /></ProtectedRoute>} />
+                  <Route path="/admin-permissions" element={<ProtectedRoute allowedRoles={['admin', 'superadmin']}><AdminPermissions /></ProtectedRoute>} />
+                  <Route path="/permissions" element={<ProtectedRoute allowedRoles={['admin', 'superadmin']}><AdminPermissions /></ProtectedRoute>} />
                 <Route path="/team-permissions" element={<ProtectedRoute allowedRoles={['admin', 'superadmin']}><AdminPermissions /></ProtectedRoute>} />
-                <Route path="/business-permissions" element={<ProtectedRoute allowedRoles={['admin', 'superadmin']}><AdminPermissions /></ProtectedRoute>} />
-                <Route path="/admin-integrations" element={<ProtectedRoute allowedRoles={['superadmin']}><AdminIntegrations /></ProtectedRoute>} />
-                <Route path="/admin-profile" element={<ProtectedRoute allowedRoles={['superadmin', 'admin']}><AdminProfile /></ProtectedRoute>} />
-                <Route path="/admin-analytics" element={<ProtectedRoute allowedRoles={['superadmin']}><AdminReports /></ProtectedRoute>} />
-              </Route>
-              
+                  <Route path="/business-permissions" element={<ProtectedRoute allowedRoles={['admin', 'superadmin']}><AdminPermissions /></ProtectedRoute>} />
+                  <Route path="/admin-integrations" element={<ProtectedRoute allowedRoles={['superadmin']}><AdminIntegrations /></ProtectedRoute>} />
+                  <Route path="/admin-profile" element={<ProtectedRoute allowedRoles={['superadmin', 'admin']}><AdminProfile /></ProtectedRoute>} />
+                  <Route path="/admin-analytics" element={<ProtectedRoute allowedRoles={['superadmin']}><AdminReports /></ProtectedRoute>} />
+                </Route>
+                      
               {/* Auth / Public */}
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />

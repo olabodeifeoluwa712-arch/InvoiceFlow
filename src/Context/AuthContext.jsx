@@ -31,7 +31,7 @@ export function AuthProvider({ children }) {
 
   // login
   const login = async ({ email, password }) => {
-    try {      
+    try {
       const response = await api.post("/auth/login", { email, password });
       const data = response.data;
       const { token, User } = data;
@@ -40,8 +40,8 @@ export function AuthProvider({ children }) {
 
       return { data, response, success: true, ok: true };
     } catch (error) {
-    
-      if (error instanceof ApiError) return { success: false, error: error.message };   
+
+      if (error instanceof ApiError) return { success: false, error: error.message };
       console.log(error)
     }
   };
@@ -68,7 +68,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, login, getInitials, currentUser, logout}}>
+    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, login, getInitials,user, logout, currentUser }}>
       {children}
     </AuthContext.Provider>
   )

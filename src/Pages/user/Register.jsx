@@ -76,7 +76,7 @@ const Register = () => {
             email: form.email,
             password: form.password,
             name: form.name,
-            companyName: form.companyName
+            // companyName: form.companyName
           })
         
         });
@@ -358,7 +358,7 @@ const Register = () => {
                   </div>
                 </div>
 
-                {/* Company Name */}
+                {/* Company Name
                 <div>
                   <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5">Company Name</label>
                   <div className="relative group">
@@ -376,7 +376,7 @@ const Register = () => {
                       className="w-full bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-[#7F22FE] dark:focus:border-neon-cyan focus:ring-2 focus:ring-[#7F22FE]/10 dark:focus:ring-neon-cyan/15 transition-all font-medium"
                     />
                   </div>
-                </div>
+                </div>  */}
 
                 {/* Account Type */}
                 <div>

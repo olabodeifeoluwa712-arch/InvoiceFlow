@@ -4,6 +4,7 @@ import { useTheme } from '../../Context/ThemeContext'
 import { useNotifications } from '../../Context/NotificationContext'
 import { getProducts } from '../../api/inventory.api'
 import { NavLink, useNavigate } from 'react-router-dom'
+import { useBusiness } from "../../context/BusinessContext";
 import {
   ChevronLeftIcon as ChevronLeftIconOutline,
   Squares2X2Icon as Squares2X2IconOutline,
@@ -17,6 +18,7 @@ import {
   ClipboardDocumentListIcon as ClipboardDocumentListIconOutline,
   ChartBarIcon as ChartBarIconOutline,
   ShieldCheckIcon as ShieldCheckIconOutline,
+  BuildingOffice2Icon as BuildingOffice2IconOutline,
   BellIcon as BellIconOutline,
   ShoppingCartIcon as ShoppingCartIconOutline,
   ArchiveBoxIcon as ArchiveBoxIconOutline,
@@ -50,6 +52,7 @@ import {
   ClipboardDocumentListIcon as ClipboardDocumentListIconSolid,
   ChartBarIcon as ChartBarIconSolid,
   ShieldCheckIcon as ShieldCheckIconSolid,
+  BuildingOffice2Icon as BuildingOffice2IconSolid,
   BellIcon as BellIconSolid,
   ShoppingCartIcon as ShoppingCartIconSolid,
   ArchiveBoxIcon as ArchiveBoxIconSolid,
@@ -79,14 +82,16 @@ const formatRole = (role) =>
     .toUpperCase();
 
 const Sidebar = ({ isMobileOpen = false, onClose }) => {
+  
   const { currentUser, logout, getInitials } = useAuth();
+ const { business } = useBusiness();
   const navigate = useNavigate()
 
   if (currentUser == null) {
     return navigate('/login');
   }
-
-  const role = currentUser.role?.toLowerCase().trim() || 'user';
+ 
+  const role = currentUser.role?.toLowerCase().trim() || 'Business Owner';
   const normalizedRole = role.replace(/[\s_-]/g, '');
   const displayRole = formatRole(role);
 
@@ -194,7 +199,7 @@ const Sidebar = ({ isMobileOpen = false, onClose }) => {
             activeIcon: CubeIconSolid,
           },
           {
-            to: "/Business-view-invoices",
+            to: "/business-view-invoices/:id",
             label: "Manage Invoices",
             icon: DocumentTextIconOutline,
             activeIcon: DocumentTextIconSolid,
@@ -229,6 +234,12 @@ const Sidebar = ({ isMobileOpen = false, onClose }) => {
             label: "Settings",
             icon: Cog6ToothIconOutline,
             activeIcon: Cog6ToothIconSolid,
+          },
+          {
+            to: "/business-create-business",
+            label: "Profile",
+            icon: BuildingOffice2IconOutline,
+            activeIcon: BuildingOffice2IconSolid,
           },
         ],
       },
@@ -323,6 +334,9 @@ const Sidebar = ({ isMobileOpen = false, onClose }) => {
         ],
       },
     ],
+
+
+
     user: [
       {
         title: "HOME",
@@ -411,6 +425,10 @@ const Sidebar = ({ isMobileOpen = false, onClose }) => {
     logout();
     navigate('/login');
   }
+  const nameParts = currentUser?.name?.trim().split(" ") || 'User';
+
+  const firstName = nameParts[0] || "";
+  const lastName = nameParts.slice(1).join(" ") || "";
 
   return (
     <>
@@ -500,6 +518,43 @@ const Sidebar = ({ isMobileOpen = false, onClose }) => {
           ))}
         </nav>
 
+      {/* USER INFO */}
+      <div className="border-t border-[#e8e5f7] px-3 py-3 flex items-center gap-4 transition-colors duration-300 dark:border-slate-800 dark:bg-slate-950/20">
+        <div className="w-6 h-6 rounded-full overflow-hidden bg-gradient-to-br from-[#7f5cff] to-[#a45cff] text-white flex items-center justify-center font-normal dark:from-neon-cyan dark:to-neon-purple dark:text-slate-950">
+          {business?.owner?.passportPhotoUrl ? (
+            <img
+              src={`http://localhost:7000/${business.owner.passportPhotoUrl.replace(
+                /\\/g,
+                "/"
+              )}`}
+              alt={business?.owner?.fullName || "Business Owner"}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            getInitials(business?.owner?.fullName || "Business Owner")
+          )}
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <p className="leading-tight text-[#08071a] truncate dark:text-slate-100">
+            {business?.owner?.fullName || "Business Owner"}
+          </p>
+
+          <p className="font-normal leading-tight text-[#7f7da5] truncate capitalize dark:text-slate-500">
+            {role}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="w-5 h-5 rounded-full text-[#7f7da5] hover:bg-[#f0eff9] flex items-center justify-center transition-colors dark:text-slate-500 dark:hover:bg-slate-900/70 dark:hover:text-neon-pink"
+          aria-label="Log out"
+        >
+          <ArrowRightOnRectangleIconOutline className="w-3 h-3" />
+        </button>
+      </div>
+    </aside>
         {/* USER INFO */}
         <div className="border-t border-[#e8e5f7] px-3.5 py-3 flex items-center gap-3 transition-colors duration-200 dark:border-[#272D35] dark:bg-[#0F1216]">
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#7f5cff] to-[#a45cff] text-white flex items-center justify-center text-xs font-semibold dark:from-[#8B7CF6] dark:to-[#6366F1]">

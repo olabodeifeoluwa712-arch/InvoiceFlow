@@ -1,6 +1,6 @@
+import http from "./http";
 
-const authApi = {
-    login: (email, password) =>
-        api.post('/auth/login', { email, password })
-}
-
+export const authApi = {
+    login:(email,password)=>
+        http.post('/auth/login',{email,password}),
+};
