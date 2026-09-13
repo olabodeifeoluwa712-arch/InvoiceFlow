@@ -460,16 +460,20 @@ const [form, setForm] = useState({
                               <EyeIcon className="w-4.5 h-4.5" />
                             </button>
 
+                            {/* Edit Role & Permissions Action */}
+                            <button 
+                              onClick={() => navigate(`/admin-permissions?id=${member.id}`)}
+                              className="text-slate-400 hover:text-purple-600 dark:text-slate-550 dark:hover:text-neon-purple p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900 transition-all cursor-pointer"
+                              title="Edit Member Role & Permissions"
+                            >
+                              <ShieldCheckIcon className="w-4.5 h-4.5" />
+                            </button>
+
                             {/* Edit Action */}
                             <button 
-                              onClick={() => {
-                                setSelectedMember(member);
-                                setEditRole(member.role);
-                                setEditStatus(member.status);
-                                setIsEditMode(true);
-                              }}
+                              onClick={() => navigate(`/admin-permissions?id=${member.id}`)}
                               className="text-slate-400 hover:text-neon-purple dark:text-slate-550 dark:hover:text-neon-cyan p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900 transition-all cursor-pointer"
-                              title="Edit Member role"
+                              title="Edit Member Details"
                             >
                               <PencilIcon className="w-4.5 h-4.5" />
                             </button>

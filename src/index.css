@@ -1,52 +1,121 @@
 @import "tailwindcss";
+
 @custom-variant dark (&:where(.dark, .dark *));
+
 :root {
-  --color--purple-ish: #7F22FE;
-  --color--faded-gray: #99A1AF;
-  --color-faded-black: #6A799E;
-  --bgcolor--notif-yellow: #FEF3C6;
-  --color--notif-brown: #BB4D00;
-  --color--label-lightred: #FEF2F2;
-  --color--focus-lightpurple: #F5F3FF;
+  --color-purple-ish: #5B3FA3;
+  --color-faded-gray: #9CA3AF;
+  --color-faded-black: #4B5563;
+
+  --bgcolor-notif-yellow: #FEF3C7;
+  --color-notif-brown: #92400E;
+
+  --color-label-lightred: #FEE2E2;
+  --color-focus-lightpurple: #EDE9FE;
 }
+
 @theme {
-  /* Softened from pure neons → calm, muted accents */
-  --color-neon-cyan: #38bdf8;       /* was #00f3ff — now soft sky blue */
-  --color-neon-purple: #818cf8;     /* was #bd00ff — now muted indigo */
-  --color-neon-pink: #fb7185;       /* was #ff007f — now muted rose */
-  /* Backgrounds lifted from near-black → warmer dark slate */
-  --color-cyber-dark: #0f1623;      /* was #080b11 — less harsh */
-  --color-cyber-card: #1a2435;      /* was #0e1320 — warmer, lighter */
+  /* =========================
+     DARK MODE GRAPHITE SYSTEM
+     ========================= */
+
+  /* Neutral Surface Hierarchy */
+  --color-dark-bg: #0B0D10;
+  --color-dark-surface: #111418;
+  --color-dark-card: #171B21;
+  --color-dark-card-elevated: #1D2229;
+  --color-dark-input: #0F1216;
+
+  --color-dark-border: #272D35;
+  --color-dark-border-subtle: #1E242B;
+
+  /* Typography Colors */
+  --color-dark-text-primary: #F3F4F6;
+  --color-dark-text-secondary: #A1A7B0;
+  --color-dark-text-muted: #6F7782;
+
+  /* Accent Colors */
+  --color-accent-primary: #8B7CF6;
+  --color-accent-primary-hover: #9B8CFF;
+
+  /* Status Colors */
+  --color-status-success: #34D399;
+  --color-status-warning: #FBBF24;
+  --color-status-error: #F87171;
+  --color-status-info: #60A5FA;
+
+  /* Legacy Mappings for Seamless Compatibility */
+  --color-cyber-dark: #0B0D10;
+  --color-cyber-surface: #111418;
+  --color-cyber-card: #171B21;
+  --color-cyber-card-elevated: #1D2229;
+  --color-cyber-border: #272D35;
+
+  --color-neon-cyan: #8B7CF6;
+  --color-neon-purple: #9B8CFF;
+  --color-neon-pink: #F472B6;
+
+  --color-text-primary: #F3F4F6;
+  --color-text-secondary: #A1A7B0;
+  --color-text-muted: #6F7782;
+}
+
+@theme {
+  --font-sans: "Inter", sans-serif;
+  --font-heading: "Poppins", sans-serif;
+  --font-body: "Roboto", sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+}
+
+/* =========================
+   SUBTLE SAAS SHADOWS & ACCENTS
+   ========================= */
+
+@utility shadow-subtle-dark {
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
+}
+
+@utility shadow-elevated-dark {
+  box-shadow: 0 8px 30px -4px rgba(0, 0, 0, 0.6);
+}
+
+@utility border-subtle-dark {
+  border-color: rgba(255, 255, 255, 0.06);
 }
 
 @utility neon-glow-cyan {
-  box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);   /* reduced from 0.45 */
+  box-shadow: 0 4px 16px rgba(139, 124, 246, 0.12);
 }
 
 @utility neon-glow-purple {
-  box-shadow: 0 0 16px rgba(129, 140, 248, 0.25);  /* reduced from 0.45 */
+  box-shadow: 0 4px 16px rgba(155, 140, 255, 0.12);
 }
 
 @utility neon-glow-pink {
-  box-shadow: 0 0 16px rgba(251, 113, 133, 0.25);  /* reduced from 0.45 */
+  box-shadow: 0 4px 16px rgba(244, 114, 182, 0.12);
 }
 
 @utility text-glow-cyan {
-  text-shadow: 0 0 8px rgba(56, 189, 248, 0.35);   /* reduced from 0.6 */
+  text-shadow: 0 0 8px rgba(139, 124, 246, 0.2);
 }
 
 @utility text-glow-purple {
-  text-shadow: 0 0 8px rgba(129, 140, 248, 0.35);  /* reduced from 0.6 */
+  text-shadow: 0 0 8px rgba(155, 140, 255, 0.2);
 }
 
 @utility text-glow-pink {
-  text-shadow: 0 0 8px rgba(251, 113, 133, 0.35);  /* reduced from 0.6 */
+  text-shadow: 0 0 8px rgba(244, 114, 182, 0.2);
 }
+
+/* =========================
+   ANIMATIONS
+   ========================= */
 
 @keyframes float-slow-1 {
   0%, 100% {
     transform: translate(0, 0) scale(1);
   }
+
   50% {
     transform: translate(60px, -80px) scale(1.2);
   }
@@ -56,15 +125,36 @@
   0%, 100% {
     transform: translate(0, 0) scale(1.2);
   }
+
   50% {
     transform: translate(-70px, 50px) scale(0.9);
   }
 }
 
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  20%, 60% { transform: translateX(-6px); }
-  40%, 80% { transform: translateX(6px); }
+  0%, 100% {
+    transform: translateX(0);
+  }
+
+  20%, 60% {
+    transform: translateX(-6px);
+  }
+
+  40%, 80% {
+    transform: translateX(6px);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @utility animate-float-1 {
@@ -77,11 +167,6 @@
 
 @utility animate-shake {
   animation: shake 0.25s ease-in-out;
-}
-
-@keyframes fade-in {
-  from { opacity: 0; transform: translateY(-4px); }
-  to   { opacity: 1; transform: translateY(0); }
 }
 
 @utility animate-fade-in {

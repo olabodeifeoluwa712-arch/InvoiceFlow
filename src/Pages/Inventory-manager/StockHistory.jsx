@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import React, { useMemo, useState, useEffect } from 'react'
 import {
   AdjustmentsHorizontalIcon,
   ArrowDownCircleIcon,
@@ -6,132 +6,16 @@ import {
   ArrowUpCircleIcon,
   MagnifyingGlassIcon,
   TrashIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ExclamationCircleIcon,
+  CheckCircleIcon,
+  XMarkIcon,
 } from '@heroicons/react/24/outline'
 
-const filters = ['All', 'Stock In', 'Stock Out', 'Manual Adjustment', 'Return', 'Write-off']
+import { getStockHistory, getProducts } from '../../api/inventory.api'
 
-const movements = [
-  {
-    day: 'Dec',
-    date: '20, 2024',
-    time: '09:14',
-    product: 'Bluetooth Headphones Pro',
-    sku: 'SKU-1001',
-    type: 'Stock In',
-    qty: '+80',
-    reference: 'PO-2024-042',
-    user: 'Marcus Webb',
-    note: 'Goods received from SoundTech Co.',
-  },
-  {
-    day: 'Dec',
-    date: '19, 2024',
-    time: '15:32',
-    product: 'Wireless Ergonomic Mouse',
-    sku: 'SKU-1003',
-    type: 'Write-off',
-    qty: '-6',
-    reference: 'ADJ-0090',
-    user: 'Sam Okafor',
-    note: 'Damaged in transit, written off',
-  },
-  {
-    day: 'Dec',
-    date: '19, 2024',
-    time: '11:00',
-    product: 'USB-C Hub 7-Port',
-    sku: 'SKU-1002',
-    type: 'Stock Out',
-    qty: '-7',
-    reference: 'ORD-5588',
-    user: 'System',
-    note: 'Auto-deducted on order fulfilment',
-  },
-  {
-    day: 'Dec',
-    date: '18, 2024',
-    time: '11:05',
-    product: 'HDMI Cable 2m Braided',
-    sku: 'SKU-1006',
-    type: 'Write-off',
-    qty: '-4',
-    reference: 'ADJ-0089',
-    user: 'Marcus Webb',
-    note: 'Packaging defect, written off',
-  },
-  {
-    day: 'Dec',
-    date: '17, 2024',
-    time: '14:20',
-    product: 'LED Desk Lamp Smart',
-    sku: 'SKU-1007',
-    type: 'Stock In',
-    qty: '+50',
-    reference: 'PO-2024-044',
-    user: 'Sam Okafor',
-    note: 'Received from LumiHome',
-  },
-  {
-    day: 'Dec',
-    date: '16, 2024',
-    time: '10:48',
-    product: 'Laptop Stand Aluminum',
-    sku: 'SKU-1009',
-    type: 'Stock Out',
-    qty: '-12',
-    reference: 'ORD-5591',
-    user: 'Marcus Webb',
-    note: 'Order fulfilment',
-  },
-  {
-    day: 'Dec',
-    date: '15, 2024',
-    time: '16:00',
-    product: '4K Webcam Ultra HD',
-    sku: 'SKU-1005',
-    type: 'Manual Adjustment',
-    qty: '-3',
-    reference: 'CNT-2024-12',
-    user: 'Priya Sethi',
-    note: 'Inventory count discrepancy correction',
-  },
-  {
-    day: 'Dec',
-    date: '14, 2024',
-    time: '13:11',
-    product: 'Noise-Cancelling Earbuds',
-    sku: 'SKU-1010',
-    type: 'Return',
-    qty: '+2',
-    reference: 'RET-0412',
-    user: 'Sam Okafor',
-    note: 'Customer return, resaleable condition',
-  },
-  {
-    day: 'Dec',
-    date: '13, 2024',
-    time: '09:30',
-    product: 'Smart Power Strip 6-Outlet',
-    sku: 'SKU-1008',
-    type: 'Stock Out',
-    qty: '-6',
-    reference: 'ORD-5579',
-    user: 'System',
-    note: 'Order fulfilment',
-  },
-  {
-    day: 'Dec',
-    date: '12, 2024',
-    time: '15:45',
-    product: 'Mechanical Keyboard TKL',
-    sku: 'SKU-1004',
-    type: 'Stock In',
-    qty: '+20',
-    reference: 'PO-2024-046',
-    user: 'Marcus Webb',
-    note: 'Partial receipt from HID Solutions',
-  },
-]
+const filters = ['All', 'Stock In', 'Stock Out', 'Manual Adjustment', 'Return', 'Write-off']
 
 const typeMeta = {
   'Stock In': {
@@ -162,14 +46,136 @@ const typeMeta = {
 }
 
 const StockHistory = () => {
+  const [movements, setMovements] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
   const [activeFilter, setActiveFilter] = useState('All')
   const [searchTerm, setSearchTerm] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [feedback, setFeedback] = useState(null)
+  const itemsPerPage = 8
+
+  const showFeedback = (type, message) => {
+    setFeedback({ type, message })
+    setTimeout(() => setFeedback(null), 4000)
+  }
+
+  const formatMovement = (item, idx) => {
+    const dateObj = item.createdAt
+      ? new Date(item.createdAt)
+      : item.date
+      ? new Date(item.date)
+      : new Date()
+
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    const dayStr = months[dateObj.getMonth()] || 'Dec'
+    const dateStr = `${dateObj.getDate()}, ${dateObj.getFullYear()}`
+    const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
+
+    // Determine productType matching backend notifications
+    let productType = item.productType || item.type || 'Stock In'
+    const normType = String(productType).toLowerCase()
+    if (normType === 'stock out' || normType.includes('out')) productType = 'Stock Out'
+    else if (normType === 'stock in' || normType.includes('in')) productType = 'Stock In'
+    else if (normType.includes('manual') || normType.includes('adjust')) productType = 'Manual Adjustment'
+    else if (normType.includes('return')) productType = 'Return'
+    else if (normType.includes('write')) productType = 'Write-off'
+
+    // Format quantity delta based on productType & quantity value
+    const numQty = Math.abs(Number(item.quantity ?? 0))
+    const formattedQty =
+      productType === 'Stock Out' || normType.includes('write')
+        ? `-${numQty}`
+        : `+${numQty}`
+
+    const prodName =
+      item.productName ||
+      item.product?.name ||
+      (typeof item.product === 'string' ? item.product : 'Product Item')
+    const prodSku =
+      item.product?.sku ||
+      item.sku ||
+      (item._id ? `SKU-${item._id.slice(-4).toUpperCase()}` : `SKU-${1000 + idx}`)
+    const refCode =
+      item.reference ||
+      item.ref ||
+      (item._id ? `REF-${item._id.slice(-6).toUpperCase()}` : `REF-${2024 + idx}`)
+    const userName =
+      item.performedBy ||
+      item.user?.name ||
+      (typeof item.user === 'string' ? item.user : 'System')
+    const noteMsg =
+      item.message || item.note || item.notes || item.reason || `${productType} recorded`
+
+    return {
+      id: item._id || item.id || `mov-${idx}`,
+      day: item.day || dayStr,
+      date: item.dateStr || dateStr,
+      time: item.time || timeStr,
+      product: prodName,
+      sku: prodSku,
+      productType: productType,
+      quantity: formattedQty,
+      reference: refCode,
+      user: userName,
+      note: noteMsg,
+    }
+  }
+
+  const fetchHistory = async () => {
+    setIsLoading(true)
+    try {
+      const response = await getStockHistory()
+      console.log('Stock history API payload:', response)
+
+      let items = []
+      if (response && !response.error) {
+        if (Array.isArray(response)) items = response
+        else if (response?.data && Array.isArray(response.data)) items = response.data
+        else if (response?.movements && Array.isArray(response.movements)) items = response.movements
+        else if (response?.history && Array.isArray(response.history)) items = response.history
+      }
+
+      // Fallback: If no history returned, construct items from products listing
+      if (items.length === 0) {
+        const prodRes = await getProducts()
+        let prodList = []
+        if (Array.isArray(prodRes)) prodList = prodRes
+        else if (prodRes?.products && Array.isArray(prodRes.products)) prodList = prodRes.products
+        else if (prodRes?.data && Array.isArray(prodRes.data)) prodList = prodRes.data
+
+        if (prodList.length > 0) {
+          items = prodList.map((p, idx) => ({
+            _id: p._id || p.id,
+            productName: p.name,
+            sku: p.sku || `SKU-${1000 + idx}`,
+            productType: p.stockOut ? 'Stock Out' : 'Stock In',
+            quantity: p.qty ?? p.quantity ?? p.stock ?? 0,
+            reference: `ADJ-${1000 + idx}`,
+            performedBy: 'System',
+            message: `Initial stock recording for ${p.name}`,
+            createdAt: p.updatedAt || p.createdAt || new Date().toISOString(),
+          }))
+        }
+      }
+
+      setMovements(items.map(formatMovement))
+    } catch (err) {
+      console.error('Error fetching stock history:', err)
+      showFeedback('error', 'Failed to load stock history from server.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchHistory()
+  }, [])
 
   const filteredMovements = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLowerCase()
 
     return movements.filter((movement) => {
-      const matchesFilter = activeFilter === 'All' || movement.type === activeFilter
+      const matchesFilter = activeFilter === 'All' || movement.productType === activeFilter
       const matchesSearch =
         normalizedSearch.length === 0 ||
         [
@@ -178,7 +184,7 @@ const StockHistory = () => {
           movement.reference,
           movement.user,
           movement.note,
-          movement.type,
+          movement.productType,
         ]
           .join(' ')
           .toLowerCase()
@@ -186,30 +192,83 @@ const StockHistory = () => {
 
       return matchesFilter && matchesSearch
     })
-  }, [activeFilter, searchTerm])
+  }, [activeFilter, searchTerm, movements])
+
+  // Pagination logic
+  const totalPages = Math.max(1, Math.ceil(filteredMovements.length / itemsPerPage))
+  const firstIndex = filteredMovements.length === 0 ? 0 : (currentPage - 1) * itemsPerPage
+  const lastIndex = Math.min(currentPage * itemsPerPage, filteredMovements.length)
+  const paginatedMovements = filteredMovements.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+
+  const goToPage = (page) => {
+    setCurrentPage(page)
+  }
 
   return (
     <div className="relative min-h-screen w-full overflow-x-hidden bg-[#F8F9FC] p-4 font-sans text-slate-900 transition-colors duration-300 dark:bg-cyber-dark dark:text-slate-100 md:p-6 lg:p-8">
+      {/* Background Glow Orbs */}
       <div className="pointer-events-none absolute top-1/4 -right-36 h-96 w-96 rounded-full bg-neon-purple/5 blur-[120px] transition-all duration-300 dark:bg-neon-purple/10"></div>
       <div className="pointer-events-none absolute bottom-1/4 -left-36 h-96 w-96 rounded-full bg-neon-cyan/5 blur-[120px] transition-all duration-300 dark:bg-neon-cyan/10"></div>
 
-      <div className="relative z-10 mx-auto w-full max-w-7xl space-y-5">
-        <header>
-          <h1 className="text-2xl font-extrabold leading-tight tracking-tight text-slate-900 dark:text-slate-100 md:text-3xl">
-            Stock History
-          </h1>
-          <p className="mt-1.5 text-sm font-semibold text-slate-400 dark:text-slate-500">
-            Track stock movement, references, and adjustment notes.
-          </p>
+      <div className="relative z-10 mx-auto w-full max-w-7xl space-y-6">
+        {/* Feedback Alert Banner */}
+        {feedback && (
+          <div
+            className={`flex items-center justify-between p-4 rounded-2xl border text-sm font-medium transition-all shadow-md ${
+              feedback.type === 'success'
+                ? 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800'
+                : 'bg-rose-50 text-rose-800 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              {feedback.type === 'success' ? (
+                <CheckCircleIcon className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+              ) : (
+                <ExclamationCircleIcon className="w-5 h-5 text-rose-600 dark:text-rose-400" />
+              )}
+              <span>{feedback.message}</span>
+            </div>
+            <button
+              onClick={() => setFeedback(null)}
+              className="p-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+            >
+              <XMarkIcon className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+
+        {/* Top Header */}
+        <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-extrabold leading-tight tracking-tight text-slate-900 dark:text-slate-100 md:text-3xl">
+              Stock History
+            </h1>
+            <p className="mt-1.5 text-sm font-semibold text-slate-400 dark:text-slate-500">
+              Track stock movement, references, and adjustment notes.
+            </p>
+          </div>
+
+          <button
+            onClick={fetchHistory}
+            disabled={isLoading}
+            className="self-start sm:self-center px-4 py-2.5 rounded-2xl bg-white dark:bg-cyber-card text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800/80 shadow-sm text-sm font-bold flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors disabled:opacity-50"
+          >
+            <ArrowPathIcon className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} strokeWidth={2.5} />
+            <span>Refresh History</span>
+          </button>
         </header>
 
+        {/* Search & Filter Toolbar */}
         <section className="rounded-2xl border border-slate-100 bg-white p-3 shadow-sm transition-colors duration-300 dark:border-slate-800/80 dark:bg-cyber-card/85 dark:shadow-2xl md:p-4">
           <div className="flex w-full flex-col gap-3 xl:flex-row xl:items-center">
             <label className="flex h-10 w-full max-w-[390px] items-center gap-2.5 rounded-xl border border-slate-100 bg-slate-50 px-3.5 text-slate-400 transition-colors duration-300 dark:border-slate-800 dark:bg-slate-950/35 dark:text-slate-500">
               <MagnifyingGlassIcon className="h-4 w-4 shrink-0" />
               <input
                 value={searchTerm}
-                onChange={(event) => setSearchTerm(event.target.value)}
+                onChange={(event) => {
+                  setSearchTerm(event.target.value)
+                  setCurrentPage(1)
+                }}
                 className="h-full min-w-0 flex-1 bg-transparent text-sm font-semibold text-slate-700 outline-none placeholder:text-slate-400 dark:text-slate-200 dark:placeholder:text-slate-500"
                 placeholder="Search product, SKU, reference..."
               />
@@ -220,7 +279,10 @@ const StockHistory = () => {
                 <button
                   key={filter}
                   type="button"
-                  onClick={() => setActiveFilter(filter)}
+                  onClick={() => {
+                    setActiveFilter(filter)
+                    setCurrentPage(1)
+                  }}
                   className={`h-8 rounded-lg px-3 text-xs font-extrabold transition ${
                     filter === activeFilter
                       ? 'bg-[#7A66F4] text-white shadow-[0_6px_13px_rgba(122,102,244,0.25)] dark:bg-neon-cyan/15 dark:text-neon-cyan dark:ring-1 dark:ring-neon-cyan/30 dark:shadow-[0_0_16px_rgba(0,243,255,0.10)]'
@@ -234,128 +296,170 @@ const StockHistory = () => {
           </div>
         </section>
 
+        {/* Movements Table */}
         <section>
           <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition-colors duration-300 dark:border-slate-800/80 dark:bg-cyber-card/85 dark:shadow-2xl">
             <div className="w-full overflow-x-auto">
-              <table className="w-full min-w-[980px] border-collapse text-left">
-              <thead>
-                <tr className="h-11 border-b border-slate-100 bg-slate-50/75 transition-colors duration-300 dark:border-slate-800/80 dark:bg-slate-950/25">
-                  <th className="w-[125px] px-5 text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">
-                    Date & Time
-                  </th>
-                  <th className="w-[280px] px-4 text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">
-                    Product
-                  </th>
-                  <th className="w-[175px] px-4 text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">
-                    Movement Type
-                  </th>
-                  <th className="w-[105px] px-4 text-center text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">
-                    Qty Change
-                  </th>
-                  <th className="w-[135px] px-4 text-center text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">
-                    Reference
-                  </th>
-                  <th className="w-[125px] px-4 text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">
-                    User
-                  </th>
-                  <th className="px-4 text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">
-                    Note
-                  </th>
-                </tr>
-              </thead>
-
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/70">
-                {filteredMovements.map((movement) => {
-                  const meta = typeMeta[movement.type]
-                  const Icon = meta.icon
-                  const isPositive = movement.qty.startsWith('+')
-
-                  return (
-                    <tr key={`${movement.reference}-${movement.product}`} className="h-[74px] bg-white transition-colors hover:bg-slate-50/50 dark:bg-transparent dark:hover:bg-slate-900/25">
-                      <td className="px-5 py-3 align-middle">
-                        <p className="text-sm font-extrabold leading-tight text-slate-800 dark:text-slate-100">
-                          {movement.day}
-                        </p>
-                        <p className="mt-1 text-xs font-semibold leading-snug text-slate-400 dark:text-slate-500">
-                          {movement.date}
-                          <br />
-                          {movement.time}
-                        </p>
-                      </td>
-
-                      <td className="px-4 py-3 align-middle">
-                        <p className="text-sm font-extrabold leading-tight text-slate-800 dark:text-slate-100">
-                          {movement.product}
-                        </p>
-                        <p className="mt-1 font-mono text-xs font-semibold text-slate-400 dark:text-slate-500">
-                          {movement.sku}
-                        </p>
-                      </td>
-
-                      <td className="px-4 py-3 align-middle">
-                        <div className="flex items-center gap-2">
-                          <span className={`flex h-8 w-8 items-center justify-center rounded-full ${meta.iconStyle}`}>
-                            <Icon className="h-4 w-4 stroke-[2.4]" />
-                          </span>
-                          <span className={`inline-flex min-h-6 items-center rounded-full border px-2.5 text-xs font-extrabold leading-tight ${meta.badge}`}>
-                            {movement.type}
-                          </span>
-                        </div>
-                      </td>
-
-                      <td className={`px-4 py-3 text-center text-base font-extrabold align-middle ${isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
-                        {movement.qty}
-                      </td>
-
-                      <td className="px-4 py-3 text-center align-middle">
-                        <span className="break-words font-mono text-xs font-extrabold leading-relaxed text-[#7467FF] dark:text-neon-cyan">
-                          {movement.reference}
-                        </span>
-                      </td>
-
-                      <td className="px-4 py-3 align-middle text-sm font-semibold text-slate-700 dark:text-slate-300">
-                        {movement.user}
-                      </td>
-
-                      <td className="px-4 py-3 align-middle text-xs font-semibold leading-5 text-slate-400 dark:text-slate-500">
-                        {movement.note}
-                      </td>
+              {isLoading ? (
+                <div className="flex flex-col items-center justify-center py-16 text-slate-400">
+                  <ArrowPathIcon className="w-8 h-8 animate-spin text-[#7C3AED] dark:text-neon-cyan mb-3" />
+                  <p className="text-sm font-medium">Loading stock history from server...</p>
+                </div>
+              ) : (
+                <table className="w-full min-w-[980px] border-collapse text-left">
+                  <thead>
+                    <tr className="h-11 border-b border-slate-100 bg-slate-50/75 transition-colors duration-300 dark:border-slate-800/80 dark:bg-slate-950/25">
+                      <th className="w-[125px] px-5 text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">
+                        Date & Time
+                      </th>
+                      <th className="w-[280px] px-4 text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">
+                        Product
+                      </th>
+                      <th className="w-[175px] px-4 text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">
+                        Movement Type
+                      </th>
+                      <th className="w-[105px] px-4 text-center text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">
+                        Qty Change
+                      </th>
+                      <th className="w-[135px] px-4 text-center text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">
+                        Reference
+                      </th>
+                      <th className="w-[125px] px-4 text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">
+                        User
+                      </th>
+                      <th className="px-4 text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">
+                        Note
+                      </th>
                     </tr>
-                  )
-                })}
-                {filteredMovements.length === 0 && (
-                  <tr>
-                    <td
-                      colSpan="7"
-                      className="px-6 py-12 text-center text-sm font-semibold text-slate-400 dark:text-slate-500"
-                    >
-                      No stock movements match your filters.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-              </table>
+                  </thead>
+
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800/70">
+                    {paginatedMovements.map((movement) => {
+                      const meta = typeMeta[movement.productType] || typeMeta['Stock In']
+                      const Icon = meta.icon
+                      const isPositive = movement.quantity.startsWith('+')
+
+                      return (
+                        <tr
+                          key={movement.id || Math.random()}
+                          className="h-[74px] bg-white transition-colors hover:bg-slate-50/50 dark:bg-transparent dark:hover:bg-slate-900/25"
+                        >
+                          <td className="px-5 py-3 align-middle">
+                            <p className="text-sm font-extrabold leading-tight text-slate-800 dark:text-slate-100">
+                              {movement.day}
+                            </p>
+                            <p className="mt-1 text-xs font-semibold leading-snug text-slate-400 dark:text-slate-500">
+                              {movement.date}
+                              <br />
+                              {movement.time}
+                            </p>
+                          </td>
+
+                          <td className="px-4 py-3 align-middle">
+                            <p className="text-sm font-extrabold leading-tight text-slate-800 dark:text-slate-100">
+                              {movement.product}
+                            </p>
+                            <p className="mt-1 font-mono text-xs font-semibold text-slate-400 dark:text-slate-500">
+                              {movement.sku}
+                            </p>
+                          </td>
+
+                          <td className="px-4 py-3 align-middle">
+                            <div className="flex items-center gap-2">
+                              <span className={`flex h-8 w-8 items-center justify-center rounded-full ${meta.iconStyle}`}>
+                                <Icon className="h-4 w-4 stroke-[2.4]" />
+                              </span>
+                              <span
+                                className={`inline-flex min-h-6 items-center rounded-full border px-2.5 text-xs font-extrabold leading-tight ${meta.badge}`}
+                              >
+                                {movement.productType}
+                              </span>
+                            </div>
+                          </td>
+
+                          <td
+                            className={`px-4 py-3 text-center text-base font-extrabold align-middle ${
+                              isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
+                            }`}
+                          >
+                            {movement.quantity}
+                          </td>
+
+                          <td className="px-4 py-3 text-center align-middle">
+                            <span className="break-words font-mono text-xs font-extrabold leading-relaxed text-[#7467FF] dark:text-neon-cyan">
+                              {movement.reference}
+                            </span>
+                          </td>
+
+                          <td className="px-4 py-3 align-middle text-sm font-semibold text-slate-700 dark:text-slate-300">
+                            {movement.user}
+                          </td>
+
+                          <td className="px-4 py-3 align-middle text-xs font-semibold leading-5 text-slate-400 dark:text-slate-500">
+                            {movement.note}
+                          </td>
+                        </tr>
+                      )
+                    })}
+                    {filteredMovements.length === 0 && (
+                      <tr>
+                        <td
+                          colSpan="7"
+                          className="px-6 py-12 text-center text-sm font-semibold text-slate-400 dark:text-slate-500"
+                        >
+                          {searchTerm
+                            ? `No stock movements match "${searchTerm}".`
+                            : 'No stock movements match the selected filter tab.'}
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              )}
             </div>
 
-            <footer className="flex flex-col gap-4 border-t border-slate-100 bg-white px-5 py-3.5 transition-colors duration-300 dark:border-slate-800/80 dark:bg-transparent sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-xs font-semibold text-slate-400 dark:text-slate-500">
-                Showing {filteredMovements.length} of {movements.length} movements
-              </p>
-              <div className="flex items-center gap-2 text-xs font-extrabold text-slate-400 dark:text-slate-500">
-                {[1, 2, 3, 4].map((page) => (
+            {/* Pagination Footer */}
+            {filteredMovements.length > itemsPerPage && (
+              <footer className="flex flex-col gap-4 border-t border-slate-100 bg-white px-5 py-3.5 transition-colors duration-300 dark:border-slate-800/80 dark:bg-transparent sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-xs font-semibold text-slate-400 dark:text-slate-500">
+                  Showing <span className="font-bold text-slate-700 dark:text-slate-300">{firstIndex + 1}</span> to{' '}
+                  <span className="font-bold text-slate-700 dark:text-slate-300">{lastIndex}</span> of{' '}
+                  <span className="font-bold text-slate-700 dark:text-slate-300">{filteredMovements.length}</span> movements
+                </p>
+
+                <div className="flex items-center gap-2">
                   <button
-                    key={page}
-                    className={`flex h-8 w-8 items-center justify-center rounded-full transition ${
-                      page === 1
-                        ? 'bg-[#7A66F4] text-white dark:bg-neon-cyan/15 dark:text-neon-cyan dark:ring-1 dark:ring-neon-cyan/30'
-                        : 'hover:bg-slate-100 dark:hover:bg-slate-900/70 dark:hover:text-slate-200'
-                    }`}
+                    onClick={() => goToPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-800 dark:bg-cyber-card dark:text-slate-400 dark:hover:bg-slate-900/60"
                   >
-                    {page}
+                    <ChevronLeftIcon className="h-4 w-4" strokeWidth={2.5} />
                   </button>
-                ))}
-              </div>
-            </footer>
+
+                  {Array.from({ length: totalPages }, (_, idx) => idx + 1).map((page) => (
+                    <button
+                      key={page}
+                      onClick={() => goToPage(page)}
+                      className={`h-8 min-w-8 rounded-lg px-2 text-xs font-extrabold transition-colors ${
+                        currentPage === page
+                          ? 'bg-[#7A66F4] text-white shadow-[0_6px_13px_rgba(122,102,244,0.25)] dark:bg-neon-cyan/15 dark:text-neon-cyan dark:ring-1 dark:ring-neon-cyan/30'
+                          : 'border border-slate-200 bg-white text-slate-500 hover:bg-slate-50 dark:border-slate-800 dark:bg-cyber-card dark:text-slate-400 dark:hover:bg-slate-900/60'
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  ))}
+
+                  <button
+                    onClick={() => goToPage(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-800 dark:bg-cyber-card dark:text-slate-400 dark:hover:bg-slate-900/60"
+                  >
+                    <ChevronRightIcon className="h-4 w-4" strokeWidth={2.5} />
+                  </button>
+                </div>
+              </footer>
+            )}
           </div>
         </section>
       </div>

@@ -1,15 +1,14 @@
-import { useMemo, useState } from 'react'
+import React, { useMemo, useState, useEffect } from 'react'
 import {
   AdjustmentsHorizontalIcon,
   ArrowDownIcon,
   ArrowUpIcon,
   CubeIcon,
-  PencilSquareIcon,
   PlusIcon,
-  TrashIcon,
+  ArrowPathIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline'
-import { products as initialProducts } from '../../Database/data.json'
+import { getProducts, adjustStock } from '../../api/inventory.api'
 
 const categoryColors = {
   Electronics: {
@@ -43,41 +42,53 @@ const ADJUSTMENT_REASONS = [
   'Other',
 ]
 
-const LOW_STOCK_THRESHOLD = 10
-
 const num = (v) => Number(v) || 0
-
-const getStatusFromQty = (qty) => {
-  if (qty <= 0) return 'Out of Stock'
-  if (qty <= LOW_STOCK_THRESHOLD) return 'Low Stock'
-  return 'In Stock'
-}
 
 const emptyForm = {
   productId: '',
-  type: 'stock-in',
+  type: 'Stock In',
   quantity: '',
   reason: ADJUSTMENT_REASONS[0],
   notes: '',
 }
+    
 
 const StockAdjustment = () => {
-  const [productList, setProductList] = useState(() =>
-    initialProducts.map((p) => ({
-      ...p,
-      qty: num(p.qty),
-      unitCost: num(p.unitCost),
-      unitPrice: num(p.unitPrice),
-    }))
-  )
+  const [productList, setProductList] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [form, setForm] = useState(emptyForm)
   const [formError, setFormError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  console.log('form.type',form.type)
+
+  const fetchProductsList = async () => {
+    setIsLoading(true)
+    try {
+      const response = await getProducts()
+      if (response && !response.error) {
+        let items = []
+        if (Array.isArray(response)) items = response
+        else if (response?.products && Array.isArray(response.products)) items = response.products
+        else if (response?.data && Array.isArray(response.data)) items = response.data
+        else if (response?.items && Array.isArray(response.items)) items = response.items
+        setProductList(items)
+      }
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchProductsList()
+  }, [])
 
   const stats = useMemo(() => {
-    const inStockCount = productList.filter((p) => p.status === 'In Stock').length
-    const lowStockCount = productList.filter((p) => p.status === 'Low Stock').length
-    const outOfStockCount = productList.filter((p) => p.status === 'Out of Stock').length
+    const inStockCount = productList.filter((p) => (p.status || '').toLowerCase() === 'in stock').length
+    const lowStockCount = productList.filter((p) => (p.status || '').toLowerCase() === 'low stock').length
+    const outOfStockCount = productList.filter((p) => (p.status || '').toLowerCase() === 'out of stock').length
 
     return [
       {
@@ -107,7 +118,7 @@ const StockAdjustment = () => {
     ]
   }, [productList])
 
-  const selectedProduct = productList.find((p) => p.id === form.productId)
+  const selectedProduct = productList.find((p) => (p._id || p.id) === form.productId)
 
   const openModal = (productId = '') => {
     setForm({ ...emptyForm, productId })
@@ -126,45 +137,94 @@ const StockAdjustment = () => {
     setFormError('')
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
+ const handleSubmit = async (e) => {
+    e.preventDefault();
 
     if (!form.productId) {
-      setFormError('Please select a product.')
-      return
+        setFormError('Please select a product.');
+        return;
     }
 
-    const qtyChange = num(form.quantity)
-    if (qtyChange < 1) {
-      setFormError('Quantity must be at least 1.')
-      return
+    let qtyChange = num(form.quantity);
+
+    if (form.type === 'Stock In' && qtyChange < 1) {
+        setFormError('Quantity must be at least 1.');
+        return;
     }
 
-    const product = productList.find((p) => p.id === form.productId)
+    // Stock Out should be negative
+    if (form.type === 'Stock Out') {
+        if (qtyChange < 1) {
+            setFormError('Quantity must be at least 1.');
+            return;
+        }
+
+        qtyChange *= -1;
+    }
+
+    console.log('qtyChange:', qtyChange);
+
+    const product = productList.find(
+        (p) => (p._id || p.id) === form.productId
+    );
+
     if (!product) {
-      setFormError('Product not found.')
-      return
+        setFormError('Product not found.');
+        return;
     }
 
-    const delta = form.type === 'stock-in' ? qtyChange : -qtyChange
-    const newQty = Math.max(0, product.qty + delta)
+    const currentQty = num(product.quantity ?? 0);
 
-    if (form.type === 'stock-out' && product.qty < qtyChange) {
-      setFormError(`Only ${product.qty} units available to remove.`)
-      return
+    // Compare absolute amount because qtyChange is negative
+    if (form.type === 'Stock Out' && Math.abs(qtyChange) > currentQty) {
+        setFormError(
+            `Only ${currentQty} units available to remove.`
+        );
+        return;
     }
 
-    setProductList((prev) =>
-      prev.map((p) =>
-        p.id === form.productId
-          ? { ...p, qty: newQty, status: getStatusFromQty(newQty) }
-          : p
-      )
-    )
+    const delta = qtyChange;
+    const newQty = currentQty + delta;
 
-    closeModal()
-  }
+    console.log('delta:', delta);
+    console.log('new quantity:', newQty);
 
+    const resolveStatus = (qty) => {
+        if (qty === 0) {
+            return 'Out of Stock';
+        }
+
+        if (qty <= 30) {
+            return 'Low Stock';
+        }
+
+        return 'In Stock';
+    };
+
+    setIsSubmitting(true);
+
+    try {
+        const response = await adjustStock(product._id, {
+            quantity: delta,
+            type: form.type,
+        });
+
+        if (response && !response.error) {
+            await fetchProductsList();
+            closeModal();
+        } else {
+            setFormError(
+                response?.error || 'Failed to update stock.'
+            );
+        }
+    } catch (err) {
+        setFormError(
+            err?.message || 'Error executing stock adjustment.'
+        );
+    } finally {
+        setIsSubmitting(false);
+    }
+};
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-[#F8F9FC] p-4 font-sans text-slate-900 transition-colors duration-300 dark:bg-cyber-dark dark:text-slate-100 md:p-6 lg:p-8">
       <div className="pointer-events-none absolute top-1/4 -right-36 h-96 w-96 rounded-full bg-neon-purple/5 blur-[120px] transition-all duration-300 dark:bg-neon-purple/10"></div>
@@ -181,14 +241,25 @@ const StockAdjustment = () => {
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={() => openModal()}
-            className="inline-flex h-10 items-center gap-2 self-start rounded-xl bg-[#7F22FE] px-4 text-sm font-bold text-white shadow-[0_8px_18px_rgba(124,31,255,0.18)] transition hover:bg-[#7016ea] dark:bg-neon-purple dark:text-white dark:shadow-[0_0_18px_rgba(189,0,255,0.22)] sm:self-auto"
-          >
-            <PlusIcon className="h-4 w-4" />
-            <span>New Adjustment</span>
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={fetchProductsList}
+              disabled={isLoading}
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-600 shadow-sm transition hover:bg-slate-50 dark:border-slate-800 dark:bg-cyber-card/85 dark:text-slate-300 dark:hover:border-neon-cyan/30 dark:hover:text-neon-cyan disabled:opacity-50"
+            >
+              <ArrowPathIcon className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+              <span>Refresh</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => openModal()}
+              className="inline-flex h-10 items-center gap-2 self-start rounded-xl bg-[#7F22FE] px-4 text-sm font-bold text-white shadow-[0_8px_18px_rgba(124,31,255,0.18)] transition hover:bg-[#7016ea] dark:bg-neon-purple dark:text-white dark:shadow-[0_0_18px_rgba(189,0,255,0.22)] sm:self-auto"
+            >
+              <PlusIcon className="h-4 w-4" />
+              <span>New Adjustment</span>
+            </button>
+          </div>
         </header>
 
         <section className="grid gap-4 md:grid-cols-3">
@@ -228,158 +299,107 @@ const StockAdjustment = () => {
           </div>
 
           <div className="w-full overflow-x-auto">
-            <table className="w-full min-w-[860px] border-collapse text-left">
-              <thead>
-                <tr className="h-11 border-y border-slate-100 bg-slate-50/75 transition-colors duration-300 dark:border-slate-800/80 dark:bg-slate-950/25">
-                  <th className="px-5 text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">Product Name</th>
-                  <th className="px-4 text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">SKU</th>
-                  <th className="px-4 text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">Category</th>
-                  <th className="px-4 text-right text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">Unit Cost</th>
-                  <th className="px-4 text-right text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">Unit Price</th>
-                  <th className="px-4 text-center text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">Qty</th>
-                  <th className="px-4 text-center text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">Status</th>
-                  <th className="px-5 text-right text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">Actions</th>
-                </tr>
-              </thead>
+            {isLoading ? (
+              <div className="flex flex-col items-center justify-center py-16 text-slate-400">
+                <ArrowPathIcon className="w-8 h-8 animate-spin text-[#7C3AED] dark:text-neon-cyan mb-3" />
+                <p className="text-sm font-medium">Loading inventory products...</p>
+              </div>
+            ) : productList.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 text-center text-slate-400">
+                <CubeIcon className="w-8 h-8 mb-2 text-slate-300" />
+                <p className="text-sm font-bold">No inventory products found</p>
+              </div>
+            ) : (
+              <table className="w-full min-w-[860px] border-collapse text-left">
+                <thead>
+                  <tr className="h-11 border-y border-slate-100 bg-slate-50/75 transition-colors duration-300 dark:border-slate-800/80 dark:bg-slate-950/25">
+                    <th className="px-5 text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">Product Name</th>
+                    <th className="px-4 text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">Brand</th>
+                    <th className="px-4 text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">Category</th>
+                    <th className="px-4 text-right text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">Unit Cost</th>
+                    <th className="px-4 text-right text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">Unit Price</th>
+                    <th className="px-4 text-center text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">Qty</th>
+                    <th className="px-4 text-center text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">Status</th>
+                    <th className="px-5 text-right text-xs font-extrabold uppercase text-slate-400 dark:text-slate-500">Actions</th>
+                  </tr>
+                </thead>
 
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/70">
-                {productList.map((product) => {
-                  const catStyle = categoryColors[product.category] || {
-                    bg: 'bg-slate-100 dark:bg-slate-800/60',
-                    text: 'text-slate-600 dark:text-slate-300',
-                  }
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/70">
+                  {productList.map((product) => {
+                    const pId = product._id || product.id
+                    const categoryName = product.category || 'General'
+                    const catStyle = categoryColors[categoryName] || {
+                      bg: 'bg-slate-100 dark:bg-slate-800/60',
+                      text: 'text-slate-600 dark:text-slate-300',
+                    }
+                    const status = product.status || ''
+                    const qty = num(product.qty ?? product.quantity ?? product.stock ?? 0)
 
-                  return (
-                    <tr
-                      key={product.id}
-                      className="h-[74px] bg-white transition-colors hover:bg-slate-50/50 dark:bg-transparent dark:hover:bg-slate-900/25"
-                    >
-                      <td className="px-5 py-3">
-                        <div className="flex items-center gap-3">
-                          <div
-                            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${
-                              product.status === 'Out of Stock'
-                                ? 'bg-rose-50 text-rose-500 dark:bg-rose-950/20 dark:text-rose-400'
-                                : product.status === 'Low Stock'
-                                  ? 'bg-amber-50 text-amber-500 dark:bg-amber-950/20 dark:text-amber-400'
-                                  : 'bg-indigo-50 text-[#7C3AED] dark:bg-purple-950/20 dark:text-purple-400'
-                            }`}
-                          >
-                            <CubeIcon className="h-5 w-5" />
-                          </div>
-                          <div>
-                            <p className="text-sm font-extrabold leading-tight text-slate-800 dark:text-slate-100">
-                              {product.name}
-                            </p>
-                            <p className="mt-1 text-xs font-semibold text-slate-400 dark:text-slate-500">
-                              {product.brand}
-                            </p>
-                          </div>
-                        </div>
-                      </td>
-
-                      <td className="px-4 py-3 font-mono text-xs font-semibold text-slate-500 dark:text-slate-400">
-                        {product.sku}
-                      </td>
-
-                      <td className="px-4 py-3">
-                        <span className={`rounded-full px-3 py-1 text-xs font-semibold ${catStyle.bg} ${catStyle.text}`}>
-                          {product.category}
-                        </span>
-                      </td>
-
-                      <td className="px-4 py-3 text-right text-sm font-semibold text-slate-500 dark:text-slate-400">
-                        ${product.unitCost}
-                      </td>
-
-                      <td className="px-4 py-3 text-right text-sm font-extrabold text-slate-800 dark:text-slate-100">
-                        ${product.unitPrice}
-                      </td>
-
-                      <td className="px-4 py-3 text-center">
-                        <span
-                          className={`text-sm font-extrabold ${
-                            product.status === 'Out of Stock'
-                              ? 'text-rose-500 dark:text-rose-400'
-                              : product.status === 'Low Stock'
-                                ? 'text-amber-500 dark:text-amber-400'
-                                : 'text-slate-700 dark:text-slate-300'
-                          }`}
-                        >
-                          {product.qty}
-                        </span>
-                      </td>
-
-                      <td className="px-4 py-3 text-center">
-                        <span
-                          className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold ${
-                            product.status === 'In Stock'
-                              ? 'border-emerald-100/50 bg-emerald-50 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400'
-                              : product.status === 'Low Stock'
-                                ? 'border-amber-100/50 bg-amber-50 text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-400'
-                                : 'border-rose-100/50 bg-rose-50 text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-400'
-                          }`}
-                        >
+                    return (
+                      <tr key={pId} className="h-16 transition-colors hover:bg-slate-50/50 dark:hover:bg-slate-900/25">
+                        <td className="px-5 text-sm font-extrabold text-slate-800 dark:text-slate-100">
+                          {product.name}
+                        </td>
+                        <td className="px-4 text-xs font-semibold text-slate-500 dark:text-slate-400">
+                          {product.brand || '—'}
+                        </td>
+                        <td className="px-4">
+                          <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-bold ${catStyle.bg} ${catStyle.text}`}>
+                            {categoryName}
+                          </span>
+                        </td>
+                        <td className="px-4 text-right text-xs font-bold text-slate-500 dark:text-slate-400">
+                          ${num(product.unitCost).toFixed(2)}
+                        </td>
+                        <td className="px-4 text-right text-xs font-bold text-slate-800 dark:text-slate-100">
+                          ${num(product.unitPrice).toFixed(2)}
+                        </td>
+                        <td className="px-4 text-center text-sm font-extrabold text-slate-800 dark:text-slate-100">
+                          {qty}
+                        </td>
+                        <td className="px-4 text-center">
                           <span
-                            className={`h-1.5 w-1.5 rounded-full ${
-                              product.status === 'In Stock'
-                                ? 'bg-emerald-500'
-                                : product.status === 'Low Stock'
-                                  ? 'bg-amber-500'
-                                  : 'bg-rose-500'
+                            className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-bold ${
+                              status === 'Out of Stock'
+                                ? 'border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-400'
+                                : status === 'Low Stock'
+                                  ? 'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-400'
+                                  : 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400'
                             }`}
-                          ></span>
-                          {product.status}
-                        </span>
-                      </td>
-
-                      <td className="px-5 py-3 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
+                          >
+                            {status}
+                          </span>
+                        </td>
+                        <td className="px-5 text-right">
                           <button
                             type="button"
-                            onClick={() => openModal(product.id)}
-                            className="rounded-lg border border-slate-100 bg-white p-1.5 text-[#7C3AED] transition-colors hover:bg-indigo-50 dark:border-slate-800 dark:bg-cyber-card dark:text-neon-cyan dark:hover:bg-indigo-500/10"
-                            aria-label={`Adjust stock for ${product.name}`}
+                            onClick={() => openModal(pId)}
+                            className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-50 dark:border-slate-800 dark:bg-cyber-card/85 dark:text-slate-200 dark:hover:border-neon-cyan/30 dark:hover:text-neon-cyan"
                           >
-                            <PencilSquareIcon className="h-3.5 w-3.5" strokeWidth={2} />
+                            <AdjustmentsHorizontalIcon className="h-3.5 w-3.5" />
+                            <span>Adjust</span>
                           </button>
-                          <button
-                            type="button"
-                            className="rounded-lg border border-slate-100 bg-white p-1.5 text-rose-500 transition-colors hover:bg-rose-50 dark:border-slate-800 dark:bg-cyber-card dark:text-rose-400 dark:hover:bg-rose-500/10"
-                            aria-label={`Remove ${product.name}`}
-                          >
-                            <TrashIcon className="h-3.5 w-3.5" strokeWidth={2} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
-          <div className="border-t border-slate-100 px-5 py-3.5 transition-colors duration-300 dark:border-slate-800/80">
-            <p className="text-xs font-semibold text-slate-400 dark:text-slate-500">
-              Showing {productList.length} products.
-            </p>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            )}
           </div>
         </section>
       </div>
 
+      {/* Adjustment Modal */}
       {isModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md bg-slate-950/20 dark:bg-black/40"
-          onClick={closeModal}
-          role="presentation"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md dark:bg-slate-950/70"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="adjustment-modal-title"
         >
-          <div
-            className="relative w-full max-w-lg bg-white border border-slate-200 dark:bg-cyber-card dark:border-slate-800 shadow-2xl rounded-3xl p-6 overflow-hidden"
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="adjustment-modal-title"
-          >
-            <div className="absolute -top-[1px] left-8 right-8 h-[1.5px] bg-gradient-to-r from-transparent via-neon-purple to-transparent dark:via-neon-cyan"></div>
+          <div className="relative w-full max-w-lg rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-800 dark:bg-cyber-card overflow-hidden">
+            <div className="absolute -top-[1px] left-8 right-8 h-[1.5px] bg-gradient-to-r from-transparent via-purple-500 to-transparent dark:via-neon-cyan"></div>
 
             <div className="flex justify-between items-center mb-6">
               <h3
@@ -400,57 +420,63 @@ const StockAdjustment = () => {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold font-mono tracking-wider uppercase text-slate-400 dark:text-slate-500 mb-2">
+                <label className="block text-xs font-bold tracking-wider uppercase text-slate-400 dark:text-slate-500 mb-2">
                   Product
                 </label>
                 <select
                   value={form.productId}
                   onChange={(e) => setField('productId', e.target.value)}
-                  className="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 font-medium focus:border-neon-purple focus:outline-none transition-all dark:bg-slate-950/40 dark:border-slate-800 dark:text-slate-100 dark:focus:border-neon-cyan/80"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 font-medium focus:border-purple-500 focus:outline-none transition-all dark:bg-slate-900 dark:border-slate-800 dark:text-slate-100"
                   required
                 >
                   <option value="">Select a product…</option>
-                  {productList.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name} ({p.sku}) — {p.qty} in stock
-                    </option>
-                  ))}
+                  {productList.map((p) => {
+                    const pId = p._id || p.id
+                    const qty = num(p.qty ?? p.quantity ?? p.stock ?? 0)
+                    return (
+                      <option key={pId} value={pId}>
+                        {p.name} — {qty} in stock
+                      </option>
+                    )
+                  })}
                 </select>
               </div>
 
               {selectedProduct && (
-                <div className="rounded-xl border border-slate-100 bg-slate-50/80 px-4 py-3 text-sm dark:border-slate-800 dark:bg-slate-950/40">
+                <div className="rounded-xl border border-slate-100 bg-slate-50/80 px-4 py-3 text-sm dark:border-slate-800 dark:bg-slate-900/60">
                   <p className="font-semibold text-slate-700 dark:text-slate-300">
                     Current quantity:{' '}
-                    <span className="font-extrabold text-slate-900 dark:text-white">{selectedProduct.qty}</span>
+                    <span className="font-extrabold text-slate-900 dark:text-white">
+                      {num(selectedProduct.qty ?? selectedProduct.quantity ?? selectedProduct.stock ?? 0)}
+                    </span>
                   </p>
-                  <p className="mt-0.5 text-xs text-slate-400 dark:text-slate-500">{selectedProduct.status}</p>
+                  <p className="mt-0.5 text-xs text-slate-400 dark:text-slate-500">{selectedProduct.status || ''}</p>
                 </div>
               )}
 
               <div>
-                <label className="block text-xs font-bold font-mono tracking-wider uppercase text-slate-400 dark:text-slate-500 mb-2">
+                <label className="block text-xs font-bold tracking-wider uppercase text-slate-400 dark:text-slate-500 mb-2">
                   Adjustment Type
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
-                    onClick={() => setField('type', 'stock-in')}
+                    onClick={() => setField('type', 'Stock In')}
                     className={`rounded-xl border px-3 py-2.5 text-sm font-bold transition-all ${
-                      form.type === 'stock-in'
+                      form.type === 'Stock In'
                         ? 'border-emerald-500/50 bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400'
-                        : 'border-slate-200 bg-white text-slate-500 dark:border-slate-800 dark:bg-slate-950/40 dark:text-slate-400'
+                        : 'border-slate-200 bg-white text-slate-500 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400'
                     }`}
                   >
                     + Stock In
                   </button>
                   <button
                     type="button"
-                    onClick={() => setField('type', 'stock-out')}
+                    onClick={() => setField('type', 'Stock Out')}
                     className={`rounded-xl border px-3 py-2.5 text-sm font-bold transition-all ${
-                      form.type === 'stock-out'
+                      form.type === 'Stock Out'
                         ? 'border-rose-500/50 bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-400'
-                        : 'border-slate-200 bg-white text-slate-500 dark:border-slate-800 dark:bg-slate-950/40 dark:text-slate-400'
+                        : 'border-slate-200 bg-white text-slate-500 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400'
                     }`}
                   >
                     − Stock Out
@@ -459,7 +485,7 @@ const StockAdjustment = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold font-mono tracking-wider uppercase text-slate-400 dark:text-slate-500 mb-2">
+                <label className="block text-xs font-bold tracking-wider uppercase text-slate-400 dark:text-slate-500 mb-2">
                   Quantity
                 </label>
                 <input
@@ -468,31 +494,19 @@ const StockAdjustment = () => {
                   placeholder="e.g. 10"
                   value={form.quantity}
                   onChange={(e) => setField('quantity', e.target.value)}
-                  className="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder-slate-400 font-medium focus:border-neon-purple focus:outline-none transition-all dark:bg-slate-950/40 dark:border-slate-800 dark:text-slate-100 dark:placeholder-slate-550 dark:focus:border-neon-cyan/80"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder-slate-400 font-medium focus:border-purple-500 focus:outline-none transition-all dark:bg-slate-900 dark:border-slate-800 dark:text-slate-100"
                   required
                 />
-                {selectedProduct && form.quantity && (
-                  <p className="mt-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
-                    New quantity:{' '}
-                    <span className="text-slate-800 dark:text-slate-200">
-                      {Math.max(
-                        0,
-                        selectedProduct.qty +
-                          (form.type === 'stock-in' ? num(form.quantity) : -num(form.quantity))
-                      )}
-                    </span>
-                  </p>
-                )}
               </div>
 
               <div>
-                <label className="block text-xs font-bold font-mono tracking-wider uppercase text-slate-400 dark:text-slate-500 mb-2">
+                <label className="block text-xs font-bold tracking-wider uppercase text-slate-400 dark:text-slate-500 mb-2">
                   Reason
                 </label>
                 <select
                   value={form.reason}
                   onChange={(e) => setField('reason', e.target.value)}
-                  className="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 font-medium focus:border-neon-purple focus:outline-none transition-all dark:bg-slate-950/40 dark:border-slate-800 dark:text-slate-100 dark:focus:border-neon-cyan/80"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 font-medium focus:border-purple-500 focus:outline-none transition-all dark:bg-slate-900 dark:border-slate-800 dark:text-slate-100"
                 >
                   {ADJUSTMENT_REASONS.map((reason) => (
                     <option key={reason} value={reason}>
@@ -503,15 +517,15 @@ const StockAdjustment = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold font-mono tracking-wider uppercase text-slate-400 dark:text-slate-500 mb-2">
+                <label className="block text-xs font-bold tracking-wider uppercase text-slate-400 dark:text-slate-500 mb-2">
                   Notes <span className="normal-case font-normal text-slate-400">(optional)</span>
                 </label>
                 <textarea
                   rows={2}
-                  placeholder="Add any details about this adjustment…"
+                  placeholder="Add details about this stock adjustment…"
                   value={form.notes}
                   onChange={(e) => setField('notes', e.target.value)}
-                  className="w-full resize-none bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder-slate-400 font-medium focus:border-neon-purple focus:outline-none transition-all dark:bg-slate-950/40 dark:border-slate-800 dark:text-slate-100 dark:placeholder-slate-550 dark:focus:border-neon-cyan/80"
+                  className="w-full resize-none bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder-slate-400 font-medium focus:border-purple-500 focus:outline-none transition-all dark:bg-slate-900 dark:border-slate-800 dark:text-slate-100"
                 />
               </div>
 
@@ -525,15 +539,24 @@ const StockAdjustment = () => {
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="flex-1 py-3 rounded-xl border border-slate-200 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-900 text-xs font-bold font-mono tracking-wider text-slate-500 dark:text-slate-400 transition-colors"
+                  disabled={isSubmitting}
+                  className="flex-1 py-3 rounded-xl border border-slate-200 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-900 text-xs font-bold tracking-wider text-slate-500 dark:text-slate-400 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-3 bg-[#7F22FE] text-white hover:bg-[#7016ea] dark:bg-gradient-to-r dark:from-neon-cyan dark:to-neon-purple dark:text-slate-950 font-extrabold text-xs tracking-wider rounded-xl transition-all shadow-md dark:shadow-[0_0_15px_rgba(0,243,255,0.2)]"
+                  disabled={isSubmitting}
+                  className="flex-1 py-3 bg-[#7F22FE] text-white hover:bg-[#7016ea] dark:bg-neon-purple font-extrabold text-xs tracking-wider rounded-xl transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
                 >
-                  Apply Adjustment
+                  {isSubmitting ? (
+                    <>
+                      <ArrowPathIcon className="w-4 h-4 animate-spin" />
+                      Updating...
+                    </>
+                  ) : (
+                    'Apply Adjustment'
+                  )}
                 </button>
               </div>
             </form>

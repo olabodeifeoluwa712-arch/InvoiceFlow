@@ -2,10 +2,13 @@ import axios from "axios";
 import ApiError from "./apiError";
 import useAuthStore from "./token";
 
-const BASE_URL = import.meta.env.VITE_API_URL
+
+const backend_endPoints = ['https://ftr3lxvw-7000.uks1.devtunnels.ms/api', 'http://localhost:7000/api']
+const BASE_URL = 'http://localhost:7000/api' /* 'http://localhost:7000/api' */
 
 const api = axios.create({
   baseURL: BASE_URL,
+  timeout: 50000,
   withCredentials: true,
 });
 
@@ -14,7 +17,6 @@ api.interceptors.request.use(
   (config) => {
     // const token = useAuthStore((state) => state.accessToken);
     const token = useAuthStore.getState().accessToken
-    console.log (token)
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -51,8 +53,9 @@ api.interceptors.response.use(
                 { withCredentials: true }
               )
               .then((res) => {
-                const token = res.data;
-                useAuthStore.getState().setAccessToken(token);
+                const token = res.data.token;
+                console.log(res)
+                useAuthStore.getState().setAccessToken(token)
                 return token;
               })
               .finally(() => {
@@ -67,14 +70,8 @@ api.interceptors.response.use(
           return api(originalRequest);
         } catch (err) {
           useAuthStore.getState().logout();
-          window.location.assign("/login?session=expired");
 
-          return Promise.reject(
-            new ApiError({
-              message: "Your session has expired. Please log in again.",
-              status: 401,
-            })
-          );
+         
         }
       }
 
@@ -130,7 +127,7 @@ api.interceptors.response.use(
     }
 
     // Network/timeout error
-    if (!error.response) {
+    if (!error?.response) {
       return Promise.reject(
         new ApiError({
           message:
@@ -146,8 +143,8 @@ api.interceptors.response.use(
     // Other API errors
     return Promise.reject(
       new ApiError({
-        message: error.response.data?.message || "Something went wrong.",
-        status: error.response.status,
+        message: error?.response.data?.message || "Something went wrong.",
+        status: error?.response.status,
         code: error.code,
       })
     );
