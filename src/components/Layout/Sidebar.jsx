@@ -1,7 +1,10 @@
-import { useAuth } from '../../Context/AuthContext'
-import { useTheme } from '../../Context/ThemeContext'
-import { NavLink, useNavigate } from 'react-router-dom'
-import { useBusiness } from "../../context/BusinessContext";
+import { useEffect, useState } from "react";
+
+import { useAuth } from "../../Context/AuthContext";
+import { useTheme } from "../../Context/ThemeContext";
+import { NavLink, useNavigate } from "react-router-dom";
+import api from "../../api/http";
+
 import {
   ChevronLeftIcon as ChevronLeftIconOutline,
   Squares2X2Icon as Squares2X2IconOutline,
@@ -32,8 +35,6 @@ import {
   ArrowTrendingUpIcon as ArrowTrendingUpIconOutline,
   ShieldCheckIcon as permissionsIconOutline,
   CommandLineIcon as plugIconOutline,
-
-
 } from "@heroicons/react/24/outline";
 
 import {
@@ -66,32 +67,89 @@ import {
   UserGroupIcon as UserGroupIconSolid,
   ShieldCheckIcon as permissionsIconSolid,
   CommandLineIcon as plugIconSolid,
-
 } from "@heroicons/react/24/solid";
+
 
 const formatRole = (role) =>
   role
-    .replace(/([a-z])([A-Z])/g, '$1 $2')
-    .replace(/[-_]/g, ' ')
-    .replace(/\s+/g, ' ')
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/[-_]/g, " ")
+    .replace(/\s+/g, " ")
     .trim()
     .toUpperCase();
 
+
 const Sidebar = () => {
-  
   const { currentUser, logout, getInitials } = useAuth();
- const { business } = useBusiness();
-  const navigate = useNavigate()
+
+  const navigate = useNavigate();
+
+  const [business, setBusiness] = useState(null);
+  const [businessLoading, setBusinessLoading] = useState(true);
+
+
+  /*
+   * Load business information directly from the backend.
+   *
+   * The backend endpoint:
+   * GET /api/business/my-business
+   *
+   * Response:
+   * {
+   *   business: {
+   *     owner: {
+   *       fullName,
+   *       passportPhotoUrl
+   *     }
+   *   }
+   * }
+   */
+  useEffect(() => {
+    const loadBusiness = async () => {
+      try {
+        setBusinessLoading(true);
+
+        const response = await api.get("/business/my-business");
+
+        setBusiness(response.business || null);
+
+      } catch (error) {
+        console.error(
+          "Failed to load business information:",
+          error
+        );
+
+        setBusiness(null);
+
+      } finally {
+        setBusinessLoading(false);
+      }
+    };
+
+    if (currentUser) {
+      loadBusiness();
+    }
+  }, [currentUser]);
+
 
   if (currentUser == null) {
-    return navigate('/login');
+    return navigate("/login");
   }
- 
-  const role = currentUser.role?.toLowerCase().trim() || 'Business Owner';
-  const normalizedRole = role.replace(/[\s_-]/g, '');
-  const displayRole = formatRole(role);
+
+
+  const role =
+    currentUser.role?.toLowerCase().trim() ||
+    "Business Owner";
+
+  const normalizedRole =
+    role.replace(/[\s\_-]/g, "");
+
+  const displayRole =
+    formatRole(role);
+
 
   const SIDEBAR_LINKS = {
+
     inventory: [
       {
         title: "OVERVIEW",
@@ -116,6 +174,7 @@ const Sidebar = () => {
           },
         ],
       },
+
       {
         title: "OPERATIONS",
         items: [
@@ -140,8 +199,8 @@ const Sidebar = () => {
           },
         ],
       },
-
     ],
+
 
     admin: [
       {
@@ -153,14 +212,12 @@ const Sidebar = () => {
             icon: Squares2X2IconOutline,
             activeIcon: Squares2X2IconSolid,
           },
-
           {
             to: "/business-invoices",
             label: "Invoices",
             icon: DocumentTextIconOutline,
             activeIcon: DocumentTextIconSolid,
           },
-
           {
             to: "/create-invoice",
             label: "Create Invoice",
@@ -185,28 +242,24 @@ const Sidebar = () => {
             icon: CubeIconOutline,
             activeIcon: CubeIconSolid,
           },
-
           {
             to: "/business-view-invoices/:id",
             label: "Manage Invoices",
             icon: DocumentTextIconOutline,
             activeIcon: DocumentTextIconSolid,
           },
-
           {
-            to: '/business-management',
-            label: 'Team Management',
+            to: "/business-management",
+            label: "Team Management",
             icon: UserGroupIconOutline,
             activeIcon: UserGroupIconSolid,
           },
-
           {
             to: "/business-products",
             label: "Products",
             icon: ArchiveBoxIconOutline,
             activeIcon: ArchiveBoxIconSolid,
           },
-
           {
             to: "/business-settings",
             label: "Settings",
@@ -222,6 +275,8 @@ const Sidebar = () => {
         ],
       },
     ],
+
+
     super_admin: [
       {
         title: "MAIN MENU",
@@ -232,12 +287,6 @@ const Sidebar = () => {
             icon: Squares2X2IconOutline,
             activeIcon: Squares2X2IconSolid,
           },
-          // {
-          //   to: "/admin-invoices",
-          //   label: "Invoices",
-          //   icon: DocumentTextIconOutline,
-          //   activeIcon: DocumentTextIconSolid,
-          // },
           {
             to: "/admin-receipts",
             label: "Receipts",
@@ -252,6 +301,7 @@ const Sidebar = () => {
           },
         ],
       },
+
       {
         title: "Admin",
         items: [
@@ -261,12 +311,6 @@ const Sidebar = () => {
             icon: UserGroupIconOutline,
             activeIcon: UserGroupIconSolid,
           },
-          // {
-          //   to: "/admin-permissions",
-          //   label: "Permissions",
-          //   icon: permissionsIconOutline,
-          //   activeIcon: permissionsIconSolid,
-          // },
           {
             to: "/admin-integrations",
             label: "Integrations",
@@ -274,15 +318,16 @@ const Sidebar = () => {
             activeIcon: plugIconSolid,
           },
           {
-            to: '/admin-settings',
-            label: 'Settings',
+            to: "/admin-settings",
+            label: "Settings",
             icon: Cog6ToothIconOutline,
             activeIcon: Cog6ToothIconSolid,
-          }
+          },
         ],
-      }
-
+      },
     ],
+
+
     accountant: [
       {
         title: "MAIN MENU",
@@ -293,7 +338,6 @@ const Sidebar = () => {
             icon: Squares2X2IconOutline,
             activeIcon: Squares2X2IconSolid,
           },
-
           {
             to: "/payments",
             label: "Payments",
@@ -312,14 +356,12 @@ const Sidebar = () => {
             icon: ClipboardDocumentListIconOutline,
             activeIcon: ClipboardDocumentListIconSolid,
           },
-
           {
             to: "/reports",
             label: "Reports",
             icon: ChartBarIconOutline,
             activeIcon: ChartBarIconSolid,
           },
-
           {
             to: "/audit",
             label: "Audit",
@@ -329,7 +371,6 @@ const Sidebar = () => {
         ],
       },
     ],
-
 
 
     user: [
@@ -342,14 +383,12 @@ const Sidebar = () => {
             icon: Squares2X2IconOutline,
             activeIcon: Squares2X2IconSolid,
           },
-
           {
             to: "/register",
             label: "Register",
             icon: UserPlusIconOutline,
             activeIcon: UserPlusIconSolid,
           },
-
           {
             to: "/login",
             label: "Login",
@@ -360,108 +399,190 @@ const Sidebar = () => {
       },
     ],
   };
-  const roleKey = normalizedRole === 'soloprenuer' ? 'solopreneur' : normalizedRole;
-  const sections = SIDEBAR_LINKS[roleKey] || SIDEBAR_LINKS.user
+
+
+  const roleKey =
+    normalizedRole === "soloprenuer"
+      ? "solopreneur"
+      : normalizedRole;
+
+  const sections =
+    SIDEBAR_LINKS[roleKey] ||
+    SIDEBAR_LINKS.user;
+
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
-  }
-  const nameParts = currentUser?.name?.trim().split(" ") || 'User';
+    navigate("/login");
+  };
 
-  const firstName = nameParts[0] || "";
-  const lastName = nameParts.slice(1).join(" ") || "";
 
   return (
     <aside className="w-[230px] max-w-full h-screen border-r border-[#e8e5f7] bg-white flex flex-col transition-colors duration-300 dark:bg-[#080B11] dark:border-slate-800 dark:text-slate-100 font-mono">
 
       {/* Logo */}
+
       <div className="h-10 pb-8 pt-8 flex items-center justify-between border-b border-[#e8e5f7] transition-colors duration-300 dark:border-slate-800">
+
         <div className="flex items-center gap-2 ml-3">
+
           <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center shadow-[0_8px_18px_rgba(124,31,255,0.22)] transition-all duration-300 dark:from-neon-cyan dark:to-neon-purple dark:shadow-[0_0_18px_rgba(0,243,255,0.28)]">
-            <svg className="h-5 w-5 text-white dark:text-slate-950" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+
+            <svg
+              className="h-5 w-5 text-white dark:text-slate-950"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <path d="M12 2L2 7L12 12L22 7L12 2Z" />
               <path d="M2 17L12 22L22 17" />
               <path d="M2 12L12 17L22 12" />
             </svg>
+
           </div>
+
           <span className="text-lg font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent dark:from-neon-cyan dark:to-neon-purple dark:text-glow-cyan">
             InvoiceFlow
           </span>
+
         </div>
 
       </div>
 
 
-
       {/* NAV */}
+
       <nav className="flex-1 px-2 py-3 overflow-y-auto">
+
         <div className="mb-5 rounded-xl border border-[#ded7ff] bg-[var(--color--focus-lightpurple)] px-3 py-[0.3rem] text-sm font-normal text-[var(--color--purple-ish)] transition-colors duration-300 dark:border-neon-cyan/25 dark:bg-neon-cyan/10 dark:text-neon-cyan dark:shadow-[0_0_14px_rgba(0,243,255,0.08)]">
+
           {displayRole}
+
         </div>
 
+
         {sections.map((section) => (
-          <div key={section.title} className="mb-3.5">
-            <h3 className="px-2.5 mb-2.5 font-bold text-[13px] tracking-[0.16em] text-[#817da5] transition-colors duration-300  dark:text-slate-500">
+
+          <div
+            key={section.title}
+            className="mb-3.5"
+          >
+
+            <h3 className="px-2.5 mb-2.5 font-bold text-[13px] tracking-[0.16em] text-[#817da5] transition-colors duration-300 dark:text-slate-500">
               {section.title}
             </h3>
+
 
             <div className="space-y-3">
 
               {section.items.map((item) => (
+
                 <NavLink
                   key={item.to}
                   to={item.to}
                   className="block no-underline"
                 >
+
                   {({ isActive }) => (
-                    <div className={`min-h-7 rounded-[22px] px-3 py-[0.3rem] flex items-center gap-5 transition-colors duration-300 ${isActive ? 'bg-[#efedf7] text-[#17162b] font-normal dark:bg-neon-cyan/10 dark:text-neon-cyan dark:shadow-[0_0_14px_rgba(0,243,255,0.08)]' : 'text-[#7f7da5] hover:bg-[#f6f4fb] dark:text-slate-400 dark:hover:bg-slate-900/70 dark:hover:text-slate-100'}`}>
+
+                    <div
+                      className={`min-h-7 rounded-[22px] px-3 py-[0.3rem] flex items-center gap-5 transition-colors duration-300 ${
+                        isActive
+                          ? "bg-[#efedf7] text-[#17162b] font-normal dark:bg-neon-cyan/10 dark:text-neon-cyan dark:shadow-[0_0_14px_rgba(0,243,255,0.08)]"
+                          : "text-[#7f7da5] hover:bg-[#f6f4fb] dark:text-slate-400 dark:hover:bg-slate-900/70 dark:hover:text-slate-100"
+                      }`}
+                    >
+
                       {(() => {
-                        const Icon = isActive ? item.activeIcon : item.icon;
-                        return <Icon className="w-5 h-5 flex-shrink-0" />;
+                        const Icon =
+                          isActive
+                            ? item.activeIcon
+                            : item.icon;
+
+                        return (
+                          <Icon className="w-5 h-5 flex-shrink-0" />
+                        );
                       })()}
-                      <span className="flex-1 truncate">{item.label}</span>
+
+
+                      <span className="flex-1 truncate">
+                        {item.label}
+                      </span>
+
+
                       {item.badge && (
                         <span className="min-w-4 h-4 px-2 rounded-full bg-[var(--bgcolor--notif-yellow)] border border-[#ffd96b] text-[var(--color--notif-brown)] font-normal flex items-center justify-center dark:bg-neon-pink/10 dark:border-neon-pink/30 dark:text-neon-pink">
                           {item.badge}
                         </span>
                       )}
+
                     </div>
+
                   )}
+
                 </NavLink>
+
               ))}
+
             </div>
+
           </div>
+
         ))}
+
       </nav>
-   
+
 
       {/* USER INFO */}
+
       <div className="border-t border-[#e8e5f7] px-3 py-3 flex items-center gap-4 transition-colors duration-300 dark:border-slate-800 dark:bg-slate-950/20">
+
         <div className="w-6 h-6 rounded-full overflow-hidden bg-gradient-to-br from-[#7f5cff] to-[#a45cff] text-white flex items-center justify-center font-normal dark:from-neon-cyan dark:to-neon-purple dark:text-slate-950">
+
           {business?.owner?.passportPhotoUrl ? (
+
             <img
               src={`http://localhost:7000/${business.owner.passportPhotoUrl.replace(
                 /\\/g,
                 "/"
               )}`}
-              alt={business?.owner?.fullName || "Business Owner"}
+              alt={
+                business?.owner?.fullName ||
+                "Business Owner"
+              }
               className="w-full h-full object-cover"
             />
+
           ) : (
-            getInitials(business?.owner?.fullName || "Business Owner")
+
+            getInitials(
+              business?.owner?.fullName ||
+              "Business Owner"
+            )
+
           )}
+
         </div>
 
+
         <div className="min-w-0 flex-1">
+
           <p className="leading-tight text-[#08071a] truncate dark:text-slate-100">
-            {business?.owner?.fullName || "Business Owner"}
+
+            {businessLoading
+              ? "Loading..."
+              : business?.owner?.fullName ||
+                "Business Owner"}
+
           </p>
 
           <p className="font-normal leading-tight text-[#7f7da5] truncate capitalize dark:text-slate-500">
             {role}
           </p>
+
         </div>
+
 
         <button
           type="button"
@@ -469,11 +590,16 @@ const Sidebar = () => {
           className="w-5 h-5 rounded-full text-[#7f7da5] hover:bg-[#f0eff9] flex items-center justify-center transition-colors dark:text-slate-500 dark:hover:bg-slate-900/70 dark:hover:text-neon-pink"
           aria-label="Log out"
         >
-          <ArrowRightOnRectangleIconOutline className="w-3 h-3" />
-        </button>
-      </div>
-    </aside>
-  )
-}
 
-export default Sidebar
+          <ArrowRightOnRectangleIconOutline className="w-3 h-3" />
+
+        </button>
+
+      </div>
+
+    </aside>
+  );
+};
+
+
+export default Sidebar;

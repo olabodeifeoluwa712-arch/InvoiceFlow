@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../Context/ThemeContext";
+import {
+  UserPlusIcon,
+  XMarkIcon,
+  PlusIcon,
+} from "@heroicons/react/24/outline";
 import {
   getCustomers,
   createCustomer,
@@ -55,7 +61,7 @@ const Customers = () => {
     notes: "",
   });
 
-
+  const navigate = useNavigate();
   // =====================================================
   // FETCH CUSTOMERS
   // =====================================================
@@ -73,8 +79,8 @@ const Customers = () => {
 
       setError(
         err?.response?.data?.message ||
-          err?.message ||
-          "Unable to load customers."
+        err?.message ||
+        "Unable to load customers."
       );
     } finally {
       setLoading(false);
@@ -216,8 +222,8 @@ const Customers = () => {
 
       setFormError(
         err?.response?.data?.message ||
-          err?.message ||
-          "Unable to create customer."
+        err?.message ||
+        "Unable to create customer."
       );
     } finally {
       setCreatingCustomer(false);
@@ -261,11 +267,10 @@ const Customers = () => {
               {loading
                 ? "Loading customers..."
                 : filteredCustomers.length === 0
-                ? "No customers found"
-                : `${filteredCustomers.length} total customer${
-                    filteredCustomers.length !== 1
-                      ? "s"
-                      : ""
+                  ? "No customers found"
+                  : `${filteredCustomers.length} total customer${filteredCustomers.length !== 1
+                    ? "s"
+                    : ""
                   }`}
 
             </p>
@@ -511,8 +516,8 @@ const Customers = () => {
                           <td className="py-4 px-4 text-slate-500 dark:text-slate-400 font-mono text-sm">
                             {customer.createdAt
                               ? getFormattedDate(
-                                  customer.createdAt
-                                )
+                                customer.createdAt
+                              )
                               : "—"}
                           </td>
 
@@ -523,6 +528,7 @@ const Customers = () => {
 
                             <button
                               type="button"
+                              onClick={() => navigate(`/customers/${customer._id}`)}
                               className="text-slate-400 dark:text-slate-500 group-hover/row:text-neon-purple dark:group-hover/row:text-neon-cyan transition-colors duration-200 cursor-pointer"
                             >
 
@@ -566,170 +572,170 @@ const Customers = () => {
       {/* =====================================================
           ADD CUSTOMER MODAL
       ====================================================== */}
-{/* ===============================
+      {/* ===============================
     ADD CUSTOMER MODAL
 ================================ */}
-{showAddCustomer && (
-  <div
-    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/45 backdrop-blur-[4px]"
-    onClick={handleCloseAddCustomer}
-  >
-    <div
-      className="relative w-full max-w-[500px] rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-900 overflow-hidden"
-      onClick={(e) => e.stopPropagation()}
-    >
-      {/* Purple top accent */}
-      <div className="h-1 w-full bg-gradient-to-r from-violet-500 via-purple-600 to-indigo-500" />
-
-      {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-100 text-violet-600 dark:bg-violet-500/10 dark:text-violet-400">
-            <UserPlusIcon className="h-5 w-5" />
-          </div>
-
-          <div>
-            <h2 className="text-base font-semibold text-slate-900 dark:text-white">
-              Add Customer
-            </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Create a new customer profile
-            </p>
-          </div>
-        </div>
-
-        <button
-          type="button"
+      {showAddCustomer && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/45 backdrop-blur-[4px]"
           onClick={handleCloseAddCustomer}
-          className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-200"
         >
-          <XMarkIcon className="h-5 w-5" />
-        </button>
-      </div>
+          <div
+            className="relative w-full max-w-[500px] rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-900 overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Purple top accent */}
+            <div className="h-1 w-full bg-gradient-to-r from-violet-500 via-purple-600 to-indigo-500" />
 
-      {/* Form */}
-      <form onSubmit={handleSubmitCustomer} className="px-6 py-5">
-        {formError && (
-          <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-xs text-red-600 dark:border-red-900/40 dark:bg-red-950/20 dark:text-red-400">
-            {formError}
-          </div>
-        )}
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-100 text-violet-600 dark:bg-violet-500/10 dark:text-violet-400">
+                  <UserPlusIcon className="h-5 w-5" />
+                </div>
 
-        <div className="space-y-4">
-          {/* Customer Name */}
-          <div>
-            <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">
-              Customer Name <span className="text-red-500">*</span>
-            </label>
+                <div>
+                  <h2 className="text-base font-semibold text-slate-900 dark:text-white">
+                    Add Customer
+                  </h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Create a new customer profile
+                  </p>
+                </div>
+              </div>
 
-            <input
-              type="text"
-              name="displayName"
-              value={formData.displayName}
-              onChange={handleInputChange}
-              placeholder="e.g. John Doe"
-              className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-500 focus:bg-white focus:ring-2 focus:ring-violet-500/10 dark:border-slate-700 dark:bg-slate-800/70 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-violet-500 dark:focus:bg-slate-800"
-            />
-          </div>
-
-          {/* Email + Phone */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">
-                Email
-              </label>
-
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                placeholder="customer@email.com"
-                className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-500 focus:bg-white focus:ring-2 focus:ring-violet-500/10 dark:border-slate-700 dark:bg-slate-800/70 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-violet-500 dark:focus:bg-slate-800"
-              />
+              <button
+                type="button"
+                onClick={handleCloseAddCustomer}
+                className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+              >
+                <XMarkIcon className="h-5 w-5" />
+              </button>
             </div>
 
-            <div>
-              <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">
-                Phone
-              </label>
+            {/* Form */}
+            <form onSubmit={handleSubmitCustomer} className="px-6 py-5">
+              {formError && (
+                <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-xs text-red-600 dark:border-red-900/40 dark:bg-red-950/20 dark:text-red-400">
+                  {formError}
+                </div>
+              )}
 
-              <input
-                type="text"
-                name="phone"
-                value={formData.phone}
-                onChange={handleInputChange}
-                placeholder="08012345678"
-                className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-500 focus:bg-white focus:ring-2 focus:ring-violet-500/10 dark:border-slate-700 dark:bg-slate-800/70 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-violet-500 dark:focus:bg-slate-800"
-              />
-            </div>
-          </div>
+              <div className="space-y-4">
+                {/* Customer Name */}
+                <div>
+                  <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">
+                    Customer Name <span className="text-red-500">*</span>
+                  </label>
 
-          {/* Address */}
-          <div>
-            <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">
-              Address
-            </label>
+                  <input
+                    type="text"
+                    name="displayName"
+                    value={formData.displayName}
+                    onChange={handleInputChange}
+                    placeholder="e.g. John Doe"
+                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-500 focus:bg-white focus:ring-2 focus:ring-violet-500/10 dark:border-slate-700 dark:bg-slate-800/70 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-violet-500 dark:focus:bg-slate-800"
+                  />
+                </div>
 
-            <input
-              type="text"
-              name="address"
-              value={formData.address}
-              onChange={handleInputChange}
-              placeholder="Customer address"
-              className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-500 focus:bg-white focus:ring-2 focus:ring-violet-500/10 dark:border-slate-700 dark:bg-slate-800/70 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-violet-500 dark:focus:bg-slate-800"
-            />
-          </div>
+                {/* Email + Phone */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">
+                      Email
+                    </label>
 
-          {/* Notes */}
-          <div>
-            <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">
-              Notes
-            </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      placeholder="customer@email.com"
+                      className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-500 focus:bg-white focus:ring-2 focus:ring-violet-500/10 dark:border-slate-700 dark:bg-slate-800/70 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-violet-500 dark:focus:bg-slate-800"
+                    />
+                  </div>
 
-            <textarea
-              name="notes"
-              value={formData.notes}
-              onChange={handleInputChange}
-              rows={2}
-              placeholder="Optional notes about this customer..."
-              className="w-full resize-none rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-500 focus:bg-white focus:ring-2 focus:ring-violet-500/10 dark:border-slate-700 dark:bg-slate-800/70 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-violet-500 dark:focus:bg-slate-800"
-            />
+                  <div>
+                    <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">
+                      Phone
+                    </label>
+
+                    <input
+                      type="text"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      placeholder="08012345678"
+                      className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-500 focus:bg-white focus:ring-2 focus:ring-violet-500/10 dark:border-slate-700 dark:bg-slate-800/70 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-violet-500 dark:focus:bg-slate-800"
+                    />
+                  </div>
+                </div>
+
+                {/* Address */}
+                <div>
+                  <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">
+                    Address
+                  </label>
+
+                  <input
+                    type="text"
+                    name="address"
+                    value={formData.address}
+                    onChange={handleInputChange}
+                    placeholder="Customer address"
+                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-500 focus:bg-white focus:ring-2 focus:ring-violet-500/10 dark:border-slate-700 dark:bg-slate-800/70 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-violet-500 dark:focus:bg-slate-800"
+                  />
+                </div>
+
+                {/* Notes */}
+                <div>
+                  <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">
+                    Notes
+                  </label>
+
+                  <textarea
+                    name="notes"
+                    value={formData.notes}
+                    onChange={handleInputChange}
+                    rows={2}
+                    placeholder="Optional notes about this customer..."
+                    className="w-full resize-none rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-500 focus:bg-white focus:ring-2 focus:ring-violet-500/10 dark:border-slate-700 dark:bg-slate-800/70 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-violet-500 dark:focus:bg-slate-800"
+                  />
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="mt-5 flex justify-end gap-2.5 border-t border-slate-100 pt-4 dark:border-slate-800">
+                <button
+                  type="button"
+                  onClick={handleCloseAddCustomer}
+                  className="rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={creatingCustomer}
+                  className="flex items-center gap-2 rounded-lg bg-violet-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {creatingCustomer ? (
+                    <>
+                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                      Adding...
+                    </>
+                  ) : (
+                    <>
+                      <PlusIcon className="h-4 w-4" />
+                      Add Customer
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
-
-        {/* Actions */}
-        <div className="mt-5 flex justify-end gap-2.5 border-t border-slate-100 pt-4 dark:border-slate-800">
-          <button
-            type="button"
-            onClick={handleCloseAddCustomer}
-            className="rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
-          >
-            Cancel
-          </button>
-
-          <button
-            type="submit"
-            disabled={creatingCustomer}
-            className="flex items-center gap-2 rounded-lg bg-violet-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {creatingCustomer ? (
-              <>
-                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                Adding...
-              </>
-            ) : (
-              <>
-                <PlusIcon className="h-4 w-4" />
-                Add Customer
-              </>
-            )}
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-)}
+      )}
 
     </div>
   );

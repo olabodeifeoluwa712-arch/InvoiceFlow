@@ -85,8 +85,8 @@ const Topbar = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false)
 
   const pageTitle = PAGE_TITLES[pathname] || 'Dashboard'
-  const userName = [currentUser?.firstName, currentUser?.lastName].filter(Boolean).join(' ') || 'User'
-  const role = formatRole(currentUser?.role || 'user')
+  const userName = [currentUser?.firstName, user?.lastName].filter(Boolean).join(' ') || 'Business Owner'
+  const role = formatRole(user?.role || 'admin')
 
   const initials = useMemo(() => getInitials(userName), [getInitials, userName])
  const navigate =useNavigate()
@@ -234,7 +234,7 @@ const Topbar = () => {
               .join(' ') || 'User'}
           </h2>
 
-          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+          <p className="text-sm font-meium text-slate-500 dark:text-slate-400">
             {role}
           </p>
         </div>

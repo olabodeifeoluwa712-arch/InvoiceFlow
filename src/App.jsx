@@ -47,6 +47,7 @@ import AdminSettings from './Pages/Admin/Settings'
 import AdminReports from './Pages/Admin/Reports'
 import BusinessManagement from './Pages/Business/Management'
 import SeeInvoices from './Pages/Business/seeInvoices'
+import CustomerDetails from "./Pages/Business/CustomerDetails";
 import LandingPage from './Pages/landingPage'
 import { useAuth } from './Context/AuthContext'
 import { Navigate } from 'react-router-dom'
@@ -100,6 +101,7 @@ function App() {
                 <Route path="/create-invoice" element={<ProtectedRoute allowedRoles={['admin']}><CreateInvoice /></ProtectedRoute>} />
                 <Route path="/business-products" element={<ProtectedRoute allowedRoles={['admin']}><BusinessProducts /></ProtectedRoute>} />
                 <Route path="/business-management" element={<ProtectedRoute allowedRoles={['admin']}><BusinessManagement /></ProtectedRoute>} />
+                <Route path="/customers/:id" element={<ProtectedRoute allowedRoles={['admin']}><CustomerDetails /></ProtectedRoute>} />
                 <Route
                   path="/business-view-invoices/:id"
                   element={
