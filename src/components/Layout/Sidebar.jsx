@@ -478,7 +478,7 @@ const Sidebar = ({ isMobileOpen = false, onClose }) => {
         {/* NAV */}
         <nav className="flex-1 px-3 py-4 overflow-y-auto scrollbar-none">
           <div className="mb-5 rounded-lg border border-[#ded7ff] bg-[var(--color--focus-lightpurple)] px-3 py-1.5 text-xs font-semibold tracking-wider text-[var(--color--purple-ish)] transition-colors duration-200 dark:border-[#272D35] dark:bg-[#171B21] dark:text-[#8B7CF6]">
-            {displayRole}
+           
           </div>
 
           {sections.map((section) => (
@@ -517,44 +517,8 @@ const Sidebar = ({ isMobileOpen = false, onClose }) => {
             </div>
           ))}
         </nav>
+   
 
-      {/* USER INFO */}
-      <div className="border-t border-[#e8e5f7] px-3 py-3 flex items-center gap-4 transition-colors duration-300 dark:border-slate-800 dark:bg-slate-950/20">
-        <div className="w-6 h-6 rounded-full overflow-hidden bg-gradient-to-br from-[#7f5cff] to-[#a45cff] text-white flex items-center justify-center font-normal dark:from-neon-cyan dark:to-neon-purple dark:text-slate-950">
-          {business?.owner?.passportPhotoUrl ? (
-            <img
-              src={`http://localhost:7000/${business.owner.passportPhotoUrl.replace(
-                /\\/g,
-                "/"
-              )}`}
-              alt={business?.owner?.fullName || "Business Owner"}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            getInitials(business?.owner?.fullName || "Business Owner")
-          )}
-        </div>
-
-        <div className="min-w-0 flex-1">
-          <p className="leading-tight text-[#08071a] truncate dark:text-slate-100">
-            {business?.owner?.fullName || "Business Owner"}
-          </p>
-
-          <p className="font-normal leading-tight text-[#7f7da5] truncate capitalize dark:text-slate-500">
-            {role}
-          </p>
-        </div>
-
-        <button
-          type="button"
-          onClick={handleLogout}
-          className="w-5 h-5 rounded-full text-[#7f7da5] hover:bg-[#f0eff9] flex items-center justify-center transition-colors dark:text-slate-500 dark:hover:bg-slate-900/70 dark:hover:text-neon-pink"
-          aria-label="Log out"
-        >
-          <ArrowRightOnRectangleIconOutline className="w-3 h-3" />
-        </button>
-      </div>
-    </aside>
         {/* USER INFO */}
         <div className="border-t border-[#e8e5f7] px-3.5 py-3 flex items-center gap-3 transition-colors duration-200 dark:border-[#272D35] dark:bg-[#0F1216]">
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#7f5cff] to-[#a45cff] text-white flex items-center justify-center text-xs font-semibold dark:from-[#8B7CF6] dark:to-[#6366F1]">

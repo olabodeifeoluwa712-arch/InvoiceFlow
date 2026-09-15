@@ -43,7 +43,6 @@ import AdminManagement from './Pages/Admin/Management'
 import AdminPermissions from './Pages/Admin/Permissions'
 import AdminIntegrations from './Pages/Admin/integrations'
 import AdminReports from './Pages/Admin/Reports'
-import BusinessManagement from './Pages/Business/Management'
 import SeeInvoices from './Pages/Business/seeInvoices'
 import AdminProfile from './Pages/Admin/admin-profile'
 

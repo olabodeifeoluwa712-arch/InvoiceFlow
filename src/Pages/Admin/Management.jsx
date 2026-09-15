@@ -82,29 +82,29 @@ const normalizeMember = (item, idx = 0) => {
     typeof rawStatus === 'string'
       ? rawStatus.charAt(0).toUpperCase() + rawStatus.slice(1).toLowerCase()
       : rawStatus
-      ? 'Active'
-      : 'Inactive';
+        ? 'Active'
+        : 'Inactive';
 
   const formattedJoined = item.joined
     ? item.joined
     : item.createdAt
-    ? new Date(item.createdAt).toLocaleDateString('en-US', {
+      ? new Date(item.createdAt).toLocaleDateString('en-US', {
         month: 'short',
         day: 'numeric',
         year: 'numeric'
       })
-    : 'Jan 12, 2024';
+      : 'Jan 12, 2024';
 
   const formattedLastActive = item.lastActive
     ? item.lastActive
     : item.lastLogin
-    ? new Date(item.lastLogin).toLocaleDateString('en-US', {
+      ? new Date(item.lastLogin).toLocaleDateString('en-US', {
         month: 'short',
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit'
       })
-    : `${(idx * 7 + 2) % 55 + 1} min ago`;
+      : `${(idx * 7 + 2) % 55 + 1} min ago`;
 
   return {
     id: item._id || item.id || `user-${idx + 1}`,
@@ -356,20 +356,18 @@ const Management = () => {
 
   return (
     <div className="relative min-h-screen p-6 md:p-10 overflow-hidden font-sans select-none w-full transition-colors duration-300 bg-slate-50 text-slate-900 dark:bg-cyber-dark dark:text-slate-100">
-      
+
       {/* Dynamic interactive toasts */}
       {toast && (
         <div
-          className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-6 py-4 rounded-2xl shadow-xl border animate-float-1 transition-all duration-300 ${
-            toast.type === 'error'
+          className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-6 py-4 rounded-2xl shadow-xl border animate-float-1 transition-all duration-300 ${toast.type === 'error'
               ? 'bg-red-500/10 border-red-500/30 text-red-500'
               : 'bg-neon-purple/10 border-neon-purple/30 text-slate-900 dark:bg-neon-cyan/10 dark:border-neon-cyan/30 dark:text-neon-cyan'
-          }`}
+            }`}
         >
           <div
-            className={`h-2 w-2 rounded-full ${
-              toast.type === 'error' ? 'bg-red-500' : 'bg-neon-purple dark:bg-neon-cyan'
-            } animate-ping`}
+            className={`h-2 w-2 rounded-full ${toast.type === 'error' ? 'bg-red-500' : 'bg-neon-purple dark:bg-neon-cyan'
+              } animate-ping`}
           ></div>
           <span className="font-bold tracking-wide text-sm font-mono">{toast.message}</span>
         </div>
@@ -380,7 +378,7 @@ const Management = () => {
       <div className="absolute bottom-1/4 -left-36 w-96 h-96 bg-neon-cyan/5 dark:bg-neon-cyan/10 rounded-full blur-[120px] pointer-events-none transition-all duration-300"></div>
 
       <div className="relative z-10 max-w-6xl mx-auto space-y-6 md:space-y-8">
-        
+
         {/* HEADER BLOCK */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
@@ -441,7 +439,7 @@ const Management = () => {
 
         {/* METRICS ROW (4 CARDS) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-          
+
           {/* Metrics Card 1: Total Members */}
           <div className="bg-white border border-slate-200/80 dark:bg-cyber-card/85 dark:border-slate-800/80 rounded-3xl p-5 relative group transition-all duration-300 shadow-sm">
             <div className="absolute -top-[1px] left-8 right-8 h-[1.5px] bg-gradient-to-r from-transparent via-neon-cyan to-transparent opacity-40"></div>
@@ -568,9 +566,8 @@ const Management = () => {
                 >
                   <span>{roleFilter}</span>
                   <ChevronDownIcon
-                    className={`w-3.5 h-3.5 transition-transform duration-300 ${
-                      showRoleDropdown ? 'rotate-180' : ''
-                    }`}
+                    className={`w-3.5 h-3.5 transition-transform duration-300 ${showRoleDropdown ? 'rotate-180' : ''
+                      }`}
                   />
                 </button>
 
@@ -584,11 +581,10 @@ const Management = () => {
                           setRoleFilter(role);
                           setShowRoleDropdown(false);
                         }}
-                        className={`w-full text-left px-4 py-2.5 text-xs font-bold font-mono hover:bg-slate-50 dark:hover:bg-slate-900/60 transition-colors ${
-                          roleFilter === role
+                        className={`w-full text-left px-4 py-2.5 text-xs font-bold font-mono hover:bg-slate-50 dark:hover:bg-slate-900/60 transition-colors ${roleFilter === role
                             ? 'text-neon-purple dark:text-neon-cyan bg-purple-50/20 dark:bg-neon-cyan/5'
                             : 'text-slate-600 dark:text-slate-400'
-                        }`}
+                          }`}
                       >
                         {role}
                       </button>
@@ -711,22 +707,20 @@ const Management = () => {
                         <td className="py-4 px-4">
                           <div className="flex items-center gap-1.5">
                             <span
-                              className={`h-2 w-2 rounded-full ${
-                                isUserActive
+                              className={`h-2 w-2 rounded-full ${isUserActive
                                   ? 'bg-emerald-500 animate-pulse'
                                   : isUserPending
-                                  ? 'bg-amber-500'
-                                  : 'bg-slate-400 dark:bg-slate-600'
-                              }`}
+                                    ? 'bg-amber-500'
+                                    : 'bg-slate-400 dark:bg-slate-600'
+                                }`}
                             />
                             <span
-                              className={`text-xs font-bold font-mono ${
-                                isUserActive
+                              className={`text-xs font-bold font-mono ${isUserActive
                                   ? 'text-emerald-600 dark:text-emerald-450'
                                   : isUserPending
-                                  ? 'text-amber-600 dark:text-amber-500'
-                                  : 'text-slate-500 dark:text-slate-500'
-                              }`}
+                                    ? 'text-amber-600 dark:text-amber-500'
+                                    : 'text-slate-500 dark:text-slate-500'
+                                }`}
                             >
                               {member.status}
                             </span>
@@ -805,7 +799,7 @@ const Management = () => {
 
         {/* BOTTOM GRID DETAIL CARDS: ACTIVE SESSIONS & ACTIVITY FEED */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
-          
+
           {/* CARD 1: ACTIVE CONNECTED DEVICES */}
           <div className="bg-white border border-slate-200/80 shadow-sm dark:bg-cyber-card/85 dark:border-slate-800/80 dark:shadow-2xl rounded-3xl p-6 relative transition-all duration-300">
             <div className="absolute -top-[1px] left-10 right-10 h-[1.5px] bg-gradient-to-r from-transparent via-neon-cyan to-transparent opacity-40"></div>
@@ -819,7 +813,7 @@ const Management = () => {
                   Active Sessions
                 </h3>
               </div>
-              
+
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono tracking-wide bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-250 dark:border-emerald-500/30 text-emerald-600 dark:text-emerald-450 shadow-[0_0_8px_rgba(16,185,129,0.05)]">
                 {activeSessionsList.length} online
               </span>
@@ -849,7 +843,7 @@ const Management = () => {
                         </span>
                       </div>
                     </div>
-                    
+
                     <span className="relative flex h-2 w-2 mr-2">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
@@ -886,7 +880,7 @@ const Management = () => {
                   >
                     {/* Timeline point */}
                     <span className="absolute -left-[4.5px] top-1.5 h-2 w-2 rounded-full bg-neon-purple dark:bg-neon-cyan shadow-[0_0_8px_rgba(0,243,255,0.6)]" />
-                    
+
                     <div className="flex justify-between items-start gap-3">
                       <div>
                         <span className="text-xs font-bold text-slate-800 dark:text-slate-200 font-sans">
@@ -1024,11 +1018,10 @@ const Management = () => {
                   <div className="flex justify-between border-b border-slate-100 dark:border-slate-900/50 pb-2">
                     <span className="font-bold text-slate-400">ACCOUNT STATUS</span>
                     <span
-                      className={`font-extrabold ${
-                        selectedMember.status.toLowerCase() === 'active'
+                      className={`font-extrabold ${selectedMember.status.toLowerCase() === 'active'
                           ? 'text-emerald-500'
                           : 'text-amber-500'
-                      }`}
+                        }`}
                     >
                       {selectedMember.status}
                     </span>
