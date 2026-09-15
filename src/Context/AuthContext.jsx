@@ -73,19 +73,10 @@ export function AuthProvider({ children }) {
     console.log(res)
     return res;
   };
-  const myBusiness = async () => {
-    try {
-      const res = await api.get("/my-business");
-      return res
-    }
-    catch (error) {
-      console.error("GET BUSINESS:", error)
-      throw error
-    }
-  }
+ 
   const currentUser = useAuthStore((state) => state.currentUser)
   return (
-    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, login, getInitials, user, logout, currentUser,myBusiness }}>
+    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, login, getInitials, user, logout, currentUser }}>
       {children}
     </AuthContext.Provider>
   )

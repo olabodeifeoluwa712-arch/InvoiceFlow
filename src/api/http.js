@@ -2,7 +2,7 @@ import axios from "axios";
 import ApiError from "./apiError";
 import useAuthStore from "./token";
 
-const BASE_URL = 'https://invoiceflow-back-end-1.onrender.com/api'
+const BASE_URL = 'http://localhost:7000/api'
 
 const api = axios.create({
   baseURL: BASE_URL,
