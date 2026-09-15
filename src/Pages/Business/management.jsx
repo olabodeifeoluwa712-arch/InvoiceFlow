@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTheme } from '../../Context/ThemeContext';
 import {
   UserGroupIcon,
@@ -10,62 +10,22 @@ import {
   MagnifyingGlassIcon,
   ChevronDownIcon,
   EyeIcon,
+  EyeSlashIcon,
   PencilIcon,
   TrashIcon,
   ComputerDesktopIcon,
   ClockIcon,
   CheckIcon,
-  XMarkIcon
+  XMarkIcon,
+  ArrowPathIcon
 } from '@heroicons/react/24/outline';
-import Register from '../user/Register';
 import { useAuth } from '../../Context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import businessApi, { getTeam, addTeam, removeTeam, updateTeam } from '../../api/team.api';
 
 const Management = () => {
   const { theme } = useTheme();
-  const { register } = useAuth();
   const navigate = useNavigate();
-
-
-const [form, setForm] = useState({
-    fullName: '',
-    email: '',
-    password: '',
-    role: '',
-  });
-     const handleSubmit = async () => {
-    // e.preventDefault();
-    // setError('');
-    // setSuccess('');
-    // const validationError = validate();
-    // if (validationError) { triggerError(validationError); return; }
-
-    // setLoading(true);
-    // await new Promise(r => setTimeout(r, 600));
-
-    const nameParts = form.fullName.trim().split(/\s+/);
-    const firstName = nameParts[0] || 'User';
-    const lastName = nameParts.slice(1).join(' ') || '';
-
-   register({
-      email: form.email,
-      password: form.password,
-      firstName: form.firstName,
-      lastName,
-      role: form.role,
-    });
-
-    return navigate('/business-management');
-
-    // setLoading(false);
-    // if (res && res.success) {
-    //   setSuccess('Account created successfully! Welcome aboard.');
-    //   setTimeout(() => navigate('/'), 1500);
-    // } else {
-    //   triggerError(res?.error || 'Registration failed. Please try again.');
-    // }
-
-  };
 
   // Toast notification state
   const [toast, setToast] = useState(null);
@@ -82,6 +42,54 @@ const [form, setForm] = useState({
     { id: 5, name: 'Aisha Okonkwo', email: 'aisha@acmecorp.com', role: 'Viewer', status: 'Active', lastActive: '30 min ago', joined: 'May 1, 2024', avatarBg: 'bg-emerald-500/15 border-emerald-500/20 text-emerald-450' },
     { id: 6, name: 'Dev Sharma', email: 'dev@acmecorp.com', role: 'Accountant', status: 'Pending', lastActive: 'Never', joined: 'May 27, 2026', avatarBg: 'bg-amber-500/15 border-amber-500/20 text-amber-450' }
   ]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Fetch team members from team.api (/admin/team)
+  const fetchTeamMembers = useCallback(async (isManualRefresh = false) => {
+    if (isManualRefresh) {
+      setIsRefreshing(true);
+    } else {
+      setIsLoading(true);
+    }
+    try {
+      const res = await getTeam();
+      if (res && (res.status || res.success) && Array.isArray(res.data) && res.data.length > 0) {
+        const avatarStyles = {
+          'Super Admin': 'bg-purple-650/15 border-purple-550/20 text-neon-purple',
+          'Admin': 'bg-neon-cyan/15 border-neon-cyan/20 text-neon-cyan',
+          'inventory': 'bg-blue-500/15 border-blue-500/20 text-blue-400',
+          'Accountant': 'bg-fuchsia-500/15 border-fuchsia-500/20 text-fuchsia-400',
+          'Viewer': 'bg-emerald-500/15 border-emerald-500/20 text-emerald-450'
+        };
+        const formatted = res.data.map((item, idx) => ({
+          id: item._id || item.id || idx + 1,
+          name: item.name || `${item.firstName || ''} ${item.lastName || ''}`.trim() || item.email?.split('@')[0] || `Member ${idx + 1}`,
+          email: item.email || '',
+          role: item.role || 'Admin',
+          status: item.status || (item.isActive === false ? 'Inactive' : 'Active'),
+          lastActive: item.lastActive || 'Recently',
+          joined: item.joined || (item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Jan 12, 2024'),
+          avatarBg: avatarStyles[item.role] || 'bg-slate-500/15 border-slate-500/20 text-slate-400'
+        }));
+        setMembers(formatted);
+        if (isManualRefresh) {
+          triggerToast('Team members synchronized with team.api!');
+        }
+      } else if (isManualRefresh) {
+        triggerToast('Team members list updated!');
+      }
+    } catch (err) {
+      console.error('Failed to load team members from team.api:', err);
+    } finally {
+      setIsLoading(false);
+      setIsRefreshing(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchTeamMembers();
+  }, [fetchTeamMembers]);
 
   // Search & filter states
   const [searchQuery, setSearchQuery] = useState('');
@@ -90,7 +98,8 @@ const [form, setForm] = useState({
 
   // Invite Modal State
   const [isInviteOpen, setIsInviteOpen] = useState(false);
-  const [newMember, setNewMember] = useState({ name: '', email: '', role: 'Admin' });
+  const [newMember, setNewMember] = useState({ name: '', email: '', password: '', role: 'Admin' });
+  const [showPassword, setShowPassword] = useState(false);
 
   // Selected Member Details Modal
   const [selectedMember, setSelectedMember] = useState(null);
@@ -113,11 +122,11 @@ const [form, setForm] = useState({
     return matchesSearch && matchesRole;
   });
 
-  // Handle invitation submission
-  const handleInviteSubmit = (e) => {
+  // Handle invitation submission via team.api
+  const handleInviteSubmit = async (e) => {
     e.preventDefault();
-    if (!newMember.name.trim() || !newMember.email.trim()) {
-      triggerToast('Please fill out all fields!', 'error');
+    if (!newMember.name.trim() || !newMember.email.trim() || !newMember.password.trim()) {
+      triggerToast('Please fill out all fields including password!', 'error');
       return;
     }
     
@@ -126,8 +135,11 @@ const [form, setForm] = useState({
       triggerToast('Invalid email address!', 'error');
       return;
     }
-  
 
+    if (newMember.password.length < 6) {
+      triggerToast('Password must be at least 6 characters long!', 'error');
+      return;
+    }
 
     // Role colors mapping
     const avatarStyles = {
@@ -137,6 +149,19 @@ const [form, setForm] = useState({
       'Accountant': 'bg-fuchsia-500/15 border-fuchsia-500/20 text-fuchsia-400',
       'Viewer': 'bg-emerald-500/15 border-emerald-500/20 text-emerald-450'
     };
+
+    const payload = {
+      email: newMember.email.trim(),
+      password: newMember.password,
+      role: newMember.role,
+      name: newMember.name.trim()
+    };
+
+    try {
+      await addTeam(payload);
+    } catch (err) {
+      console.error('Failed to save to team.api:', err);
+    }
 
     const newRow = {
       id: Date.now(),
@@ -149,10 +174,11 @@ const [form, setForm] = useState({
       avatarBg: avatarStyles[newMember.role] || 'bg-slate-500/15 border-slate-500/20 text-slate-400'
     };
 
-    setMembers(prev => [...prev, newRow]);
+    setMembers(prev => [newRow, ...prev]);
     setIsInviteOpen(false);
-    setNewMember({ name: '', email: '', role: 'Admin' });
-    triggerToast(`Invitation sent to ${newRow.name}!`);
+    setNewMember({ name: '', email: '', password: '', role: 'Admin' });
+    setShowPassword(false);
+    triggerToast(`Invitation sent to ${newRow.name} via team.api!`);
   };
 
   // Get initials for profile badge
@@ -162,26 +188,38 @@ const [form, setForm] = useState({
     return name.slice(0, 2).toUpperCase();
   };
 
-  // Handle member delete action
-  const handleDeleteMember = (id, name) => {
+  // Handle member delete action via team.api
+  const handleDeleteMember = async (id, name) => {
     if (window.confirm(`Are you sure you want to remove ${name} from your team?`)) {
+      try {
+        await removeTeam({ id });
+      } catch (err) {
+        console.error('Failed to remove from team.api:', err);
+      }
       setMembers(prev => prev.filter(m => m.id !== id));
       triggerToast(`${name} has been removed.`, 'error');
     }
   };
 
-  // Handle member edit action
-  const handleSaveEdit = (e) => {
+  // Handle member edit action via team.api
+  const handleSaveEdit = async (e) => {
     e.preventDefault();
-    setMembers(prev => prev.map(m => {
-      if (m.id === selectedMember.id) {
-        return { ...m, role: editRole, status: editStatus };
+    if (selectedMember) {
+      try {
+        await updateTeam({ id: selectedMember.id, role: editRole, status: editStatus });
+      } catch (err) {
+        console.error('Failed to update team.api:', err);
       }
-      return m;
-    }));
+      setMembers(prev => prev.map(m => {
+        if (m.id === selectedMember.id) {
+          return { ...m, role: editRole, status: editStatus };
+        }
+        return m;
+      }));
+    }
     setSelectedMember(null);
     setIsEditMode(false);
-    triggerToast('Member settings updated!');
+    triggerToast('Member settings updated via team.api!');
   };
 
   // Trigger export action
@@ -209,15 +247,31 @@ const [form, setForm] = useState({
         {/* HEADER BLOCK */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-extrabold tracking-wider text-slate-900 dark:bg-gradient-to-r dark:from-neon-cyan dark:via-slate-100 dark:to-neon-purple dark:bg-clip-text dark:text-transparent dark:text-glow-cyan transition-all duration-300">
-              Team Management
-            </h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl font-extrabold tracking-wider text-slate-900 dark:bg-gradient-to-r dark:from-neon-cyan dark:via-slate-100 dark:to-neon-purple dark:bg-clip-text dark:text-transparent dark:text-glow-cyan transition-all duration-300">
+                Team Management
+              </h1>
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold font-mono bg-neon-cyan/10 border border-neon-cyan/30 text-neon-cyan">
+                Live API
+              </span>
+            </div>
             <p className="text-slate-500 dark:text-slate-400 text-sm mt-1 font-mono">
-              Manage your team members, roles, and access levels
+              Manage your team members, roles, and access levels via team.api (/admin/team)
             </p>
           </div>
 
           <div className="flex items-center gap-3">
+            {/* Sync / Refresh Button */}
+            <button
+              onClick={() => fetchTeamMembers(true)}
+              disabled={isLoading || isRefreshing}
+              className="flex items-center gap-2 px-4 py-3 rounded-xl font-bold font-mono text-xs tracking-wider transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer border border-slate-200 hover:bg-slate-100 text-slate-600 dark:border-slate-800 dark:hover:bg-slate-900/60 dark:text-slate-400 disabled:opacity-50"
+              title="Synchronize with team.api"
+            >
+              <ArrowPathIcon className={`w-4 h-4 ${isRefreshing ? 'animate-spin text-neon-cyan' : ''}`} />
+              <span>{isRefreshing ? 'Syncing...' : 'Sync'}</span>
+            </button>
+
             {/* Export button */}
             <button 
               onClick={handleExport}
@@ -460,16 +514,20 @@ const [form, setForm] = useState({
                               <EyeIcon className="w-4.5 h-4.5" />
                             </button>
 
+                            {/* Edit Role & Permissions Action */}
+                            <button 
+                              onClick={() => navigate(`/admin-permissions?id=${member.id}`)}
+                              className="text-slate-400 hover:text-purple-600 dark:text-slate-550 dark:hover:text-neon-purple p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900 transition-all cursor-pointer"
+                              title="Edit Member Role & Permissions"
+                            >
+                              <ShieldCheckIcon className="w-4.5 h-4.5" />
+                            </button>
+
                             {/* Edit Action */}
                             <button 
-                              onClick={() => {
-                                setSelectedMember(member);
-                                setEditRole(member.role);
-                                setEditStatus(member.status);
-                                setIsEditMode(true);
-                              }}
+                              onClick={() => navigate(`/admin-permissions?id=${member.id}`)}
                               className="text-slate-400 hover:text-neon-purple dark:text-slate-550 dark:hover:text-neon-cyan p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900 transition-all cursor-pointer"
-                              title="Edit Member role"
+                              title="Edit Member Details"
                             >
                               <PencilIcon className="w-4.5 h-4.5" />
                             </button>
@@ -602,8 +660,8 @@ const [form, setForm] = useState({
                 <input
                   type="text"
                   placeholder="e.g. John Doe"
-                  value={form.name}
-                  onChange={(e) => setForm(prev => ({ ...prev, name: e.target.value }))}
+                  value={newMember.name}
+                  onChange={(e) => setNewMember(prev => ({ ...prev, name: e.target.value }))}
                   className="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder-slate-400 font-medium focus:border-neon-purple focus:outline-none transition-all dark:bg-slate-950/40 dark:border-slate-800 dark:text-slate-100 dark:placeholder-slate-550 dark:focus:border-neon-cyan/80 dark:focus:ring-neon-cyan/40"
                   required
                 />
@@ -614,35 +672,50 @@ const [form, setForm] = useState({
                 <input
                   type="email"
                   placeholder="e.g. john@acmecorp.com"
-                  value={form.email}
-                  onChange={(e) => setForm(prev => ({ ...prev, email: e.target.value }))}
-                  className="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder-slate-400 font-medium focus:border-neon-purple focus:outline-none transition-all dark:bg-slate-950/40 dark:border-slate-800 dark:text-slate-100 dark:placeholder-slate-550 dark:focus:border-neon-cyan/80 dark:focus:ring-neon-cyan/40"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-bold font-mono tracking-wider uppercase text-slate-400 dark:text-slate-500 mb-2">Member Email</label>
-                <input
-                  type="password"
-                  placeholder="password"
-                  value={form.password}
-                  onChange={(e) => setForm(prev => ({ ...prev, password: e.target.value }))}
+                  value={newMember.email}
+                  onChange={(e) => setNewMember(prev => ({ ...prev, email: e.target.value }))}
                   className="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder-slate-400 font-medium focus:border-neon-purple focus:outline-none transition-all dark:bg-slate-950/40 dark:border-slate-800 dark:text-slate-100 dark:placeholder-slate-550 dark:focus:border-neon-cyan/80 dark:focus:ring-neon-cyan/40"
                   required
                 />
               </div>
 
               <div>
+                <label className="block text-xs font-bold font-mono tracking-wider uppercase text-slate-400 dark:text-slate-500 mb-2">Member Password</label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Set account password"
+                    value={newMember.password}
+                    onChange={(e) => setNewMember(prev => ({ ...prev, password: e.target.value }))}
+                    className="w-full bg-slate-100 border border-slate-200 rounded-xl pl-4 pr-11 py-3 text-sm text-slate-800 placeholder-slate-400 font-medium focus:border-neon-purple focus:outline-none transition-all dark:bg-slate-950/40 dark:border-slate-800 dark:text-slate-100 dark:placeholder-slate-550 dark:focus:border-neon-cyan/80 dark:focus:ring-neon-cyan/40"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 cursor-pointer"
+                    title={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? (
+                      <EyeSlashIcon className="w-5 h-5" />
+                    ) : (
+                      <EyeIcon className="w-5 h-5" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <div>
                 <label className="block text-xs font-bold font-mono tracking-wider uppercase text-slate-400 dark:text-slate-500 mb-2">System Role</label>
                 <select
-                  value={form.role}
-                  onChange={(e) => setForm(prev => ({ ...prev, role: e.target.value }))}
+                  value={newMember.role}
+                  onChange={(e) => setNewMember(prev => ({ ...prev, role: e.target.value }))}
                   className="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 font-medium focus:border-neon-purple focus:outline-none transition-all dark:bg-slate-950/40 dark:border-slate-800 dark:text-slate-100 dark:focus:border-neon-cyan/80 dark:focus:ring-neon-cyan/40"
                 >
-                  <option>Admin</option>
-                  <option>inventory</option>
-                  <option>Accountant</option>
-                  {/* <option>Viewer</option> */}
+                  <option value="Admin">Admin</option>
+                  <option value="inventory">Inventory Manager</option>
+                  <option value="Accountant">Accountant</option>
+                  <option value="Viewer">Viewer</option>
                 </select>
               </div>
 
@@ -656,8 +729,8 @@ const [form, setForm] = useState({
                 </button>
                 <button
                   type="submit"
-                  onClick={() => handleSubmit()}
-                  className="flex-1 py-3 bg-neon-purple text-white hover:bg-neon-purple/90 dark:bg-gradient-to-r dark:from-neon-cyan dark:to-neon-purple dark:text-slate-950 font-extrabold text-xs tracking-wider rounded-xl transition-all shadow-md dark:shadow-[0_0_15px_rgba(0,243,255,0.2)]"
+                  disabled={isLoading}
+                  className="flex-1 py-3 bg-neon-purple text-white hover:bg-neon-purple/90 dark:bg-gradient-to-r dark:from-neon-cyan dark:to-neon-purple dark:text-slate-950 font-extrabold text-xs tracking-wider rounded-xl transition-all shadow-md dark:shadow-[0_0_15px_rgba(0,243,255,0.2)] disabled:opacity-50"
                 >
                   Send Invitation
                 </button>

@@ -1,7 +1,10 @@
+import { useState, useEffect } from 'react'
 import { useEffect, useState } from "react";
 
 import { useAuth } from "../../Context/AuthContext";
 import { useTheme } from "../../Context/ThemeContext";
+import { useNotifications } from '../../Context/NotificationContext'
+import { getProducts } from '../../api/inventory.api'
 import { NavLink, useNavigate } from "react-router-dom";
 import api from "../../api/http";
 
@@ -33,8 +36,10 @@ import {
   ClockIcon as ClockIconOutline,
   UserGroupIcon as UserGroupIconOutline,
   ArrowTrendingUpIcon as ArrowTrendingUpIconOutline,
-  ShieldCheckIcon as permissionsIconOutline,
-  CommandLineIcon as plugIconOutline,
+  ShieldCheckIcon  as permissionsIconOutline,
+  BuildingOfficeIcon as BuildingOfficeIconOutline,
+  CommandLineIcon     as plugIconOutline,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 
 import {
@@ -64,9 +69,10 @@ import {
   ExclamationTriangleIcon as ExclamationTriangleIconSolid,
   ClockIcon as ClockIconSolid,
   ArrowTrendingUpIcon as ArrowTrendingUpIconSolid,
-  UserGroupIcon as UserGroupIconSolid,
-  ShieldCheckIcon as permissionsIconSolid,
-  CommandLineIcon as plugIconSolid,
+   UserGroupIcon as UserGroupIconSolid,
+  ShieldCheckIcon  as permissionsIconSolid,
+  BuildingOfficeIcon as BuildingOfficeIconSolid,
+  CommandLineIcon     as plugIconSolid,
 } from "@heroicons/react/24/solid";
 
 
@@ -78,8 +84,8 @@ const formatRole = (role) =>
     .trim()
     .toUpperCase();
 
-
-const Sidebar = () => {
+const Sidebar = ({ isMobileOpen = false, onClose }) => {
+  
   const { currentUser, logout, getInitials } = useAuth();
 
   const navigate = useNavigate();
@@ -172,6 +178,12 @@ const Sidebar = () => {
             icon: ArchiveBoxIconOutline,
             activeIcon: ArchiveBoxIconSolid,
           },
+          {
+            to: "/notifications",
+            label: "Notifications",
+            icon: BellIconOutline,
+            activeIcon: BellIconSolid,
+          },
         ],
       },
 
@@ -224,6 +236,12 @@ const Sidebar = () => {
             icon: PlusCircleIconOutline,
             activeIcon: PlusCircleIconSolid,
           },
+          {
+            to: "/notifications",
+            label: "Notifications",
+            icon: BellIconOutline,
+            activeIcon: BellIconSolid,
+          },
         ],
       },
 
@@ -261,6 +279,19 @@ const Sidebar = () => {
             activeIcon: ArchiveBoxIconSolid,
           },
           {
+            to: "/business-subscription",
+            label: "Subscription",
+            icon: CreditCardIconOutline,
+            activeIcon: CreditCardIconSolid,
+            badge: currentUser?.subscriptionPlan ? currentUser.subscriptionPlan.slice(0, 4) : null,
+          },
+          {
+            to: "/business-profile",
+            label: "Business Profile",
+            icon: BuildingOfficeIconOutline,
+            activeIcon: BuildingOfficeIconSolid,
+          },
+          {
             to: "/business-settings",
             label: "Settings",
             icon: Cog6ToothIconOutline,
@@ -275,9 +306,7 @@ const Sidebar = () => {
         ],
       },
     ],
-
-
-    super_admin: [
+    superadmin: [
       {
         title: "MAIN MENU",
         items: [
@@ -288,16 +317,10 @@ const Sidebar = () => {
             activeIcon: Squares2X2IconSolid,
           },
           {
-            to: "/admin-receipts",
-            label: "Receipts",
-            icon: ReceiptPercentIconOutline,
-            activeIcon: ReceiptPercentIconSolid,
-          },
-          {
-            to: "/admin-inventory",
-            label: "Inventory",
-            icon: CubeIconOutline,
-            activeIcon: CubeIconSolid,
+            to: "/notifications",
+            label: "Notifications",
+            icon: BellIconOutline,
+            activeIcon: BellIconSolid,
           },
         ],
       },
@@ -318,11 +341,11 @@ const Sidebar = () => {
             activeIcon: plugIconSolid,
           },
           {
-            to: "/admin-settings",
-            label: "Settings",
-            icon: Cog6ToothIconOutline,
-            activeIcon: Cog6ToothIconSolid,
-          },
+            to: "/admin-profile",
+            label: "Business Profile",
+            icon: BuildingOfficeIconOutline,
+            activeIcon: BuildingOfficeIconSolid,
+          }
         ],
       },
     ],
@@ -344,9 +367,14 @@ const Sidebar = () => {
             icon: CreditCardIconOutline,
             activeIcon: CreditCardIconSolid,
           },
+          {
+            to: "/notifications",
+            label: "Notifications",
+            icon: BellIconOutline,
+            activeIcon: BellIconSolid,
+          },
         ],
       },
-
       {
         title: "FINANCE",
         items: [
@@ -384,6 +412,12 @@ const Sidebar = () => {
             activeIcon: Squares2X2IconSolid,
           },
           {
+            to: "/notifications",
+            label: "Notifications",
+            icon: BellIconOutline,
+            activeIcon: BellIconSolid,
+          },
+          {
             to: "/register",
             label: "Register",
             icon: UserPlusIconOutline,
@@ -400,16 +434,56 @@ const Sidebar = () => {
     ],
   };
 
+  const { unreadCount } = useNotifications();
+  const [lowStockCount, setLowStockCount] = useState(0);
 
-  const roleKey =
-    normalizedRole === "soloprenuer"
-      ? "solopreneur"
-      : normalizedRole;
+  useEffect(() => {
+    const fetchLowStockCount = async () => {
+      try {
+        const response = await getProducts()
+        if (response && !response.error) {
+          let items = []
+          if (Array.isArray(response)) items = response
+          else if (response?.products && Array.isArray(response.products)) items = response.products
+          else if (response?.data && Array.isArray(response.data)) items = response.data
+          else if (response?.items && Array.isArray(response.items)) items = response.items
 
-  const sections =
-    SIDEBAR_LINKS[roleKey] ||
-    SIDEBAR_LINKS.user;
+          const affected = items.filter((p) => {
+            const status = (p.status || '').toLowerCase()
+            const qty = Number(p.quantity ?? p.qty ?? p.stock ?? 0)
+            return status === 'out of stock' || status === 'low stock' || qty <= 10
+          })
 
+          setLowStockCount(affected.length)
+        }
+      } catch (err) {
+        console.error('Error fetching low stock count for sidebar:', err)
+      }
+    }
+
+    fetchLowStockCount()
+  }, [])
+
+  const roleKey = normalizedRole === 'soloprenuer' ? 'solopreneur' : normalizedRole;
+  const rawSections = SIDEBAR_LINKS[roleKey] || SIDEBAR_LINKS.user;
+  const sections = rawSections.map((sec) => ({
+    ...sec,
+    items: sec.items.map((item) => {
+      if (item.to === '/notifications') {
+        return {
+          ...item,
+          badge: unreadCount > 0 ? unreadCount : null,
+        }
+      }
+      if (item.to === '/low-stock-alerts') {
+        return {
+          ...item,
+          badge: lowStockCount > 0 ? lowStockCount : null,
+        }
+      }
+      return item
+    }),
+  }));
 
   const handleLogout = () => {
     logout();
@@ -418,49 +492,55 @@ const Sidebar = () => {
 
 
   return (
-    <aside className="w-[230px] max-w-full h-screen border-r border-[#e8e5f7] bg-white flex flex-col transition-colors duration-300 dark:bg-[#080B11] dark:border-slate-800 dark:text-slate-100 font-mono">
+    <>
+      {/* Mobile Backdrop */}
+      <div
+        className={`fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-xs transition-opacity duration-300 md:hidden ${
+          isMobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={onClose}
+        aria-hidden="true"
+      />
 
-      {/* Logo */}
-
-      <div className="h-10 pb-8 pt-8 flex items-center justify-between border-b border-[#e8e5f7] transition-colors duration-300 dark:border-slate-800">
-
-        <div className="flex items-center gap-2 ml-3">
-
-          <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center shadow-[0_8px_18px_rgba(124,31,255,0.22)] transition-all duration-300 dark:from-neon-cyan dark:to-neon-purple dark:shadow-[0_0_18px_rgba(0,243,255,0.28)]">
-
-            <svg
-              className="h-5 w-5 text-white dark:text-slate-950"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M12 2L2 7L12 12L22 7L12 2Z" />
-              <path d="M2 17L12 22L22 17" />
-              <path d="M2 12L12 17L22 12" />
-            </svg>
-
+      {/* Sidebar (Drawer on mobile, static on md+) */}
+      <aside
+        className={`
+          fixed inset-y-0 left-0 z-50 w-[240px] max-w-[85vw] h-full bg-white flex flex-col border-r border-[#e8e5f7] transition-transform duration-300 ease-in-out dark:bg-[#111418] dark:border-[#272D35] dark:text-[#F3F4F6] font-header shadow-2xl
+          md:static md:z-auto md:w-[230px] md:max-w-none md:h-screen md:translate-x-0 md:shadow-none md:flex
+          ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        `}
+      >
+        {/* Logo & Header */}
+        <div className="h-14 px-4 flex items-center justify-between border-b border-[#e8e5f7] transition-colors duration-200 dark:border-[#272D35]">
+          <div className="flex items-center gap-2.5">
+            <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center shadow-[0_4px_12px_rgba(124,31,255,0.22)] transition-all duration-200 dark:from-[#8B7CF6] dark:to-[#6366F1] dark:shadow-none">
+              <svg className="h-5 w-5 text-white dark:text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 2L2 7L12 12L22 7L12 2Z" />
+                <path d="M2 17L12 22L22 17" />
+                <path d="M2 12L12 17L22 12" />
+              </svg>
+            </div>
+            <span className="text-lg font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent dark:from-[#F3F4F6] dark:to-[#A1A7B0]">
+              InvoiceFlow
+            </span>
           </div>
 
-          <span className="text-lg font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent dark:from-neon-cyan dark:to-neon-purple dark:text-glow-cyan">
-            InvoiceFlow
-          </span>
-
+          {/* Close button on mobile */}
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors dark:text-[#A1A7B0] dark:hover:bg-[#1D2229] dark:hover:text-[#F3F4F6] md:hidden"
+            aria-label="Close sidebar"
+          >
+            <XMarkIcon className="w-5 h-5" />
+          </button>
         </div>
 
-      </div>
-
-
-      {/* NAV */}
-
-      <nav className="flex-1 px-2 py-3 overflow-y-auto">
-
-        <div className="mb-5 rounded-xl border border-[#ded7ff] bg-[var(--color--focus-lightpurple)] px-3 py-[0.3rem] text-sm font-normal text-[var(--color--purple-ish)] transition-colors duration-300 dark:border-neon-cyan/25 dark:bg-neon-cyan/10 dark:text-neon-cyan dark:shadow-[0_0_14px_rgba(0,243,255,0.08)]">
-
-          {displayRole}
-
-        </div>
-
+        {/* NAV */}
+        <nav className="flex-1 px-3 py-4 overflow-y-auto scrollbar-none">
+          <div className="mb-5 rounded-lg border border-[#ded7ff] bg-[var(--color--focus-lightpurple)] px-3 py-1.5 text-xs font-semibold tracking-wider text-[var(--color--purple-ish)] transition-colors duration-200 dark:border-[#272D35] dark:bg-[#171B21] dark:text-[#8B7CF6]">
+           
+          </div>
 
         {sections.map((section) => (
 
@@ -473,133 +553,98 @@ const Sidebar = () => {
               {section.title}
             </h3>
 
+          {sections.map((section) => (
+            <div key={section.title} className="mb-4">
+              <h3 className="px-2.5 mb-2 font-bold text-[11px] uppercase tracking-wider text-[#817da5] transition-colors duration-200 dark:text-[#6F7782]">
+                {section.title}
+              </h3>
 
-            <div className="space-y-3">
+              <div className="space-y-1">
+                {section.items.map((item) => (
 
-              {section.items.map((item) => (
+                  <NavLink
+                    key={item.to}
+                    to={item.to}
+                    onClick={() => {
+                      if (onClose) onClose();
+                    }}
+                    className="block no-underline"
+                  >
 
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  className="block no-underline"
-                >
+                    {({ isActive }) => (
 
-                  {({ isActive }) => (
-
-                    <div
-                      className={`min-h-7 rounded-[22px] px-3 py-[0.3rem] flex items-center gap-5 transition-colors duration-300 ${
+                      <div
+                      className={`min-h-9 rounded-lg px-3 py-2 flex items-center gap-3 transition-colors duration-150 text-sm font-medium ${
                         isActive
-                          ? "bg-[#efedf7] text-[#17162b] font-normal dark:bg-neon-cyan/10 dark:text-neon-cyan dark:shadow-[0_0_14px_rgba(0,243,255,0.08)]"
-                          : "text-[#7f7da5] hover:bg-[#f6f4fb] dark:text-slate-400 dark:hover:bg-slate-900/70 dark:hover:text-slate-100"
+                          ? "bg-[#efedf7] text-[#17162b] dark:bg-[#8B7CF6]/15 dark:text-[#8B7CF6] dark:border dark:border-[#8B7CF6]/30"
+                          : "text-[#7f7da5] hover:bg-[#f6f4fb] dark:text-[#A1A7B0] dark:hover:bg-[#1D2229] dark:hover:text-[#F3F4F6]"
                       }`}
                     >
 
-                      {(() => {
-                        const Icon =
+                        {(() => {
+                          const Icon =
                           isActive
                             ? item.activeIcon
                             : item.icon;
 
-                        return (
-                          <Icon className="w-5 h-5 flex-shrink-0" />
+                          return (
+                          <Icon className="w-4 h-4 flex-shrink-0" />
                         );
-                      })()}
+                        })()}
 
 
-                      <span className="flex-1 truncate">
+                        <span className="flex-1 truncate">
                         {item.label}
                       </span>
 
 
-                      {item.badge && (
-                        <span className="min-w-4 h-4 px-2 rounded-full bg-[var(--bgcolor--notif-yellow)] border border-[#ffd96b] text-[var(--color--notif-brown)] font-normal flex items-center justify-center dark:bg-neon-pink/10 dark:border-neon-pink/30 dark:text-neon-pink">
-                          {item.badge}
-                        </span>
-                      )}
+                        {item.badge && (
+                          <span className="min-w-4 h-4 px-2 rounded-full bg-[var(--bgcolor--notif-yellow)] border border-[#ffd96b] text-[var(--color--notif-brown)] font-normal flex items-center justify-center text-xs dark:bg-[#8B7CF6]/20 dark:border-[#8B7CF6]/30 dark:text-[#8B7CF6]">
+                            {item.badge}
+                          </span>
+                        )}
 
-                    </div>
+                      </div>
 
-                  )}
+                    )}
 
-                </NavLink>
+                  </NavLink>
 
-              ))}
+                ))}
+
+              </div>
 
             </div>
 
+          ))}
+
+        </nav>
+
+
+        {/* USER INFO */}
+        <div className="border-t border-[#e8e5f7] px-3.5 py-3 flex items-center gap-3 transition-colors duration-200 dark:border-[#272D35] dark:bg-[#0F1216]">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#7f5cff] to-[#a45cff] text-white flex items-center justify-center text-xs font-semibold dark:from-[#8B7CF6] dark:to-[#6366F1]">
+            {getInitials(currentUser?.firstName ||  currentUser?.name || 'User')}
           </div>
-
-        ))}
-
-      </nav>
-
-
-      {/* USER INFO */}
-
-      <div className="border-t border-[#e8e5f7] px-3 py-3 flex items-center gap-4 transition-colors duration-300 dark:border-slate-800 dark:bg-slate-950/20">
-
-        <div className="w-6 h-6 rounded-full overflow-hidden bg-gradient-to-br from-[#7f5cff] to-[#a45cff] text-white flex items-center justify-center font-normal dark:from-neon-cyan dark:to-neon-purple dark:text-slate-950">
-
-          {business?.owner?.passportPhotoUrl ? (
-
-            <img
-              src={`http://localhost:7000/${business.owner.passportPhotoUrl.replace(
-                /\\/g,
-                "/"
-              )}`}
-              alt={
-                business?.owner?.fullName ||
-                "Business Owner"
-              }
-              className="w-full h-full object-cover"
-            />
-
-          ) : (
-
-            getInitials(
-              business?.owner?.fullName ||
-              "Business Owner"
-            )
-
-          )}
-
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-semibold leading-tight text-[#08071a] truncate dark:text-[#F3F4F6]">
+              {[currentUser?.firstName, currentUser?.lastName].filter(Boolean).join(' ') || currentUser?.name || 'User'}
+            </p>
+            <p className="text-[11px] font-normal leading-tight text-[#7f7da5] truncate capitalize dark:text-[#6F7782]">{role}</p>
+          </div>
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="w-7 h-7 rounded-lg text-[#7f7da5] hover:bg-[#f0eff9] flex items-center justify-center transition-colors dark:text-[#6F7782] dark:hover:bg-[#171B21] dark:hover:text-[#F87171]"
+            aria-label="Log out"
+          >
+            <ArrowRightOnRectangleIconOutline className="w-4 h-4" />
+          </button>
         </div>
-
-
-        <div className="min-w-0 flex-1">
-
-          <p className="leading-tight text-[#08071a] truncate dark:text-slate-100">
-
-            {businessLoading
-              ? "Loading..."
-              : business?.owner?.fullName ||
-                "Business Owner"}
-
-          </p>
-
-          <p className="font-normal leading-tight text-[#7f7da5] truncate capitalize dark:text-slate-500">
-            {role}
-          </p>
-
-        </div>
-
-
-        <button
-          type="button"
-          onClick={handleLogout}
-          className="w-5 h-5 rounded-full text-[#7f7da5] hover:bg-[#f0eff9] flex items-center justify-center transition-colors dark:text-slate-500 dark:hover:bg-slate-900/70 dark:hover:text-neon-pink"
-          aria-label="Log out"
-        >
-
-          <ArrowRightOnRectangleIconOutline className="w-3 h-3" />
-
-        </button>
-
-      </div>
-
-    </aside>
-  );
-};
+      </aside>
+    </>
+  )
+}
 
 
 export default Sidebar;

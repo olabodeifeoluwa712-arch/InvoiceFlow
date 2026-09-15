@@ -1,29 +1,15 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import {
   MagnifyingGlassIcon,
   AdjustmentsHorizontalIcon,
   PencilSquareIcon,
   TrashIcon,
-  EllipsisVerticalIcon,
   CubeIcon,
   PlusIcon,
+  ArrowPathIcon,
 } from '@heroicons/react/24/outline'
-import { products } from '../../Database/data.json'
-
-// const products = [
-//   { id: 1, name: 'Bluetooth Headphones Pro', brand: 'SoundTech Co.', sku: 'SKU-1001', category: 'Electronics', unitCost: 89.99, unitPrice: 159.99, qty: 243, status: 'In Stock' },
-//   { id: 2, name: 'USB-C Hub 7-Port', brand: 'ConnectPro Ltd.', sku: 'SKU-1002', category: 'Accessories', unitCost: 34.50, unitPrice: 69.99, qty: 18, status: 'Low Stock' },
-//   { id: 3, name: 'Wireless Ergonomic Mouse', brand: 'HID Solutions', sku: 'SKU-1003', category: 'Peripherals', unitCost: 42.00, unitPrice: 89.99, qty: 0, status: 'Out of Stock' },
-//   { id: 4, name: 'Mechanical Keyboard TKL', brand: 'KeyCraft Inc.', sku: 'SKU-1004', category: 'Peripherals', unitCost: 119.00, unitPrice: 219.00, qty: 67, status: 'In Stock' },
-//   { id: 5, name: 'LED Desk Lamp Smart', brand: 'LumiTech', sku: 'SKU-1005', category: 'Lighting', unitCost: 45.00, unitPrice: 89.99, qty: 112, status: 'In Stock' },
-//   { id: 6, name: 'HDMI Cable 2m Braided', brand: 'LinkSpeed', sku: 'SKU-1006', category: 'Cables', unitCost: 8.50, unitPrice: 19.99, qty: 5, status: 'Low Stock' },
-//   { id: 7, name: 'USB-A to USB-C Adapter', brand: 'ConnectPro Ltd.', sku: 'SKU-1007', category: 'Accessories', unitCost: 5.99, unitPrice: 14.99, qty: 340, status: 'In Stock' },
-//   { id: 8, name: 'Thunderbolt 4 Cable 1m', brand: 'LinkSpeed', sku: 'SKU-1008', category: 'Cables', unitCost: 22.00, unitPrice: 49.99, qty: 0, status: 'Out of Stock' },
-//   { id: 9, name: '4K Webcam Ultra HD', brand: 'VisionPro', sku: 'SKU-1009', category: 'Electronics', unitCost: 95.00, unitPrice: 199.99, qty: 28, status: 'In Stock' },
-//   { id: 10, name: 'Ring Light 12-inch', brand: 'LumiTech', sku: 'SKU-1010', category: 'Lighting', unitCost: 29.99, unitPrice: 59.99, qty: 9, status: 'Low Stock' },
-// ]
-
-const categories = ['All', 'Electronics', 'Accessories', 'Peripherals', 'Cables', 'Lighting']
+import { getProducts } from '../../api/inventory.api'
 
 const categoryColors = {
   Electronics: {
@@ -48,18 +34,45 @@ const categoryColors = {
   },
 }
 
-// console.log(products)
-
 const Products = () => {
+  const [products, setProducts] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
   const [activeCategory, setActiveCategory] = useState('All')
   const [search, setSearch] = useState('')
 
+  const fetchProducts = async () => {
+    setIsLoading(true)
+    try {
+      const res = await getProducts()
+      if (res && !res.error) {
+        let items = []
+        if (Array.isArray(res)) items = res
+        else if (res.products && Array.isArray(res.products)) items = res.products
+        else if (res.data && Array.isArray(res.data)) items = res.data
+        else if (res.items && Array.isArray(res.items)) items = res.items
+        setProducts(items)
+      }
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchProducts()
+  }, [])
+
+
+
+  const categories = ['All', ...Array.from(new Set(products.map((p) => p.category || 'General')))]
+
   const filteredProducts = products.filter((p) => {
     const matchesSearch =
-      p.name.toLowerCase().includes(search.toLowerCase()) ||
-      p.sku.toLowerCase().includes(search.toLowerCase())
+      (p.name || '').toLowerCase().includes(search.toLowerCase()) ||
+      (p.brand || '').toLowerCase().includes(search.toLowerCase())
     const matchesCategory =
-      activeCategory === 'All' || p.category === activeCategory
+      activeCategory === 'All' || (p.category || 'General') === activeCategory
     return matchesSearch && matchesCategory
   })
 
@@ -70,7 +83,6 @@ const Products = () => {
       <div className="absolute bottom-1/4 -left-36 w-96 h-96 bg-neon-cyan/5 dark:bg-neon-cyan/10 rounded-full blur-[120px] pointer-events-none transition-all duration-300"></div>
 
       <div className="relative z-10 max-w-7xl mx-auto space-y-8">
-
         {/* Page Header */}
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
@@ -78,11 +90,23 @@ const Products = () => {
             <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">{products.length} products in your catalogue</p>
           </div>
 
-          {/* Add Product Button */}
-          <button className="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-cyber-card text-[#7C3AED] dark:text-neon-purple hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-colors">
-            <PlusIcon className="w-4 h-4" />
-            Add Product
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={fetchProducts}
+              disabled={isLoading}
+              className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-cyber-card text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+              title="Refresh Catalogue"
+            >
+              <ArrowPathIcon className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+            </button>
+
+            <Link to="/add-products">
+              <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#7C3AED] text-white font-bold shadow-md hover:bg-[#6D28D9] dark:bg-neon-purple dark:hover:bg-neon-purple/90 transition-colors text-sm">
+                <PlusIcon className="w-4 h-4" />
+                Add Product
+              </button>
+            </Link>
+          </div>
         </div>
 
         {/* Main Card */}
@@ -91,7 +115,6 @@ const Products = () => {
 
           {/* Search & Category Filters */}
           <div className="flex flex-wrap items-center gap-4 mb-6">
-
             {/* Search Input */}
             <div className="relative w-full sm:w-72 flex-shrink-0">
               <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500">
@@ -99,7 +122,7 @@ const Products = () => {
               </span>
               <input
                 type="text"
-                placeholder="Search by name or SKU..."
+                placeholder="Search by name or brand..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 text-sm text-slate-700 bg-slate-50/70 border border-slate-200/60 rounded-xl outline-none focus:border-[#7C3AED]/40 focus:ring-2 focus:ring-[#7C3AED]/10 transition-all duration-200 dark:bg-slate-900/60 dark:border-slate-800 dark:text-slate-200 dark:placeholder-slate-500 dark:focus:border-neon-cyan/40 dark:focus:ring-neon-cyan/10"
@@ -122,188 +145,147 @@ const Products = () => {
                 </button>
               ))}
             </div>
-
-            {/* Filter Button */}
-            <div className="ml-auto">
-              <button className="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-cyber-card text-slate-600 dark:text-slate-400 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-900/60 transition-colors cursor-default">
-                <AdjustmentsHorizontalIcon className="w-4 h-4" />
-                <span>Filter</span>
-              </button>
-            </div>
           </div>
 
           {/* Table */}
-          <div className="overflow-x-auto w-full">
-            <table className="w-full text-left border-collapse min-w-[860px]">
-              <thead>
-                <tr className="border-b border-slate-100 dark:border-slate-800/80 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-                  <th className="pb-3 pl-2 font-semibold">Product Name</th>
-                  <th className="pb-3 font-semibold">SKU</th>
-                  <th className="pb-3 font-semibold">Category</th>
-                  <th className="pb-3 text-right font-semibold">Unit Cost</th>
-                  <th className="pb-3 text-right font-semibold ">Unit Price</th>
-                  <th className="pb-3 text-center font-semibold">Qty</th>
-                  <th className="pb-3 text-center font-semibold">Status</th>
-                  <th className="pb-3 text-right font-semibold">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-50 dark:divide-slate-800/30 text-sm">
-                {filteredProducts.map((product) => {
-                  const catStyle = categoryColors[product.category] || {
-                    bg: 'bg-slate-100 dark:bg-slate-800/60',
-                    text: 'text-slate-600 dark:text-slate-350',
-                  }
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center py-16 text-slate-400">
+              <ArrowPathIcon className="w-8 h-8 animate-spin text-[#7C3AED] dark:text-neon-cyan mb-3" />
+              <p className="text-sm font-medium">Loading catalogue from API...</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto w-full">
+              <table className="w-full text-left border-collapse min-w-[760px]">
+                <thead>
+                  <tr className="border-b border-slate-100 dark:border-slate-800/80 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                    <th className="pb-3 pl-2 font-semibold">Product Name</th>
+                    <th className="pb-3 font-semibold">Category</th>
+                    <th className="pb-3 text-right font-semibold">Unit Cost</th>
+                    <th className="pb-3 text-right font-semibold">Unit Price</th>
+                    <th className="pb-3 text-center font-semibold">Qty</th>
+                    <th className="pb-3 text-center font-semibold">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50 dark:divide-slate-800/30 text-sm">
+                  {filteredProducts.map((product) => {
+                    const status = product.status || ''
+                    const qty = product.qty ?? product.quantity ?? product.stock ?? 0
+                    const categoryName = product.category || 'General'
+                    const catStyle = categoryColors[categoryName] || {
+                      bg: 'bg-slate-100 dark:bg-slate-800/60',
+                      text: 'text-slate-600 dark:text-slate-350',
+                    }
 
-                  return (
-                    <tr
-                      key={product.id}
-                      className="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors group"
-                    >
-                      {/* Product Name */}
-                      <td className="py-4 pl-2">
-                        <div className="flex items-center gap-3">
-                          <div
-                            className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                              product.status === 'Out of Stock'
-                                ? 'bg-rose-50 text-rose-500 dark:bg-rose-950/20 dark:text-rose-400'
-                                : product.status === 'Low Stock'
-                                ? 'bg-amber-50 text-amber-500 dark:bg-amber-950/20 dark:text-amber-400'
-                                : 'bg-indigo-50 text-[#7C3AED] dark:bg-purple-950/20 dark:text-purple-400'
+                    return (
+                      <tr
+                        key={product._id || product.id || Math.random()}
+                        className="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors group"
+                      >
+                        {/* Product Name */}
+                        <td className="py-4 pl-2">
+                          <div className="flex items-center gap-3">
+                            <div
+                              className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                                status === 'Out of Stock'
+                                  ? 'bg-rose-50 text-rose-500 dark:bg-rose-950/20 dark:text-rose-400'
+                                  : status === 'Low Stock'
+                                  ? 'bg-amber-50 text-amber-500 dark:bg-amber-950/20 dark:text-amber-400'
+                                  : 'bg-indigo-50 text-[#7C3AED] dark:bg-purple-950/20 dark:text-purple-400'
+                              }`}
+                            >
+                              <CubeIcon className="w-5 h-5" />
+                            </div>
+                            <div>
+                              <h4 className="font-bold text-slate-800 dark:text-slate-200 leading-tight">
+                                {product.name}
+                              </h4>
+                              {product.brand && (
+                                <span className="text-xs text-slate-400 dark:text-slate-500">
+                                  {product.brand}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Category */}
+                        <td className="py-4">
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-semibold ${catStyle.bg} ${catStyle.text}`}
+                          >
+                            {categoryName}
+                          </span>
+                        </td>
+
+                        {/* Unit Cost */}
+                        <td className="py-4 text-right text-sm text-slate-600 dark:text-slate-400 font-medium">
+                          ${Number(product.unitCost || 0).toFixed(2)}
+                        </td>
+
+                        {/* Unit Price */}
+                        <td className="py-4 text-right text-sm text-slate-800 dark:text-slate-200 font-bold">
+                          ${Number(product.unitPrice || 0).toFixed(2)}
+                        </td>
+
+                        {/* Qty */}
+                        <td className="py-4 text-center">
+                          <span
+                            className={`font-extrabold text-sm ${
+                              status === 'Out of Stock'
+                                ? 'text-rose-500 dark:text-rose-400'
+                                : status === 'Low Stock'
+                                ? 'text-amber-500 dark:text-amber-400'
+                                : 'text-slate-700 dark:text-slate-300'
                             }`}
                           >
-                            <CubeIcon className="w-5 h-5" />
-                          </div>
-                          <div>
-                            <h4 className="font-bold text-slate-800 dark:text-slate-200 leading-tight">
-                              {product.name}
-                            </h4>
-                            <span className="text-xs text-slate-400 dark:text-slate-500">
-                              {product.brand}
-                            </span>
-                          </div>
-                        </div>
-                      </td>
+                            {qty}
+                          </span>
+                        </td>
 
-                      {/* SKU */}
-                      <td className="py-4 text-xs font-mono text-slate-500 dark:text-slate-450">
-                        {product.sku}
-                      </td>
-
-                      {/* Category */}
-                      <td className="py-4">
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-semibold ${catStyle.bg} ${catStyle.text}`}
-                        >
-                          {product.category}
-                        </span>
-                      </td>
-
-                      {/* Unit Cost */}
-                      <td className="py-4 text-right text-sm text-slate-600 dark:text-slate-400 font-medium">
-                        ${product.unitCost}
-                      </td>
-
-                      {/* Unit Price */}
-                      <td className="py-4 text-right text-sm text-slate-800 dark:text-slate-200 font-bold">
-                        ${product.unitPrice}
-                      </td>
-
-                      {/* Qty */}
-                      <td className="py-4 text-center">
-                        <span
-                          className={`font-extrabold text-sm ${
-                            product.status === 'Out of Stock'
-                              ? 'text-rose-500 dark:text-rose-400'
-                              : product.status === 'Low Stock'
-                              ? 'text-amber-500 dark:text-amber-400'
-                              : 'text-slate-700 dark:text-slate-300'
-                          }`}
-                        >
-                          {product.qty}
-                        </span>
-                      </td>
-
-                      {/* Status */}
-                      <td className="py-4 text-center">
-                        <span
-                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${
-                            product.status === 'In Stock'
-                              ? 'bg-emerald-50 text-emerald-700 border-emerald-100/50 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20'
-                              : product.status === 'Low Stock'
-                              ? 'bg-amber-50 text-amber-700 border-amber-100/50 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20'
-                              : 'bg-rose-50 text-rose-700 border-rose-100/50 dark:bg-rose-500/10 dark:text-rose-400 dark:border-rose-500/20'
-                          }`}
-                        >
+                        {/* Status */}
+                        <td className="py-4 text-center">
                           <span
-                            className={`h-1.5 w-1.5 rounded-full ${
-                              product.status === 'In Stock'
-                                ? 'bg-emerald-500'
-                                : product.status === 'Low Stock'
-                                ? 'bg-amber-500'
-                                : 'bg-rose-500'
+                            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${
+                              status === 'In Stock'
+                                ? 'bg-emerald-50 text-emerald-700 border-emerald-100/50 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20'
+                                : status === 'Low Stock'
+                                ? 'bg-amber-50 text-amber-700 border-amber-100/50 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20'
+                                : 'bg-rose-50 text-rose-700 border-rose-100/50 dark:bg-rose-500/10 dark:text-rose-400 dark:border-rose-500/20'
                             }`}
-                          ></span>
-                          {product.status}
-                        </span>
-                      </td>
+                          >
+                            <span
+                              className={`h-1.5 w-1.5 rounded-full ${
+                                status === 'In Stock'
+                                  ? 'bg-emerald-500'
+                                  : status === 'Low Stock'
+                                  ? 'bg-amber-500'
+                                  : 'bg-rose-500'
+                              }`}
+                            ></span>
+                            {status}
+                          </span>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
 
-                      {/* Actions */}
-                      <td className="py-4 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <button className="p-1.5 rounded-lg border border-slate-100 dark:border-slate-800 bg-white dark:bg-cyber-card text-[#7C3AED] dark:text-neon-cyan hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-colors cursor-default">
-                            <PencilSquareIcon className="w-3.5 h-3.5" strokeWidth={2} />
-                          </button>
-                          <button className="p-1.5 rounded-lg border border-slate-100 dark:border-slate-800 bg-white dark:bg-cyber-card text-rose-500 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors cursor-default">
-                            <TrashIcon className="w-3.5 h-3.5" strokeWidth={2} />
-                          </button>
-                         
-                        </div>
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-
-            {/* Empty State */}
-            {filteredProducts.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-16 text-center">
-                <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800/60 flex items-center justify-center mb-4">
-                  <CubeIcon className="w-8 h-8 text-slate-300 dark:text-slate-600" />
+              {/* Empty State */}
+              {filteredProducts.length === 0 && (
+                <div className="flex flex-col items-center justify-center py-16 text-center">
+                  <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800/60 flex items-center justify-center mb-4">
+                    <CubeIcon className="w-8 h-8 text-slate-300 dark:text-slate-600" />
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-600 dark:text-slate-400">No products found</h3>
+                  <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">
+                    Try adjusting your search or filter criteria
+                  </p>
                 </div>
-                <h3 className="text-lg font-bold text-slate-600 dark:text-slate-400">No products found</h3>
-                <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">
-                  Try adjusting your search or filter criteria
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* Table Footer / Summary */}
-          {filteredProducts.length > 0 && (
-            <div className="flex items-center justify-between mt-5 pt-4 border-t border-slate-100 dark:border-slate-800/60">
-              <p className="text-xs text-slate-400 dark:text-slate-500">
-                Showing <span className="font-bold text-slate-600 dark:text-slate-300">{filteredProducts.length}</span> of{' '}
-                <span className="font-bold text-slate-600 dark:text-slate-300">{products.length}</span> products
-              </p>
-              <div className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500">
-                  <span className="h-2 w-2 rounded-full bg-emerald-500"></span>
-                  {products.filter((p) => p.status === 'In Stock').length} In Stock
-                </span>
-                <span className="inline-flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500">
-                  <span className="h-2 w-2 rounded-full bg-amber-500"></span>
-                  {products.filter((p) => p.status === 'Low Stock').length} Low Stock
-                </span>
-                <span className="inline-flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500">
-                  <span className="h-2 w-2 rounded-full bg-rose-500"></span>
-                  {products.filter((p) => p.status === 'Out of Stock').length} Out of Stock
-                </span>
-              </div>
+              )}
             </div>
           )}
         </div>
-
       </div>
     </div>
   )

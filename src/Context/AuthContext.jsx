@@ -1,8 +1,6 @@
 import { createContext, useState, useContext, useEffect, useCallback } from "react";
 import React from "react";
 import api from '../api/http'
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 import useAuthStore from '../api/token';
 import ApiError from "../api/apiError";
 
@@ -13,11 +11,23 @@ import ApiError from "../api/apiError";
 // ── Context ───────────────────────────────────────────────────────────────────
 const AuthContext = createContext(null)
 
+// get current user
+  const user = async () => {
+    try {
+
+      const response = await api.get("/auth/profile");
+      console.log(response)
+      return response.user;
+    } catch (error) {
+      console.error("Error fetching current user:", error);
+      return null;
+    }
+  }
+
+  const currentUser = await user()
+
 export function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const setAccessToken = useAuthStore((state) => state.setAccessToken);
-  const setCurrentUser = useAuthStore((state) => state.setCurrentUser)
-  const accessToken = useAuthStore((state) => state.accessToken);
 
   // login
   const login = async ({ email, password }) => {
@@ -26,10 +36,6 @@ export function AuthProvider({ children }) {
       const data = response.data;
       const { token, User } = data;
 
-
-      setAccessToken(token)
-      setCurrentUser(User)
-      console.log(currentUser, token)
       setIsAuthenticated(true);
 
       return { data, response, success: true, ok: true };
@@ -40,20 +46,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // get current user
-  const user = async () => {
-    try {
-      const accessToken = useAuthStore((state) => state.accessToken);
-      const setAccessToken = useAuthStore((state) => state.setAccessToken);
-
-      const response = await api.get("/auth/profile");
-      console.log(response)
-      return response;
-    } catch (error) {
-      console.error("Error fetching current user:", error);
-      throw error;
-    }
-  }
+  
   // console.log(user())
 
 
@@ -73,8 +66,7 @@ export function AuthProvider({ children }) {
     console.log(res)
     return res;
   };
- 
-  const currentUser = useAuthStore((state) => state.currentUser)
+
   return (
     <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, login, getInitials, user, logout, currentUser }}>
       {children}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useTheme } from '../../Context/ThemeContext'
 import { formatStockValue } from '../../utils/formatter'
@@ -28,17 +28,7 @@ import {
 
 import { useAuth } from '../../Context/AuthContext'
 import { products as ProductsData } from '../../Database/data.json';
-
-
-const weeklyMovementData = [
-  { day: "Mon", stockIn: 30, stockOut: 12 },
-  { day: "Tue", stockIn: 15, stockOut: 20 },
-  { day: "Wed", stockIn: 55, stockOut: 30 },
-  { day: "Thu", stockIn: 8, stockOut: 18 },
-  { day: "Fri", stockIn: 65, stockOut: 18 },
-  { day: "Sat", stockIn: 5, stockOut: 8 },
-  { day: "Sun", stockIn: 4, stockOut: 2 },
-];
+import { getProducts, getTotalStockValue, chartData } from '../../api/inventory.api'
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -55,21 +45,6 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-
-
-// const ProductsData = [
-//   { id: 1, name: 'Business Starter Kit', sku: 'BSK-001', price: 299, stock: 42, category: 'Bundles', status: 'in stock' },
-//   { id: 2, name: 'Enterprise License', sku: 'ENT-001', price: 1299, stock: 8, category: 'Licenses', status: 'in stock' },
-//   { id: 3, name: 'Analytics Add-on', sku: 'ANA-001', price: 149, stock: 3, category: 'Add-ons', status: 'low stock' },
-//   { id: 4, name: 'API Access Module', sku: 'API-001', price: 499, stock: 0, category: 'Modules', status: 'out of stock' },
-//   { id: 5, name: 'Team Collaboration Suite', sku: 'TEM-001', price: 799, stock: 15, category: 'Bundles', status: 'in stock' },
-//   { id: 6, name: 'Advanced Security Firewall', sku: 'SEC-002', price: 899, stock: 2, category: 'Add-ons', status: 'low stock' },
-//   { id: 7, name: 'Cloud Storage 1TB', sku: 'CLD-1TB', price: 99, stock: 4, category: 'Add-ons', status: 'low stock' },
-//   { id: 8, name: 'Premium Support Desk', sku: 'SUP-001', price: 1500, stock: 5, category: 'Support', status: 'low stock' },
-//   { id: 9, name: 'Data Migrator Pro', sku: 'MIG-001', price: 349, stock: 0, category: 'Modules', status: 'out of stock' },
-//   { id: 10, name: 'Custom Setup Service', sku: 'SVC-001', price: 1324, stock: 1, category: 'Support', status: 'in stock' },
-// ];
-
 const recentActivities = [
   { id: 1, action: "Stock Adjusted", product: "Business Starter Kit", details: "+12 units added", time: "2 hours ago", user: "Marcus", type: "info" },
   { id: 2, action: "Low Stock Alert", product: "Analytics Add-on", details: "Fell below safety threshold (3 remaining)", time: "5 hours ago", user: "System", type: "warning" },
@@ -81,27 +56,102 @@ const Dashboard = () => {
   const {currentUser} = useAuth()
   const { theme } = useTheme();
   const isDark = theme === 'dark';
-  const [products, setProducts] = useState(ProductsData);
+  const [products, setProducts] = useState([]);
+  const [stockMetrics, setStockMetrics] = useState(null);
+  const [movementChartData, setMovementChartData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Compute stats dynamically from the mock data to match the screenshot
-  const totalProducts = products.length;
-  const totalStockValue = products.reduce((sum, p) => sum + (p.unitPrice * p.qty), 0);
-  const lowStockCount = products.filter(p => p.status.toLowerCase() === 'low stock').length;
-  const outOfStockCount = products.filter(p => p.status.toLowerCase() === 'out of stock').length;
-  const categoriesCount = new Set(products.map(p => p.category)).size;
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      setIsLoading(true)
+      try {
+        const productsRes = await getProducts()
+        if (productsRes && !productsRes.error) {
+          let items = []
+          if (Array.isArray(productsRes)) items = productsRes
+          else if (productsRes?.products && Array.isArray(productsRes.products)) items = productsRes.products
+          else if (productsRes?.data && Array.isArray(productsRes.data)) items = productsRes.data
+          else if (productsRes?.items && Array.isArray(productsRes.items)) items = productsRes.items
+          if (items.length > 0) setProducts(items)
+        }
 
-  // Format stock value for presentation (e.g. 46400 -> "$46.4k")
- 
+        const stockValueRes = await getTotalStockValue()
+        if (stockValueRes && !stockValueRes.error) {
+          const val = stockValueRes?.data || stockValueRes
+          setStockMetrics(val)
+        }
+
+        const chartRes = await chartData()
+        if (chartRes && !chartRes.error) {
+          const cVal = chartRes.response
+          console.log(cVal)
+          setMovementChartData(cVal)
+        }
+      } catch (e) {
+        console.error('Error loading dashboard metrics:', e)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchDashboardData()
+  }, [])
+
+  // Safely extract metric object from stockMetrics
+  const metricData = React.useMemo(() => {
+    if (!stockMetrics) return null
+    return (
+      stockMetrics.stockValue ||
+      stockMetrics.data?.stockValue ||
+      stockMetrics.data ||
+      stockMetrics
+    )
+  }, [stockMetrics])
+  // Dynamic stock movement chart data array
+  const chartDataToDisplay = React.useMemo(() => {
+    const list = Array.isArray(movementChartData?.weekly)
+      ? movementChartData.weekly
+      : Array.isArray(movementChartData)
+      ? movementChartData
+      : []
+
+    if (!list || list.length === 0) return []
+
+    return list.map((item, idx) => {
+      if (Array.isArray(item)) {
+        const [key, val] = item
+        return {
+          day: key,
+          stockIn: Number(val?.stockIn  ?? 0),
+          stockOut: Number(val?.stockOut ?? 0),
+        }
+      }
+      return {
+        day: item.day,
+        stockIn: Number(item.stockIn ?? 0),
+        stockOut: Number(item.stockOut ?? 0),
+      }
+    })
+  }, [movementChartData])
+
+  // Compute stats dynamically from individual API responses
+  const totalProducts = metricData?.totalProducts ?? products.length;
+  const totalItemsCount = metricData?.totalItems ?? products.reduce((sum, p) => sum + Number(p.qty ?? p.quantity ?? p.stock ?? 0), 0);
+  const calculatedStockValue = products.reduce((sum, p) => sum + (Number(p.unitPrice || p.price || 0) * Number(p.qty ?? p.quantity ?? p.stock ?? 0)), 0);
+  const totalStockValue = metricData?.totalValue ?? metricData?.totalSalesValue ?? calculatedStockValue;
+
+  const lowStockCount = products.filter(p => (p.status || '').toLowerCase() === 'low stock').length;
+  const outOfStockCount = products.filter(p => (p.status || '').toLowerCase() === 'out of stock').length;
+  const categoriesCount = new Set(products.map(p => p.category || 'General')).size;
 
   // Weekly movement computations
-  const totalReceived = weeklyMovementData.reduce((sum, d) => sum + d.stockIn, 0);
-  const totalDispatched = weeklyMovementData.reduce((sum, d) => sum + d.stockOut, 0);
+  const totalReceived = chartDataToDisplay.reduce((sum, d) => sum + (d.stockIn || 0), 0);
+  const totalDispatched = chartDataToDisplay.reduce((sum, d) => sum + (d.stockOut || 0), 0);
   const netMovement = totalReceived - totalDispatched;
 
   // Stock health computations
-  const inStockCount = products.filter(p => p.status.toLowerCase() === 'in stock').length;
-  const lowStockCountVal = products.filter(p => p.status.toLowerCase() === 'low stock').length;
-  const outOfStockCountVal = products.filter(p => p.status.toLowerCase() === 'out of stock').length;
+  const inStockCount = products.filter(p => (p.status || '').toLowerCase() === 'in stock').length;
+  const lowStockCountVal = lowStockCount;
+  const outOfStockCountVal = outOfStockCount;
   const totalProductsVal = products.length;
   const inStockPercentage = totalProductsVal > 0 ? Math.round((inStockCount / totalProductsVal) * 100) : 0;
 
@@ -117,11 +167,11 @@ const Dashboard = () => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-3xl md:text-4xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight flex items-center gap-2">
-              Good morning, {currentUser.firstName} <span className="animate-bounce inline-block">👋</span>
+              Good morning, {currentUser.name} <span className="animate-bounce inline-block">👋</span>
             </h1>
             <div className="flex items-center gap-2 text-sm font-semibold text-slate-400 dark:text-slate-500 mt-2">
               <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span>Warehouse is operational · {totalProducts} products tracked</span>
+              <span>Warehouse is operational · {totalProducts} products tracked ({totalItemsCount} total units)</span>
             </div>
           </div>
 
@@ -151,8 +201,9 @@ const Dashboard = () => {
                 {totalProducts}
               </h3>
             </div>
-            <div className="text-slate-400 dark:text-slate-500 text-xs font-semibold mt-6 tracking-normal">
-              Across {categoriesCount} categories
+            <div className="text-slate-400 dark:text-slate-500 text-xs font-semibold mt-6 tracking-normal flex items-center justify-between">
+              <span>{totalItemsCount} total units</span>
+              <span>{categoriesCount} categories</span>
             </div>
           </div>
 
@@ -166,12 +217,19 @@ const Dashboard = () => {
                   <ArrowTrendingUpIcon className="w-5 h-5 text-blue-600 dark:text-neon-cyan" strokeWidth={2} />
                 </div>
               </div>
-              <h3 className="text-4xl font-extrabold text-slate-850 dark:text-slate-100 mt-4 tracking-tight">
+              <h3 className="text-3xl lg:text-4xl font-extrabold text-slate-850 dark:text-slate-100 mt-4 tracking-tight">
                 {formatStockValue(totalStockValue)}
               </h3>
             </div>
-            <div className="text-slate-400 dark:text-slate-500 text-xs font-semibold mt-6 tracking-normal">
-              Based on unit costs
+            <div className="text-xs font-semibold mt-6 tracking-normal flex items-center justify-between text-slate-400 dark:text-slate-500">
+              {metricData?.totalCostValue !== undefined && metricData?.totalSalesValue !== undefined ? (
+                <>
+                  <span>Cost: <span className="font-bold text-slate-700 dark:text-slate-300">${Number(metricData.totalCostValue).toLocaleString()}</span></span>
+                  <span>Sales: <span className="font-bold text-emerald-600 dark:text-emerald-400">${Number(metricData.totalSalesValue).toLocaleString()}</span></span>
+                </>
+              ) : (
+                <span>{totalItemsCount} total units in stock</span>
+              )}
             </div>
           </div>
 
@@ -245,7 +303,7 @@ const Dashboard = () => {
               {/* Chart Container */}
               <div className="w-full h-[320px] mt-4">
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={weeklyMovementData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+                  <AreaChart data={chartDataToDisplay} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
                     <defs>
                       <linearGradient id="colorStockIn" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor={isDark ? '#a78bfa' : '#8b5cf6'} stopOpacity={0.12} />
