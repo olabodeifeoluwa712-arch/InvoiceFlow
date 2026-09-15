@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react'
-import { useAuth } from '../../Context/AuthContext'
-import { useTheme } from '../../Context/ThemeContext'
+import { useEffect, useState } from "react";
+
+import { useAuth } from "../../Context/AuthContext";
+import { useTheme } from "../../Context/ThemeContext";
 import { useNotifications } from '../../Context/NotificationContext'
 import { getProducts } from '../../api/inventory.api'
-import { NavLink, useNavigate } from 'react-router-dom'
-import { useBusiness } from "../../context/BusinessContext";
+import { NavLink, useNavigate } from "react-router-dom";
+import api from "../../api/http";
+
 import {
   ChevronLeftIcon as ChevronLeftIconOutline,
   Squares2X2Icon as Squares2X2IconOutline,
@@ -70,32 +73,89 @@ import {
   ShieldCheckIcon  as permissionsIconSolid,
   BuildingOfficeIcon as BuildingOfficeIconSolid,
   CommandLineIcon     as plugIconSolid,
-
 } from "@heroicons/react/24/solid";
+
 
 const formatRole = (role) =>
   role
-    .replace(/([a-z])([A-Z])/g, '$1 $2')
-    .replace(/[-_]/g, ' ')
-    .replace(/\s+/g, ' ')
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/[-_]/g, " ")
+    .replace(/\s+/g, " ")
     .trim()
     .toUpperCase();
 
 const Sidebar = ({ isMobileOpen = false, onClose }) => {
   
   const { currentUser, logout, getInitials } = useAuth();
- const { business } = useBusiness();
-  const navigate = useNavigate()
+
+  const navigate = useNavigate();
+
+  const [business, setBusiness] = useState(null);
+  const [businessLoading, setBusinessLoading] = useState(true);
+
+
+  /*
+   * Load business information directly from the backend.
+   *
+   * The backend endpoint:
+   * GET /api/business/my-business
+   *
+   * Response:
+   * {
+   *   business: {
+   *     owner: {
+   *       fullName,
+   *       passportPhotoUrl
+   *     }
+   *   }
+   * }
+   */
+  useEffect(() => {
+    const loadBusiness = async () => {
+      try {
+        setBusinessLoading(true);
+
+        const response = await api.get("/business/my-business");
+
+        setBusiness(response.business || null);
+
+      } catch (error) {
+        console.error(
+          "Failed to load business information:",
+          error
+        );
+
+        setBusiness(null);
+
+      } finally {
+        setBusinessLoading(false);
+      }
+    };
+
+    if (currentUser) {
+      loadBusiness();
+    }
+  }, [currentUser]);
+
 
   if (currentUser == null) {
-    return navigate('/login');
+    return navigate("/login");
   }
- 
-  const role = currentUser.role?.toLowerCase().trim() || 'Business Owner';
-  const normalizedRole = role.replace(/[\s_-]/g, '');
-  const displayRole = formatRole(role);
+
+
+  const role =
+    currentUser.role?.toLowerCase().trim() ||
+    "Business Owner";
+
+  const normalizedRole =
+    role.replace(/[\s\_-]/g, "");
+
+  const displayRole =
+    formatRole(role);
+
 
   const SIDEBAR_LINKS = {
+
     inventory: [
       {
         title: "OVERVIEW",
@@ -126,6 +186,7 @@ const Sidebar = ({ isMobileOpen = false, onClose }) => {
           },
         ],
       },
+
       {
         title: "OPERATIONS",
         items: [
@@ -151,6 +212,7 @@ const Sidebar = ({ isMobileOpen = false, onClose }) => {
         ],
       },
     ],
+
 
     admin: [
       {
@@ -205,8 +267,8 @@ const Sidebar = ({ isMobileOpen = false, onClose }) => {
             activeIcon: DocumentTextIconSolid,
           },
           {
-            to: '/business-management',
-            label: 'Team Management',
+            to: "/business-management",
+            label: "Team Management",
             icon: UserGroupIconOutline,
             activeIcon: UserGroupIconSolid,
           },
@@ -262,6 +324,7 @@ const Sidebar = ({ isMobileOpen = false, onClose }) => {
           },
         ],
       },
+
       {
         title: "Admin",
         items: [
@@ -284,8 +347,10 @@ const Sidebar = ({ isMobileOpen = false, onClose }) => {
             activeIcon: BuildingOfficeIconSolid,
           }
         ],
-      }
+      },
     ],
+
+
     accountant: [
       {
         title: "MAIN MENU",
@@ -334,7 +399,6 @@ const Sidebar = ({ isMobileOpen = false, onClose }) => {
         ],
       },
     ],
-
 
 
     user: [
@@ -423,12 +487,9 @@ const Sidebar = ({ isMobileOpen = false, onClose }) => {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
-  }
-  const nameParts = currentUser?.name?.trim().split(" ") || 'User';
+    navigate("/login");
+  };
 
-  const firstName = nameParts[0] || "";
-  const lastName = nameParts.slice(1).join(" ") || "";
 
   return (
     <>
@@ -481,6 +542,17 @@ const Sidebar = ({ isMobileOpen = false, onClose }) => {
            
           </div>
 
+        {sections.map((section) => (
+
+          <div
+            key={section.title}
+            className="mb-3.5"
+          >
+
+            <h3 className="px-2.5 mb-2.5 font-bold text-[13px] tracking-[0.16em] text-[#817da5] transition-colors duration-300 dark:text-slate-500">
+              {section.title}
+            </h3>
+
           {sections.map((section) => (
             <div key={section.title} className="mb-4">
               <h3 className="px-2.5 mb-2 font-bold text-[11px] uppercase tracking-wider text-[#817da5] transition-colors duration-200 dark:text-[#6F7782]">
@@ -489,6 +561,7 @@ const Sidebar = ({ isMobileOpen = false, onClose }) => {
 
               <div className="space-y-1">
                 {section.items.map((item) => (
+
                   <NavLink
                     key={item.to}
                     to={item.to}
@@ -497,27 +570,56 @@ const Sidebar = ({ isMobileOpen = false, onClose }) => {
                     }}
                     className="block no-underline"
                   >
+
                     {({ isActive }) => (
-                      <div className={`min-h-9 rounded-lg px-3 py-2 flex items-center gap-3 transition-colors duration-150 text-sm font-medium ${isActive ? 'bg-[#efedf7] text-[#17162b] dark:bg-[#8B7CF6]/15 dark:text-[#8B7CF6] dark:border dark:border-[#8B7CF6]/30' : 'text-[#7f7da5] hover:bg-[#f6f4fb] dark:text-[#A1A7B0] dark:hover:bg-[#1D2229] dark:hover:text-[#F3F4F6]'}`}>
+
+                      <div
+                      className={`min-h-9 rounded-lg px-3 py-2 flex items-center gap-3 transition-colors duration-150 text-sm font-medium ${
+                        isActive
+                          ? "bg-[#efedf7] text-[#17162b] dark:bg-[#8B7CF6]/15 dark:text-[#8B7CF6] dark:border dark:border-[#8B7CF6]/30"
+                          : "text-[#7f7da5] hover:bg-[#f6f4fb] dark:text-[#A1A7B0] dark:hover:bg-[#1D2229] dark:hover:text-[#F3F4F6]"
+                      }`}
+                    >
+
                         {(() => {
-                          const Icon = isActive ? item.activeIcon : item.icon;
-                          return <Icon className="w-4 h-4 flex-shrink-0" />;
+                          const Icon =
+                          isActive
+                            ? item.activeIcon
+                            : item.icon;
+
+                          return (
+                          <Icon className="w-4 h-4 flex-shrink-0" />
+                        );
                         })()}
-                        <span className="flex-1 truncate">{item.label}</span>
+
+
+                        <span className="flex-1 truncate">
+                        {item.label}
+                      </span>
+
+
                         {item.badge && (
                           <span className="min-w-4 h-4 px-2 rounded-full bg-[var(--bgcolor--notif-yellow)] border border-[#ffd96b] text-[var(--color--notif-brown)] font-normal flex items-center justify-center text-xs dark:bg-[#8B7CF6]/20 dark:border-[#8B7CF6]/30 dark:text-[#8B7CF6]">
                             {item.badge}
                           </span>
                         )}
+
                       </div>
+
                     )}
+
                   </NavLink>
+
                 ))}
+
               </div>
+
             </div>
+
           ))}
+
         </nav>
-   
+
 
         {/* USER INFO */}
         <div className="border-t border-[#e8e5f7] px-3.5 py-3 flex items-center gap-3 transition-colors duration-200 dark:border-[#272D35] dark:bg-[#0F1216]">
@@ -544,4 +646,5 @@ const Sidebar = ({ isMobileOpen = false, onClose }) => {
   )
 }
 
-export default Sidebar
+
+export default Sidebar;
