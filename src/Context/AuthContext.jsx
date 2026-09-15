@@ -15,8 +15,8 @@ const AuthContext = createContext(null)
   const user = async () => {
     try {
 
+      console.log('logged in user profile: ',)
       const response = await api.get("/auth/profile");
-      console.log(response)
       return response.user;
     } catch (error) {
       console.error("Error fetching current user:", error);

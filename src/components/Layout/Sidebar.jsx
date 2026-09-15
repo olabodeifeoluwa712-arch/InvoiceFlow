@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { useEffect, useState } from "react";
 
 import { useAuth } from "../../Context/AuthContext";
 import { useTheme } from "../../Context/ThemeContext";
@@ -542,13 +541,7 @@ const Sidebar = ({ isMobileOpen = false, onClose }) => {
            
           </div>
 
-        {sections.map((section) => (
-
-          <div
-            key={section.title}
-            className="mb-3.5"
-          >
-
+       
             <h3 className="px-2.5 mb-2.5 font-bold text-[13px] tracking-[0.16em] text-[#817da5] transition-colors duration-300 dark:text-slate-500">
               {section.title}
             </h3>
