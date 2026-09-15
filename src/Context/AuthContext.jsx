@@ -3,8 +3,7 @@ import React from "react";
 import api from '../api/http'
 import useAuthStore from '../api/token';
 import ApiError from "../api/apiError";
-
-
+// import { user } from '../api/auth.api'
 
 
 
@@ -12,22 +11,33 @@ import ApiError from "../api/apiError";
 const AuthContext = createContext(null)
 
 // get current user
-  const user = async () => {
-    try {
 
-      const response = await api.get("/auth/profile");
-      console.log(response)
-      return response.user;
-    } catch (error) {
-      console.error("Error fetching current user:", error);
-      return null;
+const user = async () => {
+  try {
+    const response = await api.get("/auth/profile");
+
+    console.log(response);
+
+    return response.user;
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return {
+        success: false,
+        error: error.message,
+      };
     }
-  }
 
-  const currentUser = await user()
+    console.error("Error fetching current user:", error);
+  }
+};
+const currentUser = await user()
+
+
+
 
 export function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const setAccessToken = useAuthStore((state) => state.setAccessToken);
 
   // login
   const login = async ({ email, password }) => {
@@ -36,7 +46,9 @@ export function AuthProvider({ children }) {
       const data = response.data;
       const { token, User } = data;
 
+      // setCurrentUser(User);
       setIsAuthenticated(true);
+      setAccessToken(token);
 
       return { data, response, success: true, ok: true };
     } catch (error) {
@@ -45,6 +57,38 @@ export function AuthProvider({ children }) {
       console.log(error)
     }
   };
+
+  // const [currentUser, setCurrentUser] = useState(null);
+
+// const user = async () => {
+//   try {
+//     const response = await api.get("/auth/profile");
+
+//     console.log(response);
+
+//     return response.user;
+//   } catch (error) {
+//     if (error instanceof ApiError) {
+//       return {
+//         success: false,
+//         error: error.message,
+//       };
+//     }
+
+//     console.error("Error fetching current user:", error);
+//   }
+// };
+
+// useEffect(() => {
+//   const getUser = async () => {
+//     const data = await user();
+//     setCurrentUser(data);
+//   };
+
+//   getUser();
+// }, []);
+
+    
 
   
   // console.log(user())
@@ -68,7 +112,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, login, getInitials, user, logout, currentUser,myBusiness }}>
+    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, login, getInitials, user, logout, currentUser }}>
       {children}
     </AuthContext.Provider>
   )
