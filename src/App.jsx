@@ -45,7 +45,6 @@ import AdminIntegrations from './Pages/Admin/integrations'
 import AdminReports from './Pages/Admin/Reports'
 import SeeInvoices from './Pages/Business/seeInvoices'
 import CustomerDetails from "./Pages/Business/CustomerDetails";
-import AdminProfile from './Pages/Admin/admin-profile'
 
 // Shared Pages
 import LandingPage from './Pages/landingPage'
@@ -116,6 +115,18 @@ function App() {
                 <Route path="/business-view-invoices" element={<ProtectedRoute allowedRoles={['admin']}><EditBusinessInvoice /></ProtectedRoute>} />
                 <Route path="/business-subscription" element={<ProtectedRoute allowedRoles={['admin']}><BusinessSubscription /></ProtectedRoute>} />
                 <Route path="/subscription" element={<ProtectedRoute allowedRoles={['admin']}><BusinessSubscription /></ProtectedRoute>} />
+                 <Route path="/business-customers" element={<ProtectedRoute allowedRoles={['admin']}><BusinessCustomers /></ProtectedRoute>} />
+                 <Route
+                  path="/business-view-invoices/:id"
+                  element={
+                    <ProtectedRoute allowedRoles={["admin"]}>
+                      <SeeInvoices />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route path="/business-create-business" element={<ProtectedRoute allowedRoles={['admin']}><CreateBusiness /></ProtectedRoute>} />
+
 
                 {/* Accountant */}
                 <Route index path="/accountant-dashboard" element={<ProtectedRoute allowedRoles={['accountant']}><AccountantDashboard /></ProtectedRoute>} />
@@ -132,7 +143,7 @@ function App() {
                 <Route path="/team-permissions" element={<ProtectedRoute allowedRoles={['admin', 'superadmin']}><AdminPermissions /></ProtectedRoute>} />
                   <Route path="/business-permissions" element={<ProtectedRoute allowedRoles={['admin', 'superadmin']}><AdminPermissions /></ProtectedRoute>} />
                   <Route path="/admin-integrations" element={<ProtectedRoute allowedRoles={['superadmin']}><AdminIntegrations /></ProtectedRoute>} />
-                  <Route path="/admin-profile" element={<ProtectedRoute allowedRoles={['superadmin', 'admin']}><AdminProfile /></ProtectedRoute>} />
+                  {/* <Route path="/admin-profile" element={<ProtectedRoute allowedRoles={['superadmin', 'admin']}><AdminProfile /></ProtectedRoute>} /> */}
                   <Route path="/admin-analytics" element={<ProtectedRoute allowedRoles={['superadmin']}><AdminReports /></ProtectedRoute>} />
                 </Route>
                       

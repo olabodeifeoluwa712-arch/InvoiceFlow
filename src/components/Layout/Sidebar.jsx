@@ -541,11 +541,7 @@ const Sidebar = ({ isMobileOpen = false, onClose }) => {
            
           </div>
 
-       
-            <h3 className="px-2.5 mb-2.5 font-bold text-[13px] tracking-[0.16em] text-[#817da5] transition-colors duration-300 dark:text-slate-500">
-              {section.title}
-            </h3>
-
+        
           {sections.map((section) => (
             <div key={section.title} className="mb-4">
               <h3 className="px-2.5 mb-2 font-bold text-[11px] uppercase tracking-wider text-[#817da5] transition-colors duration-200 dark:text-[#6F7782]">
