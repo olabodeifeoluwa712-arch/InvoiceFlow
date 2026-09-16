@@ -285,12 +285,6 @@ const Sidebar = ({ isMobileOpen = false, onClose }) => {
             badge: currentUser?.subscriptionPlan ? currentUser.subscriptionPlan.slice(0, 4) : null,
           },
           {
-            to: "/business-profile",
-            label: "Business Profile",
-            icon: BuildingOfficeIconOutline,
-            activeIcon: BuildingOfficeIconSolid,
-          },
-          {
             to: "/business-settings",
             label: "Settings",
             icon: Cog6ToothIconOutline,

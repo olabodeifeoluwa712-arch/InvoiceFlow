@@ -2,6 +2,7 @@ import './index.css'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import Login from './Pages/user/Login'
 import Register from './Pages/user/Register'
+import VerifyOtp from './Pages/user/VerifyOtp'
 import MainLayout from './components/Layout/MainLayout'
 import { AuthProvider, useAuth } from './Context/AuthContext'
 import { ThemeProvider } from './Context/ThemeContext'
@@ -150,6 +151,7 @@ function App() {
               {/* Auth / Public */}
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/verify-otp" element={<VerifyOtp />} />
               <Route path="/" element={<LandingPage />} />
             </Routes>
           </Router>

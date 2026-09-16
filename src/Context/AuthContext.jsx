@@ -11,12 +11,13 @@ import ApiError from "../api/apiError";
 const AuthContext = createContext(null)
 
 // get current user
-
 const user = async () => {
   try {
     const response = await api.get("/auth/profile");
 
-    console.log(response);
+
+    // setCurrentUser(response.user);
+    
 
     return response.user;
   } catch (error) {
@@ -30,7 +31,9 @@ const user = async () => {
     console.error("Error fetching current user:", error);
   }
 };
-const currentUser = await user()
+
+const getCurrentUser = await user();
+
 
 
 
@@ -38,6 +41,23 @@ const currentUser = await user()
 export function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const setAccessToken = useAuthStore((state) => state.setAccessToken);
+  const setOtpId = useAuthStore((state) => state.setOtpId);
+  const otpId = useAuthStore((state) => state.otpId);
+
+  const [currentUser, setCurrentUser] = useState(getCurrentUser);
+
+  //Register
+  const register = async ({ name, email, password }) => {
+    try {
+      const response = await api.post("/auth/register", { name, email, password });
+      setOtpId(response.otpId)
+      const data = response.data;
+      return { data, response, success: true, ok: true };
+    } catch (error) {
+      if (error instanceof ApiError) return { success: false, error: error.message };
+      console.error(error)
+    }
+  };
 
   // login
   const login = async ({ email, password }) => {
@@ -46,7 +66,7 @@ export function AuthProvider({ children }) {
       const data = response.data;
       const { token, User } = data;
 
-      // setCurrentUser(User);
+      setCurrentUser(User);
       setIsAuthenticated(true);
       setAccessToken(token);
 
@@ -58,36 +78,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // const [currentUser, setCurrentUser] = useState(null);
-
-// const user = async () => {
-//   try {
-//     const response = await api.get("/auth/profile");
-
-//     console.log(response);
-
-//     return response.user;
-//   } catch (error) {
-//     if (error instanceof ApiError) {
-//       return {
-//         success: false,
-//         error: error.message,
-//       };
-//     }
-
-//     console.error("Error fetching current user:", error);
-//   }
-// };
-
-// useEffect(() => {
-//   const getUser = async () => {
-//     const data = await user();
-//     setCurrentUser(data);
-//   };
-
-//   getUser();
-// }, []);
-
+ 
     
 
   
@@ -112,7 +103,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, login, getInitials, user, logout, currentUser }}>
+    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, login, register, getInitials, user, logout, currentUser, otpId }}>
       {children}
     </AuthContext.Provider>
   )
