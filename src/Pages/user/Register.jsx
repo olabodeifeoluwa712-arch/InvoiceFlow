@@ -21,7 +21,7 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const [params] = useSearchParams();
-  const { register, isAuthenticated } = useAuth();
+  const { register } = useAuth();
   const navigate = useNavigate();
 
   // useEffect(() => {
@@ -63,55 +63,39 @@ const Register = () => {
     setLoading(true);
     await new Promise(r => setTimeout(r, 600));
 
-    // const nameParts = form.fullName.trim().split(/\s+/);
-    // const firstName = nameParts[0] || 'User';
-    // const lastName = nameParts.slice(1).join(' ') || '';
-
-        const response = await fetch('http://localhost:7000/api/auth/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            email: form.email,
-            password: form.password,
-            name: form.name,
-            // companyName: form.companyName
-          })
+        // const response = await fetch('http://localhost:7000/api/auth/register', {
+        //   method: 'POST',
+        //   headers: {
+        //     'Content-Type': 'application/json'
+        //   },
+        //   body: JSON.stringify({
+        //     email: form.email,
+        //     password: form.password,
+        //     name: form.name,
+        //     // companyName: form.companyName
+        //   })
         
+        // });
+
+        const response = await register({
+          email: form.email,
+          password: form.password,
+          name: form.name,
         });
 
-        // response.cookie("refreshToken", response.data.refreshToken, {
-        //   httpOnly: true,
-        //   secure: true,
-        //   sameSite: 'Strict',
-          
-        // })
-
-         const data = await response.json();
-       console.log('Registration response:', data);
-
-         const roleHome = {
-      super_admin: '/admin-dashboard',
-      admin: '/business-dashboard',
-      inventory: '/inventory-dashboard',
-      accountant: '/accountant-dashboard'
-    };
-
-       const role = data.user?.role?.toLowerCase().trim().replace(/[\s_-]/g, '') || '';
-       console.log('User role:', role);
-      const destination = roleHome[role] || params.get('from') || '/';
-      console.log('Navigation destination:', destination);
+         const data = response
+       console.log('Registration response:', response);
 
     setLoading(false);
     if (response && response.ok) {
-      setSuccess('Account created successfully! Welcome aboard.');
-      navigate(destination);
+        navigate(`/verify-otp`);
     } else {
       triggerError(data?.error || 'Registration failed. Please try again.');
     }
     } catch (err) {
       console.error('Registration error:', err);
+        setLoading(false);
+        triggerError('Unable to create your account. Please try again.');
     }
    
     }
