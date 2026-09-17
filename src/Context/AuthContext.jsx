@@ -10,35 +10,36 @@ import ApiError from "../api/apiError";
 // ── Context ───────────────────────────────────────────────────────────────────
 const AuthContext = createContext(null)
 
-// get current user
+// // get current user
 
-const user = async () => {
-  try {
-    const response = await api.get("/auth/profile");
+// const user = async () => {
+//   try {
+//     const response = await api.get("/auth/profile");
 
-    console.log(response);
+//     console.log(response);
 
-    return response.user;
-  } catch (error) {
-    if (error instanceof ApiError) {
-      return {
-        success: false,
-        error: error.message,
-      };
-    }
+//     return response.user;
+//   } catch (error) {
+//     if (error instanceof ApiError) {
+//       return {
+//         success: false,
+//         error: error.message,
+//       };
+//     }
 
-    console.error("Error fetching current user:", error);
-  }
-};
-const currentUser = await user()
+//     console.error("Error fetching current user:", error);
+//   }
+// };
+// const currentUser = await user()
 
 
 
 
 export function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const currentUser = useAuthStore((state) => state.currentUser);
   const setAccessToken = useAuthStore((state) => state.setAccessToken);
-
+const setCurrentUser = useAuthStore((state) => state.setCurrentUser);
   // login
   const login = async ({ email, password }) => {
     try {
@@ -46,7 +47,7 @@ export function AuthProvider({ children }) {
       const data = response.data;
       const { token, User } = data;
 
-      // setCurrentUser(User);
+      setCurrentUser(User);
       setIsAuthenticated(true);
       setAccessToken(token);
 
@@ -112,7 +113,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, login, getInitials, user, logout, currentUser }}>
+    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, login, getInitials, logout, currentUser }}>
       {children}
     </AuthContext.Provider>
   )

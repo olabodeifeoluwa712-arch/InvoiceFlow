@@ -27,6 +27,7 @@ export const getProducts = async () => {
 export const getOneProduct = async (id) => {
     try {
         const response = await api.get(`/inventory/get-product/${id}`)
+        console.log(`one Product: ${response}`)
         return response
     } catch (error) {
         if(error instanceof ApiError) return {error: error.message}

@@ -16,7 +16,7 @@ import {
   getCustomer,
   updateCustomer,
   deleteCustomer,
-} from "../../api/customer.service";
+} from "../../api/customer.api";
 
 const CustomerDetails = () => {
   const { isDark } = useTheme();

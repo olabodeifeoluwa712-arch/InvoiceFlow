@@ -9,7 +9,7 @@ import {
 import {
   getCustomers,
   createCustomer,
-} from "../../api/customer.service.js";
+} from "../../api/customer.api.js";
 import { getFormattedDate } from "../../utils/formatter";
 
 

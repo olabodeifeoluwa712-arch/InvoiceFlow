@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import {
     getSettings,
     updateSettings,
-} from "../../api/settings.service";
+} from "../../api/settings.api";
 
 import {
     Cog6ToothIcon,

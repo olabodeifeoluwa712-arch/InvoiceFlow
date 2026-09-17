@@ -8,6 +8,11 @@ const useAuthStore = create(
       currentUser: null,
       setAccessToken: (token) => set({ accessToken: token }),
       setCurrentUser: (user) => set({ currentUser: user }),
+      setBusiness: (business) =>
+        set({ business }),
+
+      clearBusiness: () =>
+        set({ business: null }),
       // Clear everything on logout
       logout: () => set({ accessToken: null, currentUser: null }),
     }),
