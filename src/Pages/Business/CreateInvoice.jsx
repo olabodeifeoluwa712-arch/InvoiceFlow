@@ -734,8 +734,8 @@ const CreateInvoice = () => {
                             </button>
 
                             {openProductDropdown === item.id && (
-                              <div className="absolute left-0 right-0 top-[calc(100%+7px)] z-30 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl">
-                                <div className="border-b border-gray-100 p-3">
+                              <div className="absolute left-0 top-[calc(100%+7px)] z-40 w-[380px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl">
+                                <div className="border-b border-gray-100 bg-white p-3">
                                   <div className="relative">
                                     <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
 
@@ -750,7 +750,7 @@ const CreateInvoice = () => {
                                         }))
                                       }
                                       placeholder="Search product or SKU..."
-                                      className="w-full rounded-lg border border-gray-200 bg-gray-50 py-2.5 pl-9 pr-3 text-sm outline-none transition focus:border-[#7c3aed] focus:bg-white"
+                                     className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-10 pr-3 text-sm text-gray-700 outline-none transition placeholder:text-gray-400 focus:border-[#7c3aed] focus:bg-white focus:ring-4 focus:ring-purple-50"
                                     />
                                   </div>
                                 </div>
@@ -775,14 +775,14 @@ const CreateInvoice = () => {
                                               product
                                             )
                                           }
-                                          className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left transition hover:bg-purple-50"
+                                         className="flex w-full items-center gap-4 rounded-lg px-3 py-3 text-left transition hover:bg-purple-50"
                                         >
-                                          <div className="min-w-0">
+                                          <div className="min-w-0 flex-1">
                                             <p className="truncate text-sm font-medium text-gray-900">
                                               {product.name}
                                             </p>
 
-                                            <div className="mt-0.5 flex items-center gap-2 text-[11px] text-gray-400">
+                                           <div className="mt-1 flex items-center gap-2 whitespace-nowrap text-[11px] text-gray-400">
                                               <span>
                                                 SKU: {product.sku}
                                               </span>
@@ -795,7 +795,7 @@ const CreateInvoice = () => {
                                             </div>
                                           </div>
 
-                                          <div className="ml-4 flex shrink-0 items-center gap-3">
+                                          <div className="ml-auto flex shrink-0 items-center gap-3 pl-3">
                                             <span className="text-sm font-medium text-gray-700">
                                               {formatMoney(
                                                 product.unitPrice

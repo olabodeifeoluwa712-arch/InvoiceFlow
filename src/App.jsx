@@ -45,7 +45,8 @@ import AdminPermissions from './Pages/Admin/Permissions'
 import AdminIntegrations from './Pages/Admin/integrations'
 import AdminReports from './Pages/Admin/Reports'
 import SeeInvoices from './Pages/Business/seeInvoices'
-import CustomerDetails from "./Pages/Business/CustomerDetails";
+import CustomerDetails from "./Pages/Business/CustomerDetails"
+import ProductDetails from './Pages/Business/ProductDetails'
 
 // Shared Pages
 import LandingPage from './Pages/landingPage'
@@ -113,6 +114,7 @@ function App() {
                 <Route path="/business-products" element={<ProtectedRoute allowedRoles={['admin']}><BusinessProducts /></ProtectedRoute>} />
                 <Route path="/business-management" element={<ProtectedRoute allowedRoles={['admin']}><BusinessManagement /></ProtectedRoute>} />
                 <Route path="/customers/:id" element={<ProtectedRoute allowedRoles={['admin']}><CustomerDetails /></ProtectedRoute>} />
+                <Route path="/products/:id" element={<ProtectedRoute allowedRoles={['admin']}><ProductDetails /></ProtectedRoute>} />
                 <Route path="/business-view-invoices" element={<ProtectedRoute allowedRoles={['admin']}><EditBusinessInvoice /></ProtectedRoute>} />
                 <Route path="/business-subscription" element={<ProtectedRoute allowedRoles={['admin']}><BusinessSubscription /></ProtectedRoute>} />
                 <Route path="/subscription" element={<ProtectedRoute allowedRoles={['admin']}><BusinessSubscription /></ProtectedRoute>} />

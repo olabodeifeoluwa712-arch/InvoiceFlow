@@ -1519,27 +1519,23 @@ function DocumentUpload({
     const isNewFile =
         existingFile instanceof File;
 
-    const fileUrl =
-        isExisting
-            ? `http://localhost:7000/${existingFile.replace(
-                /\\/g,
-                "/"
-            )}`
-            : null;
+    const fileUrl = isExisting
+        ? `http://localhost:8080${existingFile.replace(/\\/g, "/")}`
+        : null;
 
     const isImage =
-        fileUrl &&
-        /\.(jpg|jpeg|png|webp)$/i.test(
-            fileUrl
-        );
+        typeof fileUrl === "string" &&
+        /\.(jpg|jpeg|png|webp)$/i.test(fileUrl);
+
+    console.log("DOCUMENT:", title);
+    console.log("EXISTING FILE:", existingFile);
+    console.log("FILE URL:", fileUrl);
+    console.log("IS IMAGE:", isImage);
 
     return (
         <div className="rounded-2xl border border-gray-200 p-5">
-
             <div className="flex items-start justify-between gap-4">
-
                 <div>
-
                     <h3 className="text-sm font-semibold text-gray-900">
                         {title}
                     </h3>
@@ -1547,7 +1543,6 @@ function DocumentUpload({
                     <p className="mt-1 text-xs text-gray-400">
                         JPG, PNG or PDF
                     </p>
-
                 </div>
 
                 {isExisting && (
@@ -1555,24 +1550,31 @@ function DocumentUpload({
                         Uploaded
                     </span>
                 )}
-
             </div>
 
-            {/* EXISTING FILE */}
-
             {isExisting && fileUrl && (
-
                 <div className="mt-4">
-
                     {isImage ? (
                         <img
                             src={fileUrl}
                             alt={title}
                             className="h-32 w-32 rounded-xl object-cover"
+                            onLoad={() =>
+                                console.log(
+                                    "IMAGE LOADED:",
+                                    fileUrl
+                                )
+                            }
+                            onError={(error) =>
+                                console.error(
+                                    "IMAGE FAILED:",
+                                    fileUrl,
+                                    error
+                                )
+                            }
                         />
                     ) : (
                         <div className="rounded-xl bg-gray-50 p-4">
-
                             <p className="text-sm font-medium text-gray-700">
                                 Document already uploaded
                             </p>
@@ -1585,19 +1587,13 @@ function DocumentUpload({
                             >
                                 View document
                             </a>
-
                         </div>
                     )}
-
                 </div>
             )}
 
-            {/* NEW FILE */}
-
             {isNewFile && (
-
                 <div className="mt-4 rounded-xl bg-[#F3EEFF] p-4">
-
                     <p className="text-sm font-medium text-[#6D28D9]">
                         New file selected
                     </p>
@@ -1605,14 +1601,10 @@ function DocumentUpload({
                     <p className="mt-1 text-xs text-gray-500">
                         {existingFile.name}
                     </p>
-
                 </div>
             )}
 
-            {/* FILE INPUT */}
-
             <label className="mt-4 flex cursor-pointer items-center justify-center rounded-xl border border-dashed border-gray-300 px-4 py-6 text-sm text-gray-500 transition hover:border-[#8B5CF6] hover:bg-[#FAF8FF]">
-
                 {isExisting
                     ? "Replace document"
                     : "Choose document"}
@@ -1623,9 +1615,7 @@ function DocumentUpload({
                     accept=".jpg,.jpeg,.png,.pdf"
                     onChange={onChange}
                 />
-
             </label>
-
         </div>
     );
 }
