@@ -1,3 +1,4 @@
+<<<<<<<<< Temporary merge branch 1
 import React from 'react'
 import { useState } from 'react'    
 import { useTheme } from '../../Context/ThemeContext'
@@ -11,6 +12,9 @@ const low = products.filter(product => product.status.toLowerCase() === "low sto
 const lowStockProducts = low.slice(0, 5); // Get the first 5 low stock products
 
 console.log(lowStockProducts);
+=========
+import React, { useEffect, useState } from "react";
+>>>>>>>>> Temporary merge branch 2
 import {
   AreaChart,
   Area,
@@ -117,34 +121,63 @@ const RevenueChart = ({ chart }) => {
 };
 
 const Dashboard = () => {
-  const totalRevenue = 13300;
-  const totalInvoices = 7;
-  const pendingInvoices = 4;
-  const lowStockItems = 2;
+  const [dashboard, setDashboard] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const [paid, setPaid] = useState(3);
-  const [oustanding, setOutstanding] = useState(4);
-  getAnalytics()
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      try {
+        setLoading(true);
+        setError("");
 
-  return (
-    <div className="relative min-h-screen bg-[#F8F9FC] p-6 md:p-10 font-sans select-none overflow-hidden transition-colors duration-200 dark:bg-[#0B0D10] dark:text-[#F3F4F6]">
-      <div className="relative z-10 max-w-7xl mx-auto space-y-8">
-        
-        {/* Metric Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          
-          {/* Total Revenue */}
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 flex flex-col justify-between relative overflow-hidden transition-all duration-200 dark:bg-[#171B21] dark:border-[#272D35] dark:shadow-subtle-dark">
-            <div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-slate-400 dark:text-[#A1A7B0]">Total Revenue</span>
-                <div className="w-10 h-10 rounded-xl bg-purple-100/50 flex items-center justify-center dark:bg-[#1D2229] dark:border dark:border-[#272D35]">
-                  <span className="text-purple-600 font-extrabold text-xl leading-none dark:text-[#8B7CF6]">$</span>
-                </div>
-              </div>
-              <h3 className="text-3xl font-extrabold text-slate-800 dark:text-[#F3F4F6] mt-4">
-                {formatStockValue(totalRevenue)}
-              </h3>
+        const response = await api.get("/dashboard");
+
+        setDashboard(response.data);
+      } catch (err) {
+        console.error("Dashboard error:", err);
+
+        setError(
+          err?.message || "Unable to load dashboard information."
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboard();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-6">
+        <div className="max-w-7xl mx-auto space-y-6 animate-pulse">
+          <div className="h-8 w-48 bg-slate-200 dark:bg-slate-800 rounded-lg" />
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {[1, 2, 3, 4].map((item) => (
+              <div
+                key={item}
+                className="h-32 bg-white dark:bg-slate-900 rounded-2xl"
+              />
+            ))}
+          </div>
+
+          <div className="h-96 bg-white dark:bg-slate-900 rounded-2xl" />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-8 text-center border border-slate-200 dark:border-slate-800">
+            <div className="w-14 h-14 mx-auto rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mb-4">
+              <span className="text-red-600 dark:text-red-400 text-xl">
+                !
+              </span>
             </div>
 
             <h2 className="text-lg font-semibold text-slate-800 dark:text-white">

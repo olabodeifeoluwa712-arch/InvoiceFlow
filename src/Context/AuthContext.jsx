@@ -67,6 +67,7 @@ export function AuthProvider({ children }) {
       const { token, User } = data;
 
       setCurrentUser(User);
+      setCurrentUser(User);
       setIsAuthenticated(true);
       setAccessToken(token);
 
