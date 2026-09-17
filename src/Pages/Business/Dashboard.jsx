@@ -4,6 +4,7 @@ import { useTheme } from '../../Context/ThemeContext'
 import { formatStockValue } from '../../utils/formatter'
 import { getNameInitials } from '../../utils/formatter'
 import { customers as customerActivity, invoices as recent, products } from '../../Database/data.json'
+import { getAnalytics } from '../../api/analytics.api'
 
 const recentInvoices = recent.slice(0, 5).reverse(); // Get the 5 most recent invoices
 const low = products.filter(product => product.status.toLowerCase() === "low stock" || product.status.toLowerCase() === "out of stock");
@@ -131,6 +132,7 @@ const Dashboard = () => {
 
   const [paid, setPaid] = useState(3);
   const [oustanding, setOutstanding] = useState(4);
+  getAnalytics()
 
   return (
     <div className="relative min-h-screen bg-[#F8F9FC] p-6 md:p-10 font-sans select-none overflow-hidden transition-colors duration-200 dark:bg-[#0B0D10] dark:text-[#F3F4F6]">

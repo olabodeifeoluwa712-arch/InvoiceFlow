@@ -712,10 +712,8 @@ const Management = () => {
                   onChange={(e) => setNewMember(prev => ({ ...prev, role: e.target.value }))}
                   className="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 font-medium focus:border-neon-purple focus:outline-none transition-all dark:bg-slate-950/40 dark:border-slate-800 dark:text-slate-100 dark:focus:border-neon-cyan/80 dark:focus:ring-neon-cyan/40"
                 >
-                  <option value="Admin">Admin</option>
                   <option value="inventory">Inventory Manager</option>
-                  <option value="Accountant">Accountant</option>
-                  <option value="Viewer">Viewer</option>
+                  <option value="accountant">Accountant</option>
                 </select>
               </div>
 
