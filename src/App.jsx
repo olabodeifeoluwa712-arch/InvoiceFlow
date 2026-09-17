@@ -1,121 +1,165 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import './index.css'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import Login from './Pages/user/Login'
+import Register from './Pages/user/Register'
+import VerifyOtp from './Pages/user/VerifyOtp'
+import MainLayout from './components/Layout/MainLayout'
+import { AuthProvider, useAuth } from './Context/AuthContext'
+import { ThemeProvider } from './Context/ThemeContext'
+import { NotificationProvider } from './Context/NotificationContext'
+
+// Accountant Pages
+import Audit from './Pages/Accountant/Audit'
+import AccountantDashboard from './Pages/Accountant/Dashboard'
+import Payments from './Pages/Accountant/Payments'
+import Reports from './Pages/Accountant/Reports'
+import Records from './Pages/Accountant/Records'
+
+// Business Pages
+import CreateInvoice from './Pages/Business/CreateInvoice'
+import CreateBusiness from './Pages/Business/createBusiness'
+import BusinessDashboard from './Pages/Business/Dashboard'
+import BusinessCustomers from './Pages/Business/Customers'
+import BusinessInvoices from './Pages/Business/Invoices'
+import BusinessCreateReceipt from './Pages/Business/CreateReceipt'
+import BusinessSettings from './Pages/Business/Settings'
+import BusinessProducts from './Pages/Business/Products'
+import BusinessManagement from './Pages/Business/Management'
+import EditBusinessInvoice from './Pages/Business/seeInvoices'
+import BusinessSubscription from './Pages/Business/Subscription'
+import BusinessProfile from './Pages/Business/BusinessProfile'
+
+// Inventory Manager Pages
+import InventoryDashboard from './Pages/Inventory-manager/Dashboard'
+import Inventory from './Pages/Inventory-manager/Inventory'
+import Products from './Pages/Inventory-manager/Products'
+import StockHistory from './Pages/Inventory-manager/StockHistory'
+import StockAdjustment from './Pages/Inventory-manager/StockAdjustment'
+import LowStockAlerts from './Pages/Inventory-manager/LowStockAlerts'
+import AddProducts from './Pages/Inventory-manager/addProducts'
+
+// Admin Pages
+import AdminDashboard from './Pages/Admin/Dashboard'
+import AdminManagement from './Pages/Admin/Management'
+import AdminPermissions from './Pages/Admin/Permissions'
+import AdminIntegrations from './Pages/Admin/integrations'
+import AdminReports from './Pages/Admin/Reports'
+import SeeInvoices from './Pages/Business/seeInvoices'
+import CustomerDetails from "./Pages/Business/CustomerDetails"
+import ProductDetails from './Pages/Business/ProductDetails'
+
+// Shared Pages
+import LandingPage from './Pages/landingPage'
+import NotificationsPage from './Pages/Notifications'
+
+function ProtectedRoute({ allowedRoles, children }) {
+  const { currentUser } = useAuth();
+
+  if (!currentUser) {
+     return <Navigate to="/login" replace />;
+  }
+
+  if (!allowedRoles.includes(currentUser.role)) {
+    return <Navigate to="/unauthorized" replace />;
+  }
+
+  return children;
+}
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <AuthProvider>
+      <ThemeProvider>
+        <NotificationProvider>
+          <Router>
+            <Routes>
+              <Route element={<MainLayout />}>
+                {/* Notifications for All Roles */}
+                <Route
+                  path="/notifications"
+                  element={
+                    <ProtectedRoute allowedRoles={['admin', 'superadmin', 'inventory', 'accountant']}>
+                      <NotificationsPage />
+                    </ProtectedRoute>
+                  }
+                />
 
-      <div className="ticks"></div>
+                {/* Profile Route for all logged in roles */}
+                <Route
+                  path="/profile"
+                  element={
+                    <ProtectedRoute allowedRoles={['admin', 'superadmin', 'inventory', 'accountant']}>
+                      <BusinessProfile />
+                    </ProtectedRoute>
+                  }
+                />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+                {/* Inventory Manager */}
+                <Route index path="/inventory-dashboard" element={<ProtectedRoute allowedRoles={['inventory']}><InventoryDashboard /></ProtectedRoute>} />
+                <Route path="/inventory" element={<ProtectedRoute allowedRoles={['inventory']}><Inventory /></ProtectedRoute>} />
+                <Route path="/inventory-products" element={<ProtectedRoute allowedRoles={['inventory']}><Products /></ProtectedRoute>} />
+                <Route path="/stock-adjustments" element={<ProtectedRoute allowedRoles={['inventory']}><StockAdjustment /></ProtectedRoute>} />
+                <Route path="/stock-history" element={<ProtectedRoute allowedRoles={['inventory']}><StockHistory /></ProtectedRoute>} />
+                <Route path="/low-stock-alerts" element={<ProtectedRoute allowedRoles={['inventory']}><LowStockAlerts /></ProtectedRoute>} />
+                <Route path="/add-products" element={<ProtectedRoute allowedRoles={['inventory']}><AddProducts /></ProtectedRoute>} />
+               
+                {/* Business */}
+                <Route index path="/business-dashboard" element={<ProtectedRoute allowedRoles={['admin']}><BusinessDashboard /></ProtectedRoute>} />
+                <Route path="/business-customers" element={<ProtectedRoute allowedRoles={['admin']}><BusinessCustomers /></ProtectedRoute>} />
+                <Route path="/business-invoices" element={<ProtectedRoute allowedRoles={['admin']}><BusinessInvoices /></ProtectedRoute>} />
+                <Route path="/business-create-receipt" element={<ProtectedRoute allowedRoles={['admin']}><BusinessCreateReceipt /></ProtectedRoute>} />
+                <Route path="/business-settings" element={<ProtectedRoute allowedRoles={['admin']}><BusinessSettings /></ProtectedRoute>} />
+                <Route path="/business-profile" element={<ProtectedRoute allowedRoles={['admin', 'superadmin']}><BusinessProfile /></ProtectedRoute>} />
+                <Route path="/create-invoice" element={<ProtectedRoute allowedRoles={['admin']}><CreateInvoice /></ProtectedRoute>} />
+                <Route path="/business-products" element={<ProtectedRoute allowedRoles={['admin']}><BusinessProducts /></ProtectedRoute>} />
+                <Route path="/business-management" element={<ProtectedRoute allowedRoles={['admin']}><BusinessManagement /></ProtectedRoute>} />
+                <Route path="/customers/:id" element={<ProtectedRoute allowedRoles={['admin']}><CustomerDetails /></ProtectedRoute>} />
+                <Route path="/products/:id" element={<ProtectedRoute allowedRoles={['admin']}><ProductDetails /></ProtectedRoute>} />
+                <Route path="/business-view-invoices" element={<ProtectedRoute allowedRoles={['admin']}><EditBusinessInvoice /></ProtectedRoute>} />
+                <Route path="/business-subscription" element={<ProtectedRoute allowedRoles={['admin']}><BusinessSubscription /></ProtectedRoute>} />
+                <Route path="/subscription" element={<ProtectedRoute allowedRoles={['admin']}><BusinessSubscription /></ProtectedRoute>} />
+                 <Route path="/business-customers" element={<ProtectedRoute allowedRoles={['admin']}><BusinessCustomers /></ProtectedRoute>} />
+                 <Route
+                  path="/business-view-invoices/:id"
+                  element={
+                    <ProtectedRoute allowedRoles={["admin"]}>
+                      <SeeInvoices />
+                    </ProtectedRoute>
+                  }
+                />
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+                <Route path="/business-create-business" element={<ProtectedRoute allowedRoles={['admin']}><CreateBusiness /></ProtectedRoute>} />
+
+
+                {/* Accountant */}
+                <Route index path="/accountant-dashboard" element={<ProtectedRoute allowedRoles={['accountant']}><AccountantDashboard /></ProtectedRoute>} />
+                <Route path="/audit" element={<ProtectedRoute allowedRoles={['accountant']}><Audit /></ProtectedRoute>} />
+                <Route path="/payments" element={<ProtectedRoute allowedRoles={['accountant']}><Payments /></ProtectedRoute>} />
+                <Route path="/reports" element={<ProtectedRoute allowedRoles={['accountant']}><Reports /></ProtectedRoute>} />
+                <Route path="/records" element={<ProtectedRoute allowedRoles={['accountant']}><Records /></ProtectedRoute>} />
+
+                  {/* Admin / Superadmin */}
+                  <Route index path="/admin-dashboard" element={<ProtectedRoute allowedRoles={['superadmin']}><AdminDashboard /></ProtectedRoute>} />
+                  <Route path="/admin-management" element={<ProtectedRoute allowedRoles={['superadmin']}><AdminManagement /></ProtectedRoute>} />
+                  <Route path="/admin-permissions" element={<ProtectedRoute allowedRoles={['admin', 'superadmin']}><AdminPermissions /></ProtectedRoute>} />
+                  <Route path="/permissions" element={<ProtectedRoute allowedRoles={['admin', 'superadmin']}><AdminPermissions /></ProtectedRoute>} />
+                <Route path="/team-permissions" element={<ProtectedRoute allowedRoles={['admin', 'superadmin']}><AdminPermissions /></ProtectedRoute>} />
+                  <Route path="/business-permissions" element={<ProtectedRoute allowedRoles={['admin', 'superadmin']}><AdminPermissions /></ProtectedRoute>} />
+                  <Route path="/admin-integrations" element={<ProtectedRoute allowedRoles={['superadmin']}><AdminIntegrations /></ProtectedRoute>} />
+                  {/* <Route path="/admin-profile" element={<ProtectedRoute allowedRoles={['superadmin', 'admin']}><AdminProfile /></ProtectedRoute>} /> */}
+                  <Route path="/admin-analytics" element={<ProtectedRoute allowedRoles={['superadmin']}><AdminReports /></ProtectedRoute>} />
+                </Route>
+                      
+              {/* Auth / Public */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/verify-otp" element={<VerifyOtp />} />
+              <Route path="/" element={<LandingPage />} />
+            </Routes>
+          </Router>
+        </NotificationProvider>
+      </ThemeProvider>
+    </AuthProvider>
   )
 }
 
