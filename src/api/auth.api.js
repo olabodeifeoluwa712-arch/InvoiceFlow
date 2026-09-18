@@ -3,7 +3,7 @@ import ApiError from "./apiError";
 
 export const authApi = {
     login:(email,password)=>
-        http.post('/auth/login',{email,password}),
+        api.post('/auth/login',{email,password}),
 };
 
 export const user = async () => {
@@ -28,7 +28,7 @@ export const user = async () => {
     }
   }
 
-  export const resendOtp = async() => {
+  export const resendOtp = async(otpId) => {
     try {
       const response = await api.post(`/auth/resend-otp/${otpId}`);
       return response

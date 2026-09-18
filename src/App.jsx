@@ -1,6 +1,6 @@
 import './index.css'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import Login from './Pages/user/Login'
+import Login from './Pages/user/login'
 import Register from './Pages/user/Register'
 import VerifyOtp from './Pages/user/VerifyOtp'
 import MainLayout from './components/Layout/MainLayout'
