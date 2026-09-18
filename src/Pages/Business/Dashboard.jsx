@@ -1,9 +1,5 @@
-<<<<<<<<< Temporary merge branch 1
-import React from 'react'
-import { useState } from 'react'    
-import { useTheme } from '../../Context/ThemeContext'
-import { formatStockValue } from '../../utils/formatter'
-import { getNameInitials } from '../../utils/formatter'
+
+
 import { customers as customerActivity, invoices as recent, products } from '../../Database/data.json'
 import { getAnalytics } from '../../api/analytics.api'
 
@@ -12,9 +8,9 @@ const low = products.filter(product => product.status.toLowerCase() === "low sto
 const lowStockProducts = low.slice(0, 5); // Get the first 5 low stock products
 
 console.log(lowStockProducts);
-=========
+
 import React, { useEffect, useState } from "react";
->>>>>>>>> Temporary merge branch 2
+
 import {
   AreaChart,
   Area,

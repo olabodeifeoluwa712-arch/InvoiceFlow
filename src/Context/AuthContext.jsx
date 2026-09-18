@@ -19,14 +19,14 @@ const user = async () => {
     // setCurrentUser(response.user);
     
 
-//     return response.user;
-//   } catch (error) {
-//     if (error instanceof ApiError) {
-//       return {
-//         success: false,
-//         error: error.message,
-//       };
-//     }
+    return response.user;
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
 
     console.error("Error fetching current user:", error);
   }

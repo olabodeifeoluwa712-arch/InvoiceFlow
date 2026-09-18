@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTheme } from '../../Context/ThemeContext';
 import {
-   getOneProduct,
+  getOneProduct,
   updateProduct,
   deleteProduct,
 } from '../../api/inventory.api';
@@ -11,14 +11,14 @@ const getStatusStyle = (status) => {
   const s = status?.toLowerCase();
 
   if (s === 'in stock') {
-    return 'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/30';
+    return 'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800';
   }
 
   if (s === 'low stock') {
-    return 'bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/30';
+    return 'bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800';
   }
 
-  return 'bg-red-50 text-red-600 border border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/30';
+  return 'bg-red-50 text-red-600 border border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800';
 };
 
 const ProductDetails = () => {
@@ -52,7 +52,7 @@ const ProductDetails = () => {
         setLoading(true);
         setError('');
 
-        const response = await  getOneProduct(id);
+        const response = await getOneProduct(id);
 
         setProduct(response);
 
@@ -111,7 +111,7 @@ const ProductDetails = () => {
           : 0,
       };
 
-      const updatedProduct = await updateProduct(id,data);
+      const updatedProduct = await updateProduct(id, data);
 
       setProduct(updatedProduct);
 
@@ -161,7 +161,7 @@ const ProductDetails = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-500 dark:bg-cyber-dark dark:text-slate-400">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-500 dark:bg-slate-950 dark:text-slate-400">
         Loading product...
       </div>
     );
@@ -169,31 +169,29 @@ const ProductDetails = () => {
 
   if (error || !product) {
     return (
-      <div className="min-h-screen p-6 md:p-10 bg-slate-50 dark:bg-cyber-dark">
-
+      <div className="min-h-screen p-6 md:p-10 bg-slate-50 dark:bg-slate-950">
         <button
           type="button"
-          onClick={() => navigate("/business-products")}
-          className="mb-6 text-sm font-semibold text-neon-purple dark:text-neon-cyan"
+          onClick={() => navigate('/business-products')}
+          className="mb-6 text-sm font-semibold text-[#7C3AED] hover:text-[#6D28D9] dark:text-purple-400 dark:hover:text-purple-300"
         >
           ← Back to Products
         </button>
 
-        <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-red-600 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-400">
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-red-600 dark:border-red-800 dark:bg-red-900/30 dark:text-red-400">
           {error || 'Product not found.'}
         </div>
-
       </div>
     );
   }
 
   return (
-    <div className="relative min-h-screen p-6 md:p-10 overflow-hidden bg-slate-50 text-slate-900 dark:bg-cyber-dark dark:text-slate-100">
+    <div className="relative min-h-screen p-6 md:p-10 overflow-hidden bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
 
       {/* Background */}
-      <div className="absolute top-1/4 -right-36 w-96 h-96 bg-neon-purple/5 dark:bg-neon-purple/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/4 -right-36 w-96 h-96 bg-purple-500/5 dark:bg-purple-500/10 rounded-full blur-[120px] pointer-events-none" />
 
-      <div className="absolute bottom-1/4 -left-36 w-96 h-96 bg-neon-cyan/5 dark:bg-neon-cyan/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-1/4 -left-36 w-96 h-96 bg-violet-500/5 dark:bg-violet-500/10 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="relative z-10 max-w-5xl mx-auto">
 
@@ -201,7 +199,7 @@ const ProductDetails = () => {
         <button
           type="button"
           onClick={() => navigate('/business-products')}
-          className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-neon-purple dark:text-slate-400 dark:hover:text-neon-cyan transition"
+          className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-[#7C3AED] dark:text-slate-400 dark:hover:text-purple-400 transition"
         >
           ← Back to Products
         </button>
@@ -231,7 +229,7 @@ const ProductDetails = () => {
                 setActionError('');
                 setShowEditModal(true);
               }}
-              className="px-5 py-3 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-cyber-card dark:text-slate-200 dark:hover:bg-slate-800 transition"
+              className="px-5 py-3 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 transition"
             >
               Edit Product
             </button>
@@ -253,18 +251,18 @@ const ProductDetails = () => {
 
         {/* Error */}
         {actionError && (
-          <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-400">
+          <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-800 dark:bg-red-900/30 dark:text-red-400">
             {actionError}
           </div>
         )}
 
         {/* Product Details */}
-        <div className="bg-white border border-slate-200/80 shadow-sm dark:bg-cyber-card/85 dark:border-slate-800/80 dark:shadow-2xl rounded-3xl p-6">
+        <div className="bg-white border border-slate-200 shadow-sm dark:bg-slate-900 dark:border-slate-800 dark:shadow-2xl rounded-3xl p-6">
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
 
             {/* Category */}
-            <div className="rounded-2xl bg-slate-50 border border-slate-200 p-5 dark:bg-slate-950/30 dark:border-slate-800">
+            <div className="rounded-2xl bg-slate-50 border border-slate-200 p-5 dark:bg-slate-950 dark:border-slate-800">
               <p className="text-xs uppercase tracking-wider font-mono text-slate-400 dark:text-slate-500">
                 Category
               </p>
@@ -275,7 +273,7 @@ const ProductDetails = () => {
             </div>
 
             {/* Brand */}
-            <div className="rounded-2xl bg-slate-50 border border-slate-200 p-5 dark:bg-slate-950/30 dark:border-slate-800">
+            <div className="rounded-2xl bg-slate-50 border border-slate-200 p-5 dark:bg-slate-950 dark:border-slate-800">
               <p className="text-xs uppercase tracking-wider font-mono text-slate-400 dark:text-slate-500">
                 Brand
               </p>
@@ -286,7 +284,7 @@ const ProductDetails = () => {
             </div>
 
             {/* Unit Cost */}
-            <div className="rounded-2xl bg-slate-50 border border-slate-200 p-5 dark:bg-slate-950/30 dark:border-slate-800">
+            <div className="rounded-2xl bg-slate-50 border border-slate-200 p-5 dark:bg-slate-950 dark:border-slate-800">
               <p className="text-xs uppercase tracking-wider font-mono text-slate-400 dark:text-slate-500">
                 Unit Cost
               </p>
@@ -297,7 +295,7 @@ const ProductDetails = () => {
             </div>
 
             {/* Selling Price */}
-            <div className="rounded-2xl bg-slate-50 border border-slate-200 p-5 dark:bg-slate-950/30 dark:border-slate-800">
+            <div className="rounded-2xl bg-slate-50 border border-slate-200 p-5 dark:bg-slate-950 dark:border-slate-800">
               <p className="text-xs uppercase tracking-wider font-mono text-slate-400 dark:text-slate-500">
                 Selling Price
               </p>
@@ -308,7 +306,7 @@ const ProductDetails = () => {
             </div>
 
             {/* Quantity */}
-            <div className="rounded-2xl bg-slate-50 border border-slate-200 p-5 dark:bg-slate-950/30 dark:border-slate-800">
+            <div className="rounded-2xl bg-slate-50 border border-slate-200 p-5 dark:bg-slate-950 dark:border-slate-800">
               <p className="text-xs uppercase tracking-wider font-mono text-slate-400 dark:text-slate-500">
                 Quantity
               </p>
@@ -319,7 +317,7 @@ const ProductDetails = () => {
             </div>
 
             {/* Status */}
-            <div className="rounded-2xl bg-slate-50 border border-slate-200 p-5 dark:bg-slate-950/30 dark:border-slate-800">
+            <div className="rounded-2xl bg-slate-50 border border-slate-200 p-5 dark:bg-slate-950 dark:border-slate-800">
               <p className="text-xs uppercase tracking-wider font-mono text-slate-400 dark:text-slate-500">
                 Status
               </p>
@@ -365,7 +363,7 @@ const ProductDetails = () => {
         >
 
           <div
-            className="w-full max-w-lg bg-white dark:bg-cyber-card border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl overflow-hidden"
+            className="w-full max-w-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
 
@@ -408,7 +406,7 @@ const ProductDetails = () => {
                     value={editData.name}
                     onChange={handleEditChange}
                     required
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-neon-purple dark:border-slate-700 dark:bg-slate-950/40 dark:text-slate-100 dark:focus:border-neon-cyan"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-[#7C3AED] focus:ring-4 focus:ring-purple-100 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-purple-500 dark:focus:ring-purple-900/30"
                   />
                 </div>
 
@@ -426,7 +424,7 @@ const ProductDetails = () => {
                       value={editData.category}
                       onChange={handleEditChange}
                       required
-                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-neon-purple dark:border-slate-700 dark:bg-slate-950/40 dark:text-slate-100 dark:focus:border-neon-cyan"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-[#7C3AED] focus:ring-4 focus:ring-purple-100 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-purple-500 dark:focus:ring-purple-900/30"
                     />
                   </div>
 
@@ -440,7 +438,7 @@ const ProductDetails = () => {
                       name="brand"
                       value={editData.brand}
                       onChange={handleEditChange}
-                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-neon-purple dark:border-slate-700 dark:bg-slate-950/40 dark:text-slate-100 dark:focus:border-neon-cyan"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-[#7C3AED] focus:ring-4 focus:ring-purple-100 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-purple-500 dark:focus:ring-purple-900/30"
                     />
                   </div>
 
@@ -460,7 +458,7 @@ const ProductDetails = () => {
                       value={editData.unitCost}
                       onChange={handleEditChange}
                       min="0"
-                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-neon-purple dark:border-slate-700 dark:bg-slate-950/40 dark:text-slate-100 dark:focus:border-neon-cyan"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-[#7C3AED] focus:ring-4 focus:ring-purple-100 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-purple-500 dark:focus:ring-purple-900/30"
                     />
                   </div>
 
@@ -475,7 +473,7 @@ const ProductDetails = () => {
                       value={editData.unitPrice}
                       onChange={handleEditChange}
                       min="0"
-                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-neon-purple dark:border-slate-700 dark:bg-slate-950/40 dark:text-slate-100 dark:focus:border-neon-cyan"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-[#7C3AED] focus:ring-4 focus:ring-purple-100 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-purple-500 dark:focus:ring-purple-900/30"
                     />
                   </div>
 
@@ -493,7 +491,7 @@ const ProductDetails = () => {
                     value={editData.quantity}
                     onChange={handleEditChange}
                     min="0"
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-neon-purple dark:border-slate-700 dark:bg-slate-950/40 dark:text-slate-100 dark:focus:border-neon-cyan"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-[#7C3AED] focus:ring-4 focus:ring-purple-100 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-purple-500 dark:focus:ring-purple-900/30"
                   />
 
                   <p className="mt-2 text-xs text-slate-400">
@@ -509,7 +507,7 @@ const ProductDetails = () => {
                   type="button"
                   onClick={() => setShowEditModal(false)}
                   disabled={updating}
-                  className="px-5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold dark:border-slate-700"
+                  className="px-5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
                 >
                   Cancel
                 </button>
@@ -517,7 +515,7 @@ const ProductDetails = () => {
                 <button
                   type="submit"
                   disabled={updating}
-                  className="px-5 py-2.5 rounded-xl bg-neon-purple text-white text-sm font-semibold dark:bg-neon-cyan dark:text-slate-950 disabled:opacity-50"
+                  className="px-5 py-2.5 rounded-xl bg-[#7C3AED] hover:bg-[#6D28D9] text-white text-sm font-semibold disabled:opacity-50 transition"
                 >
                   {updating ? 'Saving...' : 'Save Changes'}
                 </button>
@@ -542,11 +540,11 @@ const ProductDetails = () => {
         >
 
           <div
-            className="w-full max-w-md bg-white dark:bg-cyber-card border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl p-6"
+            className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl p-6"
             onClick={(e) => e.stopPropagation()}
           >
 
-            <div className="w-12 h-12 rounded-2xl bg-red-50 text-red-500 flex items-center justify-center dark:bg-red-500/10 mb-5">
+            <div className="w-12 h-12 rounded-2xl bg-red-50 text-red-500 flex items-center justify-center dark:bg-red-900/30 dark:text-red-400 mb-5">
               <svg
                 className="w-6 h-6"
                 fill="none"
@@ -580,7 +578,7 @@ const ProductDetails = () => {
                 type="button"
                 onClick={() => setShowDeleteModal(false)}
                 disabled={deleting}
-                className="px-5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold dark:border-slate-700"
+                className="px-5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
               >
                 Cancel
               </button>

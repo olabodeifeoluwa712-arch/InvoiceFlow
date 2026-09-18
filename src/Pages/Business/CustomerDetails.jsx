@@ -191,9 +191,13 @@ const CustomerDetails = () => {
   // ==========================================
   if (loading) {
     return (
-      <div className="flex min-h-[70vh] items-center justify-center">
+      <div
+        className={`flex min-h-[70vh] items-center justify-center ${
+          isDark ? "bg-slate-950" : "bg-slate-50"
+        }`}
+      >
         <div className="flex items-center gap-3 text-sm text-slate-500 dark:text-slate-400">
-          <span className="h-5 w-5 animate-spin rounded-full border-2 border-violet-200 border-t-violet-600" />
+          <span className="h-5 w-5 animate-spin rounded-full border-2 border-purple-200 border-t-[#7C3AED] dark:border-purple-900/40 dark:border-t-purple-400" />
           Loading customer...
         </div>
       </div>
@@ -205,10 +209,14 @@ const CustomerDetails = () => {
   // ==========================================
   if (pageError || !customer) {
     return (
-      <div className="px-6 py-7">
+      <div
+        className={`min-h-screen px-6 py-7 ${
+          isDark ? "bg-slate-950" : "bg-slate-50"
+        }`}
+      >
         <button
           onClick={() => navigate("/business-customers")}
-          className="mb-6 flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-violet-600 dark:text-slate-400 dark:hover:text-violet-400"
+          className="mb-6 flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-[#7C3AED] dark:text-slate-400 dark:hover:text-purple-400"
         >
           <ArrowLeftIcon className="h-4 w-4" />
           Back to Customers
@@ -235,7 +243,7 @@ const CustomerDetails = () => {
         ========================================== */}
         <button
           onClick={() => navigate("/business-customers")}
-          className="mb-6 flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-violet-600 dark:text-slate-400 dark:hover:text-violet-400"
+          className="mb-6 flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-[#7C3AED] dark:text-slate-400 dark:hover:text-purple-400"
         >
           <ArrowLeftIcon className="h-4 w-4" />
           Back to Customers
@@ -251,19 +259,18 @@ const CustomerDetails = () => {
               : "border-slate-200 bg-white"
           }`}
         >
-          {/* Purple accent */}
-          <div className="h-1 w-full bg-gradient-to-r from-violet-500 via-purple-600 to-indigo-500" />
+          <div className="h-1 w-full bg-[#7C3AED]" />
 
           <div className="flex flex-col gap-5 p-6 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-4">
-              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-violet-100 text-lg font-bold text-violet-700 dark:bg-violet-500/10 dark:text-violet-400">
+              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-purple-100 text-lg font-bold text-purple-700 dark:bg-purple-900/30 dark:text-purple-400">
                 {initials}
               </div>
 
               <div>
                 <h1
                   className={`text-xl font-semibold ${
-                    isDark ? "text-white" : "text-slate-900"
+                    isDark ? "text-slate-100" : "text-slate-900"
                   }`}
                 >
                   {customer.displayName}
@@ -278,7 +285,7 @@ const CustomerDetails = () => {
             <div className="flex items-center gap-2">
               <button
                 onClick={handleOpenEdit}
-                className="flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+                className="flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
               >
                 <PencilSquareIcon className="h-4 w-4" />
                 Edit
@@ -309,7 +316,7 @@ const CustomerDetails = () => {
           >
             <h2
               className={`mb-5 text-sm font-semibold ${
-                isDark ? "text-white" : "text-slate-900"
+                isDark ? "text-slate-100" : "text-slate-900"
               }`}
             >
               Contact Information
@@ -318,7 +325,7 @@ const CustomerDetails = () => {
             <div className="space-y-5">
               {/* Email */}
               <div className="flex gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-violet-600 dark:bg-violet-500/10 dark:text-violet-400">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">
                   <EnvelopeIcon className="h-4 w-4" />
                 </div>
 
@@ -332,7 +339,7 @@ const CustomerDetails = () => {
 
               {/* Phone */}
               <div className="flex gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-violet-600 dark:bg-violet-500/10 dark:text-violet-400">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">
                   <PhoneIcon className="h-4 w-4" />
                 </div>
 
@@ -346,7 +353,7 @@ const CustomerDetails = () => {
 
               {/* Address */}
               <div className="flex gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-violet-600 dark:bg-violet-500/10 dark:text-violet-400">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">
                   <MapPinIcon className="h-4 w-4" />
                 </div>
 
@@ -369,13 +376,13 @@ const CustomerDetails = () => {
             }`}
           >
             <div className="mb-5 flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-violet-50 text-violet-600 dark:bg-violet-500/10 dark:text-violet-400">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">
                 <DocumentTextIcon className="h-4 w-4" />
               </div>
 
               <h2
                 className={`text-sm font-semibold ${
-                  isDark ? "text-white" : "text-slate-900"
+                  isDark ? "text-slate-100" : "text-slate-900"
                 }`}
               >
                 Notes
@@ -384,7 +391,7 @@ const CustomerDetails = () => {
 
             <div
               className={`min-h-[130px] rounded-xl p-4 ${
-                isDark ? "bg-slate-800/60" : "bg-slate-50"
+                isDark ? "bg-slate-950" : "bg-slate-50"
               }`}
             >
               <p className="text-sm leading-6 text-slate-600 dark:text-slate-300">
@@ -407,7 +414,7 @@ const CustomerDetails = () => {
         >
           <h2
             className={`mb-5 text-sm font-semibold ${
-              isDark ? "text-white" : "text-slate-900"
+              isDark ? "text-slate-100" : "text-slate-900"
             }`}
           >
             Customer Record
@@ -467,16 +474,16 @@ const CustomerDetails = () => {
           <div
             className={`relative w-full max-w-[500px] overflow-hidden rounded-2xl border shadow-2xl ${
               isDark
-                ? "border-slate-700 bg-slate-900"
+                ? "border-slate-800 bg-slate-900"
                 : "border-slate-200 bg-white"
             }`}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="h-1 w-full bg-gradient-to-r from-violet-500 via-purple-600 to-indigo-500" />
+            <div className="h-1 w-full bg-[#7C3AED]" />
 
             <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4 dark:border-slate-800">
               <div>
-                <h2 className="text-base font-semibold text-slate-900 dark:text-white">
+                <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">
                   Edit Customer
                 </h2>
 
@@ -514,7 +521,7 @@ const CustomerDetails = () => {
                     name="displayName"
                     value={formData.displayName}
                     onChange={handleInputChange}
-                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-violet-500 focus:bg-white focus:ring-2 focus:ring-violet-500/10 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-violet-500"
+                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-[#7C3AED] focus:bg-white focus:ring-2 focus:ring-purple-100 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-purple-500 dark:focus:bg-slate-950 dark:focus:ring-purple-900/30"
                   />
                 </div>
 
@@ -530,7 +537,7 @@ const CustomerDetails = () => {
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
-                      className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-violet-500 focus:bg-white focus:ring-2 focus:ring-violet-500/10 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-violet-500"
+                      className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-[#7C3AED] focus:bg-white focus:ring-2 focus:ring-purple-100 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-purple-500 dark:focus:bg-slate-950 dark:focus:ring-purple-900/30"
                     />
                   </div>
 
@@ -544,7 +551,7 @@ const CustomerDetails = () => {
                       name="phone"
                       value={formData.phone}
                       onChange={handleInputChange}
-                      className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-violet-500 focus:bg-white focus:ring-2 focus:ring-violet-500/10 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-violet-500"
+                      className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-[#7C3AED] focus:bg-white focus:ring-2 focus:ring-purple-100 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-purple-500 dark:focus:bg-slate-950 dark:focus:ring-purple-900/30"
                     />
                   </div>
                 </div>
@@ -560,7 +567,7 @@ const CustomerDetails = () => {
                     name="address"
                     value={formData.address}
                     onChange={handleInputChange}
-                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-violet-500 focus:bg-white focus:ring-2 focus:ring-violet-500/10 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-violet-500"
+                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-[#7C3AED] focus:bg-white focus:ring-2 focus:ring-purple-100 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-purple-500 dark:focus:bg-slate-950 dark:focus:ring-purple-900/30"
                   />
                 </div>
 
@@ -575,7 +582,7 @@ const CustomerDetails = () => {
                     value={formData.notes}
                     onChange={handleInputChange}
                     rows={2}
-                    className="w-full resize-none rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-violet-500 focus:bg-white focus:ring-2 focus:ring-violet-500/10 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-violet-500"
+                    className="w-full resize-none rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-[#7C3AED] focus:bg-white focus:ring-2 focus:ring-purple-100 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-purple-500 dark:focus:bg-slate-950 dark:focus:ring-purple-900/30"
                   />
                 </div>
               </div>
@@ -586,7 +593,7 @@ const CustomerDetails = () => {
                   type="button"
                   disabled={updating}
                   onClick={() => setShowEditModal(false)}
-                  className="rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+                  className="rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50 disabled:opacity-50 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
                 >
                   Cancel
                 </button>
@@ -594,7 +601,7 @@ const CustomerDetails = () => {
                 <button
                   type="submit"
                   disabled={updating}
-                  className="flex items-center gap-2 rounded-lg bg-violet-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="flex items-center gap-2 rounded-lg bg-[#7C3AED] px-5 py-2.5 text-sm font-medium text-white transition hover:bg-[#6D28D9] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {updating && (
                     <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
@@ -619,7 +626,7 @@ const CustomerDetails = () => {
           <div
             className={`w-full max-w-[390px] rounded-2xl border p-6 shadow-2xl ${
               isDark
-                ? "border-slate-700 bg-slate-900"
+                ? "border-slate-800 bg-slate-900"
                 : "border-slate-200 bg-white"
             }`}
             onClick={(e) => e.stopPropagation()}
@@ -628,7 +635,7 @@ const CustomerDetails = () => {
               <TrashIcon className="h-5 w-5" />
             </div>
 
-            <h2 className="mt-4 text-base font-semibold text-slate-900 dark:text-white">
+            <h2 className="mt-4 text-base font-semibold text-slate-900 dark:text-slate-100">
               Delete Customer?
             </h2>
 
@@ -645,7 +652,7 @@ const CustomerDetails = () => {
                 type="button"
                 disabled={deleting}
                 onClick={() => setShowDeleteModal(false)}
-                className="rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+                className="rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50 disabled:opacity-50 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
               >
                 Cancel
               </button>

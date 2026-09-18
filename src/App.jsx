@@ -5,6 +5,7 @@ import Register from './Pages/user/Register'
 import VerifyOtp from './Pages/user/VerifyOtp'
 import MainLayout from './components/Layout/MainLayout'
 import { AuthProvider, useAuth } from './Context/AuthContext'
+import { BusinessProvider } from './Context/BusinessContext'
 import { ThemeProvider } from './Context/ThemeContext'
 import { NotificationProvider } from './Context/NotificationContext'
 
@@ -71,6 +72,7 @@ function App() {
     <AuthProvider>
       <ThemeProvider>
         <NotificationProvider>
+          <BusinessProvider>
           <Router>
             <Routes>
               <Route element={<MainLayout />}>
@@ -157,6 +159,7 @@ function App() {
               <Route path="/" element={<LandingPage />} />
             </Routes>
           </Router>
+          </BusinessProvider>
         </NotificationProvider>
       </ThemeProvider>
     </AuthProvider>

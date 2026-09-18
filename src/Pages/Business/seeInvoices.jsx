@@ -136,11 +136,11 @@ const SeeInvoices = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F7F7F8] flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center transition-colors duration-300">
         <div className="text-center">
-          <div className="w-10 h-10 border-4 border-gray-200 border-t-[#7C3AED] rounded-full animate-spin mx-auto" />
+          <div className="w-10 h-10 border-4 border-slate-200 dark:border-slate-800 border-t-[#7C3AED] rounded-full animate-spin mx-auto" />
 
-          <p className="mt-4 text-sm text-gray-500">
+          <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">
             Loading invoice...
           </p>
         </div>
@@ -150,13 +150,13 @@ const SeeInvoices = () => {
 
   if (error || !invoice) {
     return (
-      <div className="min-h-screen bg-[#F7F7F8] flex items-center justify-center px-6">
-        <div className="bg-white border border-gray-200 rounded-xl p-8 text-center max-w-md w-full">
-          <h2 className="text-lg font-semibold text-[#222222]">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center px-6 transition-colors duration-300">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-8 text-center max-w-md w-full shadow-sm">
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
             Unable to load invoice
           </h2>
 
-          <p className="text-sm text-gray-500 mt-2">
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
             {error || "Invoice could not be found."}
           </p>
 
@@ -227,17 +227,17 @@ const SeeInvoices = () => {
         `}
       </style>
 
-      <div className="min-h-screen bg-[#F7F7F8]">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
 
         {/* ACTION BAR */}
-        <div className="no-print sticky top-0 z-30 bg-white border-b border-gray-200">
+        <div className="no-print sticky top-0 z-30 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
           <div className="max-w-[1200px] mx-auto px-6 py-4 flex items-center justify-between gap-4">
 
             <button
               onClick={() =>
                 navigate("/business-invoices")
               }
-              className="inline-flex items-center gap-2 text-sm font-medium text-[#555555] hover:text-[#222222] transition"
+              className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-[#7C3AED] dark:hover:text-purple-400 transition"
             >
               <ArrowLeftIcon className="w-5 h-5" />
               Back to Invoices
@@ -247,7 +247,7 @@ const SeeInvoices = () => {
 
               <button
                 onClick={handlePrint}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-sm font-medium text-[#222222] hover:bg-gray-50 transition"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-950 transition"
               >
                 <PrinterIcon className="w-4 h-4" />
                 Print
@@ -256,7 +256,7 @@ const SeeInvoices = () => {
               <button
                 onClick={handleDownload}
                 disabled={downloading}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-sm font-medium text-[#222222] hover:bg-gray-50 disabled:opacity-60 transition"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-950 disabled:opacity-60 transition"
               >
                 <ArrowDownTrayIcon className="w-4 h-4" />
 
@@ -279,8 +279,10 @@ const SeeInvoices = () => {
         </div>
 
         {/* PREVIEW AREA */}
-        <main className="invoice-preview-wrapper py-10 px-6">
-          <div className="invoice-document mx-auto w-full max-w-[794px] min-h-[1123px] bg-white shadow-[0_8px_35px_rgba(0,0,0,0.08)] border border-gray-200 rounded-sm px-[53px] py-[53px]">
+        <main className="invoice-preview-wrapper py-10 px-6 bg-slate-50 dark:bg-slate-950">
+
+          {/* INVOICE DOCUMENT — ALWAYS WHITE */}
+          <div className="invoice-document mx-auto w-full max-w-[794px] min-h-[1123px] bg-white shadow-[0_8px_35px_rgba(0,0,0,0.08)] border border-slate-200 dark:border-slate-800 rounded-sm px-[53px] py-[53px]">
 
             {/* HEADER */}
             <header>
