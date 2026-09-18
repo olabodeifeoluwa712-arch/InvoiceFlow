@@ -4,7 +4,7 @@ import useAuthStore from "./token";
 
 
 const backend_endPoints = ['https://ftr3lxvw-7000.uks1.devtunnels.ms/api', 'http://localhost:8080/api']
-const BASE_URL = /* 'https://invoiceflow-back-end-1.onrender.com/api' */ 'http://localhost:8080/api'
+const BASE_URL = 'https://invoiceflow-back-end-1.onrender.com/api' || 'http://localhost:8080/api'
 
 const api = axios.create({
   baseURL: BASE_URL,

@@ -19,14 +19,14 @@ const user = async () => {
     // setCurrentUser(response.user);
     
 
-//     return response.user;
-//   } catch (error) {
-//     if (error instanceof ApiError) {
-//       return {
-//         success: false,
-//         error: error.message,
-//       };
-//     }
+    return response.user;
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
 
     console.error("Error fetching current user:", error);
   }
@@ -40,7 +40,6 @@ const getCurrentUser = await user();
 
 export function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const currentUser = useAuthStore((state) => state.currentUser);
   const setAccessToken = useAuthStore((state) => state.setAccessToken);
   const setOtpId = useAuthStore((state) => state.setOtpId);
   const otpId = useAuthStore((state) => state.otpId);
