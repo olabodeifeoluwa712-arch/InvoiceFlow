@@ -23,7 +23,7 @@ import { useAuth } from '../../Context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import businessApi, { getTeam, addTeam, removeTeam, updateTeam } from '../../api/team.api';
 
-const Management = () => {
+const management = () => {
   const { theme } = useTheme();
   const navigate = useNavigate();
 
@@ -1258,4 +1258,4 @@ const Management = () => {
   );
 };
 
-export default Management;
+export default management;
