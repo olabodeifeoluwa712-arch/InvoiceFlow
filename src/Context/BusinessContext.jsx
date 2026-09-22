@@ -1,6 +1,7 @@
 import React, {
   createContext,
   useContext,
+  useState,
 } from "react";
 
 import api from "../api/http";
@@ -14,13 +15,7 @@ export function BusinessProvider({ children }) {
     (state) => state.currentUser
   );
 
-  const business = useAuthStore(
-    (state) => state.business
-  );
-
-  const setBusiness = useAuthStore(
-    (state) => state.setBusiness
-  );
+  const [business, setBusiness] = useState(null);
 
   // GET MY BUSINESS
   const getMyBusiness = async () => {

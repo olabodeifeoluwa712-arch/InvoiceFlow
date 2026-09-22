@@ -4,7 +4,7 @@ import ReactDom from 'react-dom'
 import './index.css'
 import App from './App.jsx'
 import { ThemeProvider } from './Context/ThemeContext'
-import { BusinessProvider } from './context/BusinessContext.jsx'
+import { BusinessProvider } from './Context/BusinessContext.jsx'
 import { AuthProvider } from './Context/AuthContext.jsx'
 
 createRoot(document.getElementById('root')).render(

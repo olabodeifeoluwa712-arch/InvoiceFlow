@@ -1,4 +1,16 @@
+
+
+import { customers as customerActivity, invoices as recent, products } from '../../Database/data.json'
+import { getAnalytics } from '../../api/analytics.api'
+
+const recentInvoices = recent.slice(0, 5).reverse(); // Get the 5 most recent invoices
+const low = products.filter(product => product.status.toLowerCase() === "low stock" || product.status.toLowerCase() === "out of stock");
+const lowStockProducts = low.slice(0, 5); // Get the first 5 low stock products
+
+console.log(lowStockProducts);
+
 import React, { useEffect, useState } from "react";
+
 import {
   AreaChart,
   Area,
@@ -133,8 +145,7 @@ const Dashboard = () => {
   }, []);
   // getAnalytics()
 
-  if (loading) {  
-
+  if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-6">
         <div className="max-w-7xl mx-auto space-y-6 animate-pulse">

@@ -1,10 +1,11 @@
 import './index.css'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import Login from './Pages/user/Login'
+import Login from './Pages/user/login'
 import Register from './Pages/user/Register'
 import VerifyOtp from './Pages/user/VerifyOtp'
 import MainLayout from './components/Layout/MainLayout'
 import { AuthProvider, useAuth } from './Context/AuthContext'
+import { BusinessProvider } from './Context/BusinessContext'
 import { ThemeProvider } from './Context/ThemeContext'
 import { NotificationProvider } from './Context/NotificationContext'
 
@@ -24,7 +25,7 @@ import BusinessInvoices from './Pages/Business/Invoices'
 import BusinessCreateReceipt from './Pages/Business/CreateReceipt'
 import BusinessSettings from './Pages/Business/Settings'
 import BusinessProducts from './Pages/Business/Products'
-import BusinessManagement from './Pages/Business/Management'
+import BusinessManagement from './Pages/Business/management'
 import EditBusinessInvoice from './Pages/Business/seeInvoices'
 import BusinessSubscription from './Pages/Business/Subscription'
 import BusinessProfile from './Pages/Business/BusinessProfile'
@@ -71,6 +72,7 @@ function App() {
     <AuthProvider>
       <ThemeProvider>
         <NotificationProvider>
+          <BusinessProvider>
           <Router>
             <Routes>
               <Route element={<MainLayout />}>
@@ -157,6 +159,7 @@ function App() {
               <Route path="/" element={<LandingPage />} />
             </Routes>
           </Router>
+          </BusinessProvider>
         </NotificationProvider>
       </ThemeProvider>
     </AuthProvider>

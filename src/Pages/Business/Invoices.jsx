@@ -26,9 +26,7 @@ const Invoices = () => {
       } catch (err) {
         console.error("Fetch invoices error:", err);
 
-        setError(
-          err?.message || "Unable to fetch invoices."
-        );
+        setError(err?.message || "Unable to fetch invoices.");
       } finally {
         setLoading(false);
       }
@@ -68,34 +66,34 @@ const Invoices = () => {
   });
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-[#F8F9FC] p-6 font-sans text-slate-955 transition-colors duration-300 dark:bg-cyber-dark dark:text-slate-100 md:p-10 select-none">
+    <div className="relative min-h-screen w-full overflow-hidden bg-slate-50 p-6 font-sans text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100 md:p-10 select-none">
 
-      {/* Background Ambient Glow Blobs */}
-      <div className="absolute top-1/4 -right-36 h-96 w-96 rounded-full bg-neon-purple/5 blur-[120px] transition-all duration-300 pointer-events-none dark:bg-neon-purple/10"></div>
+      {/* Background Ambient Glow */}
+      <div className="pointer-events-none absolute top-1/4 -right-36 h-96 w-96 rounded-full bg-purple-100/40 blur-[120px] transition-all duration-300 dark:bg-purple-900/10"></div>
 
-      <div className="absolute bottom-1/4 -left-36 h-96 w-96 rounded-full bg-neon-cyan/5 blur-[120px] transition-all duration-300 pointer-events-none dark:bg-neon-cyan/10"></div>
+      <div className="pointer-events-none absolute bottom-1/4 -left-36 h-96 w-96 rounded-full bg-purple-100/30 blur-[120px] transition-all duration-300 dark:bg-purple-900/10"></div>
 
       <div className="relative z-10 mx-auto max-w-7xl space-y-8">
 
         {/* Header Section */}
-        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <header className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
 
           <div>
             <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
               Invoices
             </h1>
 
-            <p className="mt-1 text-sm font-semibold text-slate-400 dark:text-slate-500">
+            <p className="mt-1 text-sm font-semibold text-slate-500 dark:text-slate-400">
               {invoices.length} total invoices
             </p>
           </div>
 
           <button
             onClick={() => navigate("/create-invoice")}
-            className="flex items-center gap-2 px-5 py-3 rounded-2xl font-bold transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer shadow-md bg-[#7c1fff] text-white hover:bg-[#6817e7] dark:bg-gradient-to-r dark:from-neon-cyan dark:to-neon-purple dark:text-slate-950"
+            className="flex cursor-pointer items-center gap-2 rounded-2xl bg-[#7C3AED] px-5 py-3 font-bold text-white shadow-md transition-all duration-300 hover:scale-[1.02] hover:bg-[#6D28D9] active:scale-[0.98]"
           >
             <svg
-              className="w-5 h-5"
+              className="h-5 w-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -114,19 +112,19 @@ const Invoices = () => {
         </header>
 
         {/* Main List Card */}
-        <div className="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 dark:bg-cyber-card/85 dark:border-slate-800/80 w-full relative overflow-hidden">
+        <div className="relative w-full overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
 
-          <div className="absolute -top-[1px] left-10 right-10 h-[1.5px] bg-gradient-to-r from-transparent via-neon-purple to-transparent dark:via-neon-cyan opacity-40 dark:opacity-65"></div>
+          <div className="absolute left-10 right-10 top-0 h-px bg-purple-200 dark:bg-purple-900/50"></div>
 
           {/* Search + Filters */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-2">
+          <div className="mb-6 flex flex-col items-start justify-between gap-4 border-b border-slate-100 pb-6 dark:border-slate-800 sm:flex-row sm:items-center">
 
             {/* Search */}
-            <div className="relative w-full sm:max-w-xs group">
+            <div className="group relative w-full sm:max-w-xs">
 
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 group-focus-within:text-[#8B5CF6] transition-colors">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 transition-colors group-focus-within:text-[#7C3AED] dark:text-slate-500 dark:group-focus-within:text-purple-400">
                 <svg
-                  className="w-4.5 h-4.5"
+                  className="h-4.5 w-4.5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -145,22 +143,23 @@ const Invoices = () => {
                 placeholder="Search by name or ID..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-100 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 font-medium focus:border-[#8B5CF6] focus:outline-none transition-all dark:bg-slate-950/40 dark:border-slate-850 dark:text-slate-100"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm font-medium text-slate-800 placeholder-slate-400 transition-all focus:border-[#7C3AED] focus:outline-none focus:ring-4 focus:ring-purple-100 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-purple-500 dark:focus:ring-purple-900/30"
               />
 
             </div>
 
             {/* Status Tabs */}
-            <div className="bg-slate-100/70 border border-slate-200/20 p-1 flex gap-1 rounded-full text-sm font-semibold dark:bg-slate-950/40 dark:border-slate-850">
+            <div className="flex gap-1 rounded-full border border-slate-200 bg-slate-100/70 p-1 text-sm font-semibold dark:border-slate-800 dark:bg-slate-950">
 
               {statusTabs.map((tab) => (
                 <button
                   key={tab.value}
                   onClick={() => setActiveTab(tab.value)}
-                  className={`px-4 py-1.5 rounded-full transition-all text-xs font-bold cursor-pointer ${activeTab === tab.value
-                    ? "bg-white text-slate-800 shadow-sm dark:bg-slate-900 dark:text-slate-100"
-                    : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
-                    }`}
+                  className={`cursor-pointer rounded-full px-4 py-1.5 text-xs font-bold transition-all ${
+                    activeTab === tab.value
+                      ? "bg-white text-slate-800 shadow-sm dark:bg-slate-900 dark:text-slate-100"
+                      : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+                  }`}
                 >
                   {tab.label}
                 </button>
@@ -172,7 +171,7 @@ const Invoices = () => {
 
           {/* Error */}
           {error && (
-            <div className="mb-6 rounded-xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
+            <div className="mb-6 rounded-xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-400">
               {error}
             </div>
           )}
@@ -180,39 +179,39 @@ const Invoices = () => {
           {/* Table */}
           <div className="overflow-x-auto">
 
-            <table className="w-full text-left border-collapse">
+            <table className="w-full border-collapse text-left">
 
               <thead>
-                <tr className="border-b border-slate-100 dark:border-slate-800/60">
+                <tr className="border-b border-slate-100 dark:border-slate-800">
 
-                  <th className="py-4 px-4 text-slate-400 dark:text-slate-500 font-bold tracking-wider text-xs uppercase font-mono">
+                  <th className="px-4 py-4 font-mono text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                     Invoice
                   </th>
 
-                  <th className="py-4 px-4 text-slate-400 dark:text-slate-500 font-bold tracking-wider text-xs uppercase font-mono">
+                  <th className="px-4 py-4 font-mono text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                     Customer
                   </th>
 
-                  <th className="py-4 px-4 text-slate-400 dark:text-slate-500 font-bold tracking-wider text-xs uppercase font-mono">
+                  <th className="px-4 py-4 font-mono text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                     Amount
                   </th>
 
-                  <th className="py-4 px-4 text-slate-400 dark:text-slate-500 font-bold tracking-wider text-xs uppercase font-mono">
+                  <th className="px-4 py-4 font-mono text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                     Status
                   </th>
 
-                  <th className="py-4 px-4 text-slate-400 dark:text-slate-500 font-bold tracking-wider text-xs uppercase font-mono">
+                  <th className="px-4 py-4 font-mono text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                     Date
                   </th>
 
-                  <th className="py-4 px-4 text-slate-400 dark:text-slate-500 font-bold tracking-wider text-xs uppercase font-mono">
+                  <th className="px-4 py-4 font-mono text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                     Due
                   </th>
 
                 </tr>
               </thead>
 
-              <tbody className="divide-y divide-slate-50 dark:divide-slate-800/40">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
 
                 {/* Loading */}
                 {loading ? (
@@ -220,7 +219,7 @@ const Invoices = () => {
                   <tr>
                     <td
                       colSpan="6"
-                      className="py-12 text-center text-slate-400 font-medium"
+                      className="py-12 text-center font-medium text-slate-400 dark:text-slate-500"
                     >
                       Loading invoices...
                     </td>
@@ -232,7 +231,7 @@ const Invoices = () => {
                   <tr>
                     <td
                       colSpan="6"
-                      className="py-12 text-center text-slate-400 dark:text-slate-550 font-medium"
+                      className="py-12 text-center font-medium text-slate-400 dark:text-slate-500"
                     >
                       No invoices found
                     </td>
@@ -244,7 +243,7 @@ const Invoices = () => {
 
                     <tr
                       key={invoice._id}
-                      className="hover:bg-slate-50/40 dark:hover:bg-slate-900/10 transition-colors"
+                      className="transition-colors hover:bg-slate-50 dark:hover:bg-slate-950/50"
                     >
 
                       {/* Invoice Number */}
@@ -252,22 +251,23 @@ const Invoices = () => {
                         onClick={() =>
                           navigate(`/business-view-invoices/${invoice._id}`)
                         }
-                        className="py-5 px-4 font-extrabold text-[#6f18ff] dark:text-neon-cyan text-sm cursor-pointer no-underline hover:text-purple-800 dark:hover:text-cyan-300 transition-colors"
+                        className="cursor-pointer px-4 py-5 text-sm font-extrabold text-[#7C3AED] transition-colors hover:text-[#6D28D9] dark:text-purple-400 dark:hover:text-purple-300"
                       >
                         {invoice.invoiceNumber}
                       </td>
+
                       {/* Customer */}
-                      <td className="py-5 px-4">
+                      <td className="px-4 py-5">
 
                         <div className="flex items-center gap-3.5">
 
-                          <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-[10px] bg-purple-100 text-purple-700">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-100 text-[10px] font-bold text-purple-700 dark:bg-purple-900/30 dark:text-purple-400">
                             {invoice.customer?.displayName
                               ?.charAt(0)
                               ?.toUpperCase() || "C"}
                           </div>
 
-                          <span className="text-slate-800 dark:text-slate-100 font-bold text-sm">
+                          <span className="text-sm font-bold text-slate-800 dark:text-slate-100">
                             {invoice.customer?.displayName ||
                               "Unknown Customer"}
                           </span>
@@ -277,7 +277,7 @@ const Invoices = () => {
                       </td>
 
                       {/* Amount */}
-                      <td className="py-5 px-4 text-slate-800 dark:text-slate-100 font-extrabold text-sm">
+                      <td className="px-4 py-5 text-sm font-extrabold text-slate-800 dark:text-slate-100">
                         {invoice.currency}{" "}
                         {Number(invoice.totalAmount || 0).toLocaleString(
                           "en-NG",
@@ -289,21 +289,22 @@ const Invoices = () => {
                       </td>
 
                       {/* Status */}
-                      <td className="py-5 px-4">
+                      <td className="px-4 py-5">
 
                         <span
-                          className={`inline-flex items-center justify-center px-3 py-0.5 rounded-full text-[11px] font-semibold border ${invoice.status === "PAID"
-                            ? "bg-emerald-50 text-emerald-700 border-emerald-100"
-                            : invoice.status === "SENT"
-                              ? "bg-blue-50 text-blue-700 border-blue-100"
-                              : invoice.status === "OVERDUE"
-                                ? "bg-rose-50 text-rose-700 border-rose-100"
-                                : invoice.status === "PARTIALLY PAID"
-                                  ? "bg-amber-50 text-amber-700 border-amber-100"
-                                  : invoice.status === "CANCELLED"
-                                    ? "bg-slate-100 text-slate-600 border-slate-200"
-                                    : "bg-purple-50 text-purple-700 border-purple-100"
-                            }`}
+                          className={`inline-flex items-center justify-center rounded-full border px-3 py-0.5 text-[11px] font-semibold ${
+                            invoice.status === "PAID"
+                              ? "border-emerald-100 bg-emerald-50 text-emerald-700 dark:border-emerald-900/40 dark:bg-emerald-950/30 dark:text-emerald-400"
+                              : invoice.status === "SENT"
+                                ? "border-blue-100 bg-blue-50 text-blue-700 dark:border-blue-900/40 dark:bg-blue-950/30 dark:text-blue-400"
+                                : invoice.status === "OVERDUE"
+                                  ? "border-rose-100 bg-rose-50 text-rose-700 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-400"
+                                  : invoice.status === "PARTIALLY PAID"
+                                    ? "border-amber-100 bg-amber-50 text-amber-700 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-400"
+                                    : invoice.status === "CANCELLED"
+                                      ? "border-slate-200 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400"
+                                      : "border-purple-100 bg-purple-50 text-purple-700 dark:border-purple-900/40 dark:bg-purple-950/30 dark:text-purple-400"
+                          }`}
                         >
                           {invoice.status}
                         </span>
@@ -311,28 +312,28 @@ const Invoices = () => {
                       </td>
 
                       {/* Invoice Date */}
-                      <td className="py-5 px-4 text-slate-400 dark:text-slate-550 text-sm font-medium">
+                      <td className="px-4 py-5 text-sm font-medium text-slate-500 dark:text-slate-400">
                         {invoice.invoiceDate
                           ? new Date(
-                            invoice.invoiceDate
-                          ).toLocaleDateString("en-GB", {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                          })
+                              invoice.invoiceDate
+                            ).toLocaleDateString("en-GB", {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            })
                           : "—"}
                       </td>
 
                       {/* Due Date */}
-                      <td className="py-5 px-4 text-slate-400 dark:text-slate-550 text-sm font-medium">
+                      <td className="px-4 py-5 text-sm font-medium text-slate-500 dark:text-slate-400">
                         {invoice.dueDate
                           ? new Date(
-                            invoice.dueDate
-                          ).toLocaleDateString("en-GB", {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                          })
+                              invoice.dueDate
+                            ).toLocaleDateString("en-GB", {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            })
                           : "—"}
                       </td>
 

@@ -23,7 +23,7 @@ import { useAuth } from '../../Context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import businessApi, { getTeam, addTeam, removeTeam, updateTeam } from '../../api/team.api';
 
-const Management = () => {
+const management = () => {
   const { theme } = useTheme();
   const navigate = useNavigate();
 
@@ -36,12 +36,13 @@ const Management = () => {
 
   // Preloaded mock database for Team Members
   const [members, setMembers] = useState([
-    { id: 2, name: 'Marcus Lee', email: 'marcus@acmecorp.com', role: 'Admin', status: 'Active', lastActive: '15 min ago', joined: 'Mar 5, 2024', avatarBg: 'bg-neon-cyan/15 border-neon-cyan/20 text-neon-cyan' },
-    { id: 3, name: 'Priya Patel', email: 'priya@acmecorp.com', role: 'inventory', status: 'Active', lastActive: '1 hr ago', joined: 'Apr 20, 2024', avatarBg: 'bg-blue-500/15 border-blue-500/20 text-blue-400' },
-    { id: 4, name: 'Tom Rivera', email: 'tom@acmecorp.com', role: 'Accountant', status: 'Inactive', lastActive: '3 days ago', joined: 'Feb 8, 2024', avatarBg: 'bg-fuchsia-500/15 border-fuchsia-500/20 text-fuchsia-400' },
-    { id: 5, name: 'Aisha Okonkwo', email: 'aisha@acmecorp.com', role: 'Viewer', status: 'Active', lastActive: '30 min ago', joined: 'May 1, 2024', avatarBg: 'bg-emerald-500/15 border-emerald-500/20 text-emerald-450' },
-    { id: 6, name: 'Dev Sharma', email: 'dev@acmecorp.com', role: 'Accountant', status: 'Pending', lastActive: 'Never', joined: 'May 27, 2026', avatarBg: 'bg-amber-500/15 border-amber-500/20 text-amber-450' }
+    { id: 2, name: 'Marcus Lee', email: 'marcus@acmecorp.com', role: 'Admin', status: 'Active', lastActive: '15 min ago', joined: 'Mar 5, 2024', avatarBg: 'bg-purple-100 border-purple-200 text-purple-700 dark:bg-purple-900/30 dark:border-purple-800 dark:text-purple-400' },
+    { id: 3, name: 'Priya Patel', email: 'priya@acmecorp.com', role: 'inventory', status: 'Active', lastActive: '1 hr ago', joined: 'Apr 20, 2024', avatarBg: 'bg-slate-100 border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300' },
+    { id: 4, name: 'Tom Rivera', email: 'tom@acmecorp.com', role: 'Accountant', status: 'Inactive', lastActive: '3 days ago', joined: 'Feb 8, 2024', avatarBg: 'bg-purple-100 border-purple-200 text-purple-700 dark:bg-purple-900/30 dark:border-purple-800 dark:text-purple-400' },
+    { id: 5, name: 'Aisha Okonkwo', email: 'aisha@acmecorp.com', role: 'Viewer', status: 'Active', lastActive: '30 min ago', joined: 'May 1, 2024', avatarBg: 'bg-emerald-100 border-emerald-200 text-emerald-700 dark:bg-emerald-900/30 dark:border-emerald-800 dark:text-emerald-400' },
+    { id: 6, name: 'Dev Sharma', email: 'dev@acmecorp.com', role: 'Accountant', status: 'Pending', lastActive: 'Never', joined: 'May 27, 2026', avatarBg: 'bg-amber-100 border-amber-200 text-amber-700 dark:bg-amber-900/30 dark:border-amber-800 dark:text-amber-400' }
   ]);
+
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -52,16 +53,19 @@ const Management = () => {
     } else {
       setIsLoading(true);
     }
+
     try {
       const res = await getTeam();
+
       if (res && (res.status || res.success) && Array.isArray(res.data) && res.data.length > 0) {
         const avatarStyles = {
-          'Super Admin': 'bg-purple-650/15 border-purple-550/20 text-neon-purple',
-          'Admin': 'bg-neon-cyan/15 border-neon-cyan/20 text-neon-cyan',
-          'inventory': 'bg-blue-500/15 border-blue-500/20 text-blue-400',
-          'Accountant': 'bg-fuchsia-500/15 border-fuchsia-500/20 text-fuchsia-400',
-          'Viewer': 'bg-emerald-500/15 border-emerald-500/20 text-emerald-450'
+          'Super Admin': 'bg-purple-100 border-purple-200 text-purple-700 dark:bg-purple-900/30 dark:border-purple-800 dark:text-purple-400',
+          'Admin': 'bg-purple-100 border-purple-200 text-purple-700 dark:bg-purple-900/30 dark:border-purple-800 dark:text-purple-400',
+          'inventory': 'bg-slate-100 border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300',
+          'Accountant': 'bg-purple-100 border-purple-200 text-purple-700 dark:bg-purple-900/30 dark:border-purple-800 dark:text-purple-400',
+          'Viewer': 'bg-emerald-100 border-emerald-200 text-emerald-700 dark:bg-emerald-900/30 dark:border-emerald-800 dark:text-emerald-400'
         };
+
         const formatted = res.data.map((item, idx) => ({
           id: item._id || item.id || idx + 1,
           name: item.name || `${item.firstName || ''} ${item.lastName || ''}`.trim() || item.email?.split('@')[0] || `Member ${idx + 1}`,
@@ -70,9 +74,11 @@ const Management = () => {
           status: item.status || (item.isActive === false ? 'Inactive' : 'Active'),
           lastActive: item.lastActive || 'Recently',
           joined: item.joined || (item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Jan 12, 2024'),
-          avatarBg: avatarStyles[item.role] || 'bg-slate-500/15 border-slate-500/20 text-slate-400'
+          avatarBg: avatarStyles[item.role] || 'bg-slate-100 border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300'
         }));
+
         setMembers(formatted);
+
         if (isManualRefresh) {
           triggerToast('Team members synchronized with team.api!');
         }
@@ -115,22 +121,25 @@ const Management = () => {
 
   // Filtered members list
   const filteredMembers = members.filter(m => {
-    const matchesSearch = m.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          m.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          m.role.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch =
+      m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      m.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      m.role.toLowerCase().includes(searchQuery.toLowerCase());
+
     const matchesRole = roleFilter === 'All Roles' || m.role === roleFilter;
+
     return matchesSearch && matchesRole;
   });
 
   // Handle invitation submission via team.api
   const handleInviteSubmit = async (e) => {
     e.preventDefault();
+
     if (!newMember.name.trim() || !newMember.email.trim() || !newMember.password.trim()) {
       triggerToast('Please fill out all fields including password!', 'error');
       return;
     }
-    
-    // Simple email check
+
     if (!newMember.email.includes('@')) {
       triggerToast('Invalid email address!', 'error');
       return;
@@ -141,13 +150,12 @@ const Management = () => {
       return;
     }
 
-    // Role colors mapping
     const avatarStyles = {
-      'Super Admin': 'bg-purple-650/15 border-purple-550/20 text-neon-purple',
-      'Admin': 'bg-neon-cyan/15 border-neon-cyan/20 text-neon-cyan',
-      'inventory': 'bg-blue-500/15 border-blue-500/20 text-blue-400',
-      'Accountant': 'bg-fuchsia-500/15 border-fuchsia-500/20 text-fuchsia-400',
-      'Viewer': 'bg-emerald-500/15 border-emerald-500/20 text-emerald-450'
+      'Super Admin': 'bg-purple-100 border-purple-200 text-purple-700 dark:bg-purple-900/30 dark:border-purple-800 dark:text-purple-400',
+      'Admin': 'bg-purple-100 border-purple-200 text-purple-700 dark:bg-purple-900/30 dark:border-purple-800 dark:text-purple-400',
+      'inventory': 'bg-slate-100 border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300',
+      'Accountant': 'bg-purple-100 border-purple-200 text-purple-700 dark:bg-purple-900/30 dark:border-purple-800 dark:text-purple-400',
+      'Viewer': 'bg-emerald-100 border-emerald-200 text-emerald-700 dark:bg-emerald-900/30 dark:border-emerald-800 dark:text-emerald-400'
     };
 
     const payload = {
@@ -170,8 +178,14 @@ const Management = () => {
       role: newMember.role,
       status: 'Pending',
       lastActive: 'Never',
-      joined: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-      avatarBg: avatarStyles[newMember.role] || 'bg-slate-500/15 border-slate-500/20 text-slate-400'
+      joined: new Date().toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      }),
+      avatarBg:
+        avatarStyles[newMember.role] ||
+        'bg-slate-100 border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300'
     };
 
     setMembers(prev => [newRow, ...prev]);
@@ -184,7 +198,11 @@ const Management = () => {
   // Get initials for profile badge
   const getInitials = (name) => {
     const parts = name.split(' ');
-    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+
     return name.slice(0, 2).toUpperCase();
   };
 
@@ -196,6 +214,7 @@ const Management = () => {
       } catch (err) {
         console.error('Failed to remove from team.api:', err);
       }
+
       setMembers(prev => prev.filter(m => m.id !== id));
       triggerToast(`${name} has been removed.`, 'error');
     }
@@ -204,19 +223,33 @@ const Management = () => {
   // Handle member edit action via team.api
   const handleSaveEdit = async (e) => {
     e.preventDefault();
+
     if (selectedMember) {
       try {
-        await updateTeam({ id: selectedMember.id, role: editRole, status: editStatus });
+        await updateTeam({
+          id: selectedMember.id,
+          role: editRole,
+          status: editStatus
+        });
       } catch (err) {
         console.error('Failed to update team.api:', err);
       }
-      setMembers(prev => prev.map(m => {
-        if (m.id === selectedMember.id) {
-          return { ...m, role: editRole, status: editStatus };
-        }
-        return m;
-      }));
+
+      setMembers(prev =>
+        prev.map(m => {
+          if (m.id === selectedMember.id) {
+            return {
+              ...m,
+              role: editRole,
+              status: editStatus
+            };
+          }
+
+          return m;
+        })
+      );
     }
+
     setSelectedMember(null);
     setIsEditMode(false);
     triggerToast('Member settings updated via team.api!');
@@ -228,176 +261,278 @@ const Management = () => {
   };
 
   return (
-    <div className="relative min-h-screen p-6 md:p-10 overflow-hidden font-sans select-none w-full transition-colors duration-300 bg-slate-50 text-slate-900 dark:bg-cyber-dark dark:text-slate-100">
-      
+    <div className="relative min-h-screen w-full overflow-hidden bg-slate-50 p-6 font-sans text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100 md:p-10 select-none">
+
       {/* Dynamic interactive toasts */}
       {toast && (
-        <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-6 py-4 rounded-2xl shadow-xl border animate-float-1 transition-all duration-300 ${toast.type === 'error' ? 'bg-red-500/10 border-red-500/30 text-red-500' : 'bg-neon-purple/10 border-neon-purple/30 text-white dark:bg-neon-cyan/10 dark:border-neon-cyan/30 dark:text-neon-cyan'}`}>
-          <div className={`h-2 w-2 rounded-full ${toast.type === 'error' ? 'bg-red-500' : 'bg-neon-purple dark:bg-neon-cyan'} animate-ping`}></div>
-          <span className="font-bold tracking-wide text-sm font-mono">{toast.message}</span>
+        <div
+          className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-2xl border px-6 py-4 shadow-xl transition-all duration-300 ${
+            toast.type === 'error'
+              ? 'border-red-200 bg-red-50 text-red-600 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-400'
+              : 'border-purple-200 bg-purple-50 text-[#7C3AED] dark:border-purple-900/40 dark:bg-purple-950/30 dark:text-purple-400'
+          }`}
+        >
+          <div
+            className={`h-2 w-2 animate-ping rounded-full ${
+              toast.type === 'error'
+                ? 'bg-red-500'
+                : 'bg-[#7C3AED] dark:bg-purple-400'
+            }`}
+          ></div>
+
+          <span className="font-mono text-sm font-bold tracking-wide">
+            {toast.message}
+          </span>
         </div>
       )}
 
       {/* Decorative Glow Blobs */}
-      <div className="absolute top-1/4 -right-36 w-96 h-96 bg-neon-purple/5 dark:bg-neon-purple/10 rounded-full blur-[120px] pointer-events-none transition-all duration-300"></div>
-      <div className="absolute bottom-1/4 -left-36 w-96 h-96 bg-neon-cyan/5 dark:bg-neon-cyan/10 rounded-full blur-[120px] pointer-events-none transition-all duration-300"></div>
+      <div className="pointer-events-none absolute top-1/4 -right-36 h-96 w-96 rounded-full bg-purple-100/40 blur-[120px] transition-all duration-300 dark:bg-purple-900/10"></div>
+      <div className="pointer-events-none absolute bottom-1/4 -left-36 h-96 w-96 rounded-full bg-purple-100/30 blur-[120px] transition-all duration-300 dark:bg-purple-900/10"></div>
 
-      <div className="relative z-10 max-w-6xl mx-auto space-y-6 md:space-y-8">
-        
+      <div className="relative z-10 mx-auto max-w-6xl space-y-6 md:space-y-8">
+
         {/* HEADER BLOCK */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-extrabold tracking-wider text-slate-900 dark:bg-gradient-to-r dark:from-neon-cyan dark:via-slate-100 dark:to-neon-purple dark:bg-clip-text dark:text-transparent dark:text-glow-cyan transition-all duration-300">
+
+              <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
                 Team Management
               </h1>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold font-mono bg-neon-cyan/10 border border-neon-cyan/30 text-neon-cyan">
+
+              <span className="inline-flex items-center rounded-full border border-purple-200 bg-purple-50 px-2.5 py-0.5 font-mono text-xs font-bold text-[#7C3AED] dark:border-purple-900/50 dark:bg-purple-900/30 dark:text-purple-400">
                 Live API
               </span>
+
             </div>
-            <p className="text-slate-500 dark:text-slate-400 text-sm mt-1 font-mono">
+
+            <p className="mt-1 text-sm font-mono text-slate-500 dark:text-slate-400">
               Manage your team members, roles, and access levels via team.api (/admin/team)
             </p>
           </div>
 
           <div className="flex items-center gap-3">
+
             {/* Sync / Refresh Button */}
             <button
               onClick={() => fetchTeamMembers(true)}
               disabled={isLoading || isRefreshing}
-              className="flex items-center gap-2 px-4 py-3 rounded-xl font-bold font-mono text-xs tracking-wider transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer border border-slate-200 hover:bg-slate-100 text-slate-600 dark:border-slate-800 dark:hover:bg-slate-900/60 dark:text-slate-400 disabled:opacity-50"
+              className="flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 font-mono text-xs font-bold tracking-wider text-slate-600 transition-all duration-300 hover:scale-[1.02] hover:bg-slate-50 active:scale-[0.98] disabled:opacity-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800"
               title="Synchronize with team.api"
             >
-              <ArrowPathIcon className={`w-4 h-4 ${isRefreshing ? 'animate-spin text-neon-cyan' : ''}`} />
+              <ArrowPathIcon
+                className={`h-4 w-4 ${
+                  isRefreshing
+                    ? 'animate-spin text-[#7C3AED] dark:text-purple-400'
+                    : ''
+                }`}
+              />
+
               <span>{isRefreshing ? 'Syncing...' : 'Sync'}</span>
             </button>
 
             {/* Export button */}
-            <button 
+            <button
               onClick={handleExport}
-              className="flex items-center gap-2 px-5 py-3 rounded-xl font-bold font-mono tracking-wider transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer border border-slate-200 hover:bg-slate-100 text-slate-600 dark:border-slate-800 dark:hover:bg-slate-900/60 dark:text-slate-400"
+              className="flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 font-mono font-bold tracking-wider text-slate-600 transition-all duration-300 hover:scale-[1.02] hover:bg-slate-50 active:scale-[0.98] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800"
             >
-              <ArrowUpTrayIcon className="w-5 h-5" />
+              <ArrowUpTrayIcon className="h-5 w-5" />
               <span>Export</span>
             </button>
 
             {/* Invite Button */}
-            <button 
+            <button
               onClick={() => setIsInviteOpen(true)}
-              className="flex items-center gap-2 px-6 py-3 rounded-xl font-extrabold tracking-wider transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer shadow-md bg-neon-purple text-white hover:bg-neon-purple/90 dark:bg-gradient-to-r dark:from-neon-cyan dark:to-neon-purple dark:text-slate-950 dark:hover:from-neon-cyan dark:hover:to-neon-pink dark:shadow-[0_0_20px_rgba(0,243,255,0.3)] dark:hover:shadow-[0_0_25px_rgba(255,0,127,0.4)]"
+              className="flex cursor-pointer items-center gap-2 rounded-xl bg-[#7C3AED] px-6 py-3 font-extrabold tracking-wider text-white shadow-md transition-all duration-300 hover:scale-[1.02] hover:bg-[#6D28D9] active:scale-[0.98]"
             >
-              <PlusIcon className="w-5 h-5 stroke-[3]" />
+              <PlusIcon className="h-5 w-5 stroke-[3]" />
               <span>Invite Member</span>
             </button>
+
           </div>
         </div>
 
-        {/* METRICS ROW (4 CARDS) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-          
-          {/* Metrics Card 1: Total Members */}
-          <div className="bg-white border border-slate-200/80 dark:bg-cyber-card/85 dark:border-slate-800/80 rounded-3xl p-5 relative group transition-all duration-300">
-            <div className="absolute -top-[1px] left-8 right-8 h-[1.5px] bg-gradient-to-r from-transparent via-neon-cyan to-transparent opacity-40"></div>
-            <div className="flex justify-between items-start">
+        {/* METRICS ROW */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-4">
+
+          {/* Total Members */}
+          <div className="group relative rounded-3xl border border-slate-200 bg-white p-5 transition-all duration-300 dark:border-slate-800 dark:bg-slate-900">
+
+            <div className="absolute left-8 right-8 top-0 h-px bg-purple-200 dark:bg-purple-900/50"></div>
+
+            <div className="flex items-start justify-between">
+
               <div>
-                <span className="block text-xs font-bold font-mono tracking-wider uppercase text-slate-400 dark:text-slate-500">Total Members</span>
-                <span className="block text-3xl font-extrabold font-mono text-slate-900 dark:text-slate-100 mt-2">{totalCount}</span>
-                <span className="inline-block text-[11px] font-bold font-mono text-emerald-500 mt-2">+2 this month</span>
+                <span className="block font-mono text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  Total Members
+                </span>
+
+                <span className="mt-2 block font-mono text-3xl font-extrabold text-slate-900 dark:text-slate-100">
+                  {totalCount}
+                </span>
+
+                <span className="mt-2 inline-block font-mono text-[11px] font-bold text-emerald-500">
+                  +2 this month
+                </span>
               </div>
-              <div className="p-3 rounded-2xl bg-cyan-50 text-neon-cyan dark:bg-neon-cyan/10 dark:shadow-[0_0_15px_rgba(0,243,255,0.15)]">
-                <UserGroupIcon className="w-6 h-6" />
+
+              <div className="rounded-2xl bg-purple-50 p-3 text-[#7C3AED] dark:bg-purple-900/30 dark:text-purple-400">
+                <UserGroupIcon className="h-6 w-6" />
               </div>
+
             </div>
           </div>
 
-          {/* Metrics Card 2: Active Now */}
-          <div className="bg-white border border-slate-200/80 dark:bg-cyber-card/85 dark:border-slate-800/80 rounded-3xl p-5 relative group transition-all duration-300">
-            <div className="absolute -top-[1px] left-8 right-8 h-[1.5px] bg-gradient-to-r from-transparent via-emerald-450 to-transparent opacity-40"></div>
-            <div className="flex justify-between items-start">
+          {/* Active Now */}
+          <div className="group relative rounded-3xl border border-slate-200 bg-white p-5 transition-all duration-300 dark:border-slate-800 dark:bg-slate-900">
+
+            <div className="absolute left-8 right-8 top-0 h-px bg-emerald-200 dark:bg-emerald-900/50"></div>
+
+            <div className="flex items-start justify-between">
+
               <div>
-                <span className="block text-xs font-bold font-mono tracking-wider uppercase text-slate-400 dark:text-slate-500">Active Now</span>
-                <span className="block text-3xl font-extrabold font-mono text-slate-900 dark:text-slate-100 mt-2">{activeCount}</span>
-                <span className="inline-block text-[11px] font-bold font-mono text-slate-400 dark:text-slate-500 mt-2">Currently online</span>
+                <span className="block font-mono text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  Active Now
+                </span>
+
+                <span className="mt-2 block font-mono text-3xl font-extrabold text-slate-900 dark:text-slate-100">
+                  {activeCount}
+                </span>
+
+                <span className="mt-2 inline-block font-mono text-[11px] font-bold text-slate-400 dark:text-slate-500">
+                  Currently online
+                </span>
               </div>
-              <div className="p-3 rounded-2xl bg-emerald-50 text-emerald-500 dark:bg-emerald-500/10 dark:text-emerald-450 dark:shadow-[0_0_15px_rgba(16,185,129,0.15)] relative">
-                <CpuChipIcon className="w-6 h-6" />
-                <span className="absolute top-3.5 right-3.5 h-2 w-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping"></span>
+
+              <div className="relative rounded-2xl bg-emerald-50 p-3 text-emerald-500 dark:bg-emerald-900/30 dark:text-emerald-400">
+
+                <CpuChipIcon className="h-6 w-6" />
+
+                <span className="absolute right-3.5 top-3.5 h-2 w-2 animate-ping rounded-full bg-emerald-500 dark:bg-emerald-400"></span>
+
               </div>
+
             </div>
           </div>
 
-          {/* Metrics Card 3: Roles Defined */}
-          <div className="bg-white border border-slate-200/80 dark:bg-cyber-card/85 dark:border-slate-800/80 rounded-3xl p-5 relative group transition-all duration-300">
-            <div className="absolute -top-[1px] left-8 right-8 h-[1.5px] bg-gradient-to-r from-transparent via-neon-purple to-transparent opacity-40"></div>
-            <div className="flex justify-between items-start">
+          {/* Roles Defined */}
+          <div className="group relative rounded-3xl border border-slate-200 bg-white p-5 transition-all duration-300 dark:border-slate-800 dark:bg-slate-900">
+
+            <div className="absolute left-8 right-8 top-0 h-px bg-purple-200 dark:bg-purple-900/50"></div>
+
+            <div className="flex items-start justify-between">
+
               <div>
-                <span className="block text-xs font-bold font-mono tracking-wider uppercase text-slate-400 dark:text-slate-500">Roles Defined</span>
-                <span className="block text-3xl font-extrabold font-mono text-slate-900 dark:text-slate-100 mt-2">{uniqueRoles}</span>
-                <span className="inline-block text-[11px] font-bold font-mono text-slate-400 dark:text-slate-500 mt-2">Super Admin to Viewer</span>
+                <span className="block font-mono text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  Roles Defined
+                </span>
+
+                <span className="mt-2 block font-mono text-3xl font-extrabold text-slate-900 dark:text-slate-100">
+                  {uniqueRoles}
+                </span>
+
+                <span className="mt-2 inline-block font-mono text-[11px] font-bold text-slate-400 dark:text-slate-500">
+                  Super Admin to Viewer
+                </span>
               </div>
-              <div className="p-3 rounded-2xl bg-purple-50 text-neon-purple dark:bg-neon-purple/10 dark:shadow-[0_0_15px_rgba(189,0,255,0.15)]">
-                <ShieldCheckIcon className="w-6 h-6" />
+
+              <div className="rounded-2xl bg-purple-50 p-3 text-[#7C3AED] dark:bg-purple-900/30 dark:text-purple-400">
+                <ShieldCheckIcon className="h-6 w-6" />
               </div>
+
             </div>
           </div>
 
-          {/* Metrics Card 4: Pending Invites */}
-          <div className="bg-white border border-slate-200/80 dark:bg-cyber-card/85 dark:border-slate-800/80 rounded-3xl p-5 relative group transition-all duration-300">
-            <div className="absolute -top-[1px] left-8 right-8 h-[1.5px] bg-gradient-to-r from-transparent via-amber-500 to-transparent opacity-40"></div>
-            <div className="flex justify-between items-start">
+          {/* Pending Invites */}
+          <div className="group relative rounded-3xl border border-slate-200 bg-white p-5 transition-all duration-300 dark:border-slate-800 dark:bg-slate-900">
+
+            <div className="absolute left-8 right-8 top-0 h-px bg-amber-200 dark:bg-amber-900/50"></div>
+
+            <div className="flex items-start justify-between">
+
               <div>
-                <span className="block text-xs font-bold font-mono tracking-wider uppercase text-slate-400 dark:text-slate-500">Pending Invites</span>
-                <span className="block text-3xl font-extrabold font-mono text-slate-900 dark:text-slate-100 mt-2">{pendingCount}</span>
-                <span className="inline-block text-[11px] font-bold font-mono text-amber-500 mt-2">Awaiting acceptance</span>
+                <span className="block font-mono text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  Pending Invites
+                </span>
+
+                <span className="mt-2 block font-mono text-3xl font-extrabold text-slate-900 dark:text-slate-100">
+                  {pendingCount}
+                </span>
+
+                <span className="mt-2 inline-block font-mono text-[11px] font-bold text-amber-500">
+                  Awaiting acceptance
+                </span>
               </div>
-              <div className="p-3 rounded-2xl bg-amber-50 text-amber-500 dark:bg-amber-500/10 dark:shadow-[0_0_15px_rgba(245,158,11,0.15)]">
-                <EnvelopeIcon className="w-6 h-6" />
+
+              <div className="rounded-2xl bg-amber-50 p-3 text-amber-500 dark:bg-amber-900/30 dark:text-amber-400">
+                <EnvelopeIcon className="h-6 w-6" />
               </div>
+
             </div>
           </div>
 
         </div>
 
-        {/* MAIN ALL MEMBERS TABULAR TABLE CARD */}
-        <div className="bg-white border border-slate-200/80 shadow-sm dark:bg-cyber-card/85 dark:backdrop-blur-xl dark:border-slate-800/80 dark:shadow-2xl rounded-3xl p-6 relative transition-all duration-300">
-          <div className="absolute -top-[1px] left-10 right-10 h-[1.5px] bg-gradient-to-r from-transparent via-neon-purple to-transparent dark:via-neon-cyan opacity-40 dark:opacity-65 transition-all duration-300"></div>
+        {/* MAIN MEMBERS TABLE */}
+        <div className="relative rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 dark:border-slate-800 dark:bg-slate-900">
 
-          {/* TABLE TOP ACTIONS: SEARCH & ROLE DROP */}
-          <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 mb-6">
+          <div className="absolute left-10 right-10 top-0 h-px bg-purple-200 dark:bg-purple-900/50"></div>
+
+          {/* TABLE TOP ACTIONS */}
+          <div className="mb-6 flex flex-col items-stretch justify-between gap-4 md:flex-row md:items-center">
+
             <div className="flex items-center gap-2">
-              <h2 className="text-lg font-extrabold tracking-wide text-slate-800 dark:text-slate-100">All Members</h2>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold font-mono bg-slate-100 dark:bg-slate-900 text-slate-550 border border-slate-200 dark:border-slate-800">
+
+              <h2 className="text-lg font-extrabold tracking-wide text-slate-800 dark:text-slate-100">
+                All Members
+              </h2>
+
+              <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-100 px-2.5 py-0.5 font-mono text-xs font-bold text-slate-500 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400">
                 {totalCount} total
               </span>
+
             </div>
 
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
+
               {/* Search Bar */}
-              <div className="relative group min-w-[240px]">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 group-focus-within:text-neon-purple dark:group-focus-within:text-neon-cyan transition-colors">
-                  <MagnifyingGlassIcon className="w-5 h-5" />
+              <div className="group relative min-w-[240px]">
+
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 transition-colors group-focus-within:text-[#7C3AED] dark:text-slate-500 dark:group-focus-within:text-purple-400">
+                  <MagnifyingGlassIcon className="h-5 w-5" />
                 </span>
+
                 <input
                   type="text"
                   placeholder="Search members..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-slate-100 border border-slate-200 rounded-xl pl-11 pr-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 font-medium focus:border-neon-purple focus:outline-none transition-all duration-300 focus:ring-1 focus:ring-neon-purple/30 dark:bg-slate-950/40 dark:border-slate-800 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-neon-cyan/80 dark:focus:ring-neon-cyan/50"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-11 pr-4 text-sm font-medium text-slate-800 placeholder-slate-400 transition-all duration-300 focus:border-[#7C3AED] focus:outline-none focus:ring-1 focus:ring-purple-200 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-purple-500 dark:focus:ring-purple-900/30"
                 />
+
               </div>
 
               {/* Roles Dropdown */}
               <div className="relative">
+
                 <button
                   onClick={() => setShowRoleDropdown(!showRoleDropdown)}
-                  className="flex items-center justify-between gap-2.5 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950/40 hover:bg-slate-50 dark:hover:bg-slate-900 text-xs font-bold font-mono tracking-wider text-slate-600 dark:text-slate-350 transition-all cursor-pointer min-w-[130px]"
+                  className="flex min-w-[130px] cursor-pointer items-center justify-between gap-2.5 rounded-xl border border-slate-200 bg-white px-4 py-2.5 font-mono text-xs font-bold tracking-wider text-slate-600 transition-all dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400 dark:hover:bg-slate-900"
                 >
                   <span>{roleFilter}</span>
-                  <ChevronDownIcon className={`w-3.5 h-3.5 transition-transform duration-300 ${showRoleDropdown ? 'rotate-180' : ''}`} />
+
+                  <ChevronDownIcon
+                    className={`h-3.5 w-3.5 transition-transform duration-300 ${
+                      showRoleDropdown ? 'rotate-180' : ''
+                    }`}
+                  />
                 </button>
 
                 {showRoleDropdown && (
-                  <div className="absolute right-0 mt-2 z-40 w-44 rounded-2xl bg-white border border-slate-200 dark:bg-cyber-card dark:border-slate-800 shadow-xl py-2 animate-fade-in">
+                  <div className="absolute right-0 z-40 mt-2 w-44 animate-fade-in rounded-2xl border border-slate-200 bg-white py-2 shadow-xl dark:border-slate-800 dark:bg-slate-900">
+
                     {['All Roles', 'Super Admin', 'Admin', 'inventory', 'Accountant', 'Viewer'].map(role => (
                       <button
                         key={role}
@@ -405,212 +540,324 @@ const Management = () => {
                           setRoleFilter(role);
                           setShowRoleDropdown(false);
                         }}
-                        className={`w-full text-left px-4 py-2.5 text-xs font-bold font-mono hover:bg-slate-50 dark:hover:bg-slate-900/60 transition-colors ${roleFilter === role ? 'text-neon-purple dark:text-neon-cyan bg-purple-50/20 dark:bg-neon-cyan/5' : 'text-slate-600 dark:text-slate-400'}`}
+                        className={`w-full px-4 py-2.5 text-left font-mono text-xs font-bold transition-colors hover:bg-slate-50 dark:hover:bg-slate-800 ${
+                          roleFilter === role
+                            ? 'bg-purple-50 text-[#7C3AED] dark:bg-purple-900/20 dark:text-purple-400'
+                            : 'text-slate-600 dark:text-slate-400'
+                        }`}
                       >
                         {role}
                       </button>
                     ))}
+
                   </div>
                 )}
+
               </div>
+
             </div>
           </div>
 
-          {/* TABULAR MEMBER GRID */}
+          {/* TABLE */}
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+
+            <table className="w-full border-collapse text-left">
+
               <thead>
-                <tr className="border-b border-slate-200/60 dark:border-slate-800/50">
-                  <th className="py-4 px-4 text-slate-400 dark:text-slate-500 font-semibold tracking-wider text-xs uppercase font-mono">Member</th>
-                  <th className="py-4 px-4 text-slate-400 dark:text-slate-500 font-semibold tracking-wider text-xs uppercase font-mono">Role</th>
-                  <th className="py-4 px-4 text-slate-400 dark:text-slate-500 font-semibold tracking-wider text-xs uppercase font-mono">Status</th>
-                  <th className="py-4 px-4 text-slate-400 dark:text-slate-500 font-semibold tracking-wider text-xs uppercase font-mono">Last Active</th>
-                  <th className="py-4 px-4 text-slate-400 dark:text-slate-500 font-semibold tracking-wider text-xs uppercase font-mono">Joined</th>
-                  <th className="py-4 px-4 text-right"></th>
+                <tr className="border-b border-slate-200/60 dark:border-slate-800">
+
+                  <th className="px-4 py-4 font-mono text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                    Member
+                  </th>
+
+                  <th className="px-4 py-4 font-mono text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                    Role
+                  </th>
+
+                  <th className="px-4 py-4 font-mono text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                    Status
+                  </th>
+
+                  <th className="px-4 py-4 font-mono text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                    Last Active
+                  </th>
+
+                  <th className="px-4 py-4 font-mono text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                    Joined
+                  </th>
+
+                  <th className="px-4 py-4 text-right"></th>
+
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">
+
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+
                 {filteredMembers.length === 0 ? (
+
                   <tr>
-                    <td colSpan="6" className="py-12 text-center text-slate-400 dark:text-slate-550 font-bold font-mono">
+                    <td
+                      colSpan="6"
+                      className="py-12 text-center font-mono font-bold text-slate-400 dark:text-slate-500"
+                    >
                       No matching team members found
                     </td>
                   </tr>
+
                 ) : (
+
                   filteredMembers.map(member => {
+
                     const initials = getInitials(member.name);
-                    
-                    // Dynamic styling tags for Roles
+
                     const roleBadgeStyles = {
-                      'Super Admin': 'bg-neon-purple/10 border-neon-purple/30 text-neon-purple dark:shadow-[0_0_8px_rgba(189,0,255,0.08)]',
-                      'Admin': 'bg-neon-cyan/10 border-neon-cyan/30 text-neon-cyan dark:shadow-[0_0_8px_rgba(0,243,255,0.08)]',
-                      'inventory': 'bg-blue-500/10 border-blue-500/30 text-blue-500 dark:text-blue-400',
-                      'Accountant': 'bg-fuchsia-500/10 border-fuchsia-500/30 text-fuchsia-500 dark:text-fuchsia-400',
-                      'Viewer': 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
+                      'Super Admin': 'bg-purple-50 border-purple-200 text-purple-700 dark:bg-purple-900/30 dark:border-purple-800 dark:text-purple-400',
+                      'Admin': 'bg-purple-50 border-purple-200 text-purple-700 dark:bg-purple-900/30 dark:border-purple-800 dark:text-purple-400',
+                      'inventory': 'bg-slate-100 border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300',
+                      'Accountant': 'bg-purple-50 border-purple-200 text-purple-700 dark:bg-purple-900/30 dark:border-purple-800 dark:text-purple-400',
+                      'Viewer': 'bg-emerald-50 border-emerald-200 text-emerald-600 dark:bg-emerald-900/30 dark:border-emerald-800 dark:text-emerald-400'
                     };
 
                     return (
-                      <tr key={member.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-900/30 transition-colors duration-250 group/row">
-                        {/* Member avatar initials, name, and email */}
-                        <td className="py-4 px-4 flex items-center gap-3.5">
-                          <div className={`w-9 h-9 rounded-full font-extrabold text-xs flex items-center justify-center border shadow-sm select-none ${member.avatarBg} dark:shadow-[0_0_10px_rgba(0,0,0,0.15)] group-hover/row:scale-105 transition-transform duration-300`}>
+                      <tr
+                        key={member.id}
+                        className="group/row transition-colors duration-200 hover:bg-slate-50 dark:hover:bg-slate-950/50"
+                      >
+
+                        {/* Member */}
+                        <td className="flex items-center gap-3.5 px-4 py-4">
+
+                          <div
+                            className={`flex h-9 w-9 items-center justify-center rounded-full border text-xs font-extrabold shadow-sm transition-transform duration-300 group-hover/row:scale-105 ${member.avatarBg}`}
+                          >
                             {initials}
                           </div>
+
                           <div>
-                            <span className="block text-slate-850 dark:text-slate-100 font-bold text-sm group-hover/row:text-neon-purple dark:group-hover/row:text-neon-cyan transition-colors">
+
+                            <span className="block text-sm font-bold text-slate-800 transition-colors group-hover/row:text-[#7C3AED] dark:text-slate-100 dark:group-hover/row:text-purple-400">
                               {member.name}
                             </span>
-                            <span className="block text-[11px] font-mono text-slate-400 dark:text-slate-500 mt-0.5">{member.email}</span>
+
+                            <span className="mt-0.5 block font-mono text-[11px] text-slate-400 dark:text-slate-500">
+                              {member.email}
+                            </span>
+
                           </div>
+
                         </td>
 
                         {/* Role */}
-                        <td className="py-4 px-4">
-                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold font-mono border ${roleBadgeStyles[member.role] || 'bg-slate-100 border-slate-200 text-slate-500'}`}>
+                        <td className="px-4 py-4">
+
+                          <span
+                            className={`inline-flex items-center rounded-full border px-3 py-1 font-mono text-xs font-bold ${
+                              roleBadgeStyles[member.role] ||
+                              'border-slate-200 bg-slate-100 text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400'
+                            }`}
+                          >
                             {member.role}
                           </span>
+
                         </td>
 
                         {/* Status */}
-                        <td className="py-4 px-4">
+                        <td className="px-4 py-4">
+
                           <div className="flex items-center gap-1.5">
-                            <span className={`h-2 w-2 rounded-full ${
-                              member.status === 'Active' ? 'bg-emerald-500 animate-pulse' : 
-                              member.status === 'Pending' ? 'bg-amber-500' : 'bg-slate-455 dark:bg-slate-600'
-                            }`} />
-                            <span className={`text-xs font-bold font-mono ${
-                              member.status === 'Active' ? 'text-emerald-600 dark:text-emerald-450' : 
-                              member.status === 'Pending' ? 'text-amber-600 dark:text-amber-500' : 'text-slate-450 dark:text-slate-500'
-                            }`}>
+
+                            <span
+                              className={`h-2 w-2 rounded-full ${
+                                member.status === 'Active'
+                                  ? 'animate-pulse bg-emerald-500'
+                                  : member.status === 'Pending'
+                                    ? 'bg-amber-500'
+                                    : 'bg-slate-400 dark:bg-slate-600'
+                              }`}
+                            />
+
+                            <span
+                              className={`font-mono text-xs font-bold ${
+                                member.status === 'Active'
+                                  ? 'text-emerald-600 dark:text-emerald-400'
+                                  : member.status === 'Pending'
+                                    ? 'text-amber-600 dark:text-amber-500'
+                                    : 'text-slate-500 dark:text-slate-500'
+                              }`}
+                            >
                               {member.status}
                             </span>
+
                           </div>
+
                         </td>
 
                         {/* Last Active */}
-                        <td className="py-4 px-4 text-xs font-mono text-slate-500 dark:text-slate-400">
+                        <td className="px-4 py-4 font-mono text-xs text-slate-500 dark:text-slate-400">
                           {member.lastActive}
                         </td>
 
                         {/* Joined */}
-                        <td className="py-4 px-4 text-xs font-mono text-slate-500 dark:text-slate-400">
+                        <td className="px-4 py-4 font-mono text-xs text-slate-500 dark:text-slate-400">
                           {member.joined}
                         </td>
 
-                        {/* Actions buttons */}
-                        <td className="py-4 px-4 text-right">
-                          <div className="flex justify-end items-center gap-3 opacity-0 group-hover/row:opacity-100 transition-opacity duration-300">
-                            {/* View Action */}
-                            <button 
+                        {/* Actions */}
+                        <td className="px-4 py-4 text-right">
+
+                          <div className="flex items-center justify-end gap-3 opacity-0 transition-opacity duration-300 group-hover/row:opacity-100">
+
+                            <button
                               onClick={() => {
                                 setSelectedMember(member);
                                 setEditRole(member.role);
                                 setEditStatus(member.status);
                                 setIsEditMode(false);
                               }}
-                              className="text-slate-400 hover:text-neon-purple dark:text-slate-550 dark:hover:text-neon-cyan p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900 transition-all cursor-pointer"
+                              className="cursor-pointer rounded-lg p-1.5 text-slate-400 transition-all hover:bg-slate-100 hover:text-[#7C3AED] dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-purple-400"
                               title="View Member details"
                             >
-                              <EyeIcon className="w-4.5 h-4.5" />
+                              <EyeIcon className="h-4.5 w-4.5" />
                             </button>
 
-                            {/* Edit Role & Permissions Action */}
-                            <button 
+                            <button
                               onClick={() => navigate(`/admin-permissions?id=${member.id}`)}
-                              className="text-slate-400 hover:text-purple-600 dark:text-slate-550 dark:hover:text-neon-purple p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900 transition-all cursor-pointer"
+                              className="cursor-pointer rounded-lg p-1.5 text-slate-400 transition-all hover:bg-slate-100 hover:text-[#7C3AED] dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-purple-400"
                               title="Edit Member Role & Permissions"
                             >
-                              <ShieldCheckIcon className="w-4.5 h-4.5" />
+                              <ShieldCheckIcon className="h-4.5 w-4.5" />
                             </button>
 
-                            {/* Edit Action */}
-                            <button 
+                            <button
                               onClick={() => navigate(`/admin-permissions?id=${member.id}`)}
-                              className="text-slate-400 hover:text-neon-purple dark:text-slate-550 dark:hover:text-neon-cyan p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900 transition-all cursor-pointer"
+                              className="cursor-pointer rounded-lg p-1.5 text-slate-400 transition-all hover:bg-slate-100 hover:text-[#7C3AED] dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-purple-400"
                               title="Edit Member Details"
                             >
-                              <PencilIcon className="w-4.5 h-4.5" />
+                              <PencilIcon className="h-4.5 w-4.5" />
                             </button>
 
-                            {/* Delete Action */}
-                            <button 
+                            <button
                               onClick={() => handleDeleteMember(member.id, member.name)}
-                              className="text-slate-400 hover:text-red-500 dark:text-slate-550 dark:hover:text-red-400 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-900 transition-all cursor-pointer"
+                              className="cursor-pointer rounded-lg p-1.5 text-slate-400 transition-all hover:bg-slate-100 hover:text-red-500 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-red-400"
                               title="Remove Member"
                             >
-                              <TrashIcon className="w-4.5 h-4.5" />
+                              <TrashIcon className="h-4.5 w-4.5" />
                             </button>
+
                           </div>
+
                         </td>
+
                       </tr>
                     );
                   })
+
                 )}
+
               </tbody>
+
             </table>
+
           </div>
 
         </div>
 
-        {/* BOTTOM GRID DETAIL CARDS: ACTIVE SESSIONS & ACTIVITY FEED */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
-          
-          {/* CARD 1: ACTIVE CONNECTED DEVICES */}
-          <div className="bg-white border border-slate-200/80 shadow-sm dark:bg-cyber-card/85 dark:border-slate-800/80 dark:shadow-2xl rounded-3xl p-6 relative transition-all duration-300">
-            <div className="absolute -top-[1px] left-10 right-10 h-[1.5px] bg-gradient-to-r from-transparent via-neon-cyan to-transparent opacity-40"></div>
+        {/* BOTTOM GRID */}
+        <div className="grid grid-cols-1 gap-6 md:gap-8 lg:grid-cols-2">
 
-            <div className="flex justify-between items-center mb-6">
+          {/* ACTIVE SESSIONS */}
+          <div className="relative rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 dark:border-slate-800 dark:bg-slate-900">
+
+            <div className="absolute left-10 right-10 top-0 h-px bg-purple-200 dark:bg-purple-900/50"></div>
+
+            <div className="mb-6 flex items-center justify-between">
+
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-xl bg-cyan-50 text-neon-cyan dark:bg-neon-cyan/10 dark:shadow-[0_0_10px_rgba(0,243,255,0.1)]">
-                  <ComputerDesktopIcon className="w-5 h-5" />
+
+                <div className="rounded-xl bg-purple-50 p-2 text-[#7C3AED] dark:bg-purple-900/30 dark:text-purple-400">
+                  <ComputerDesktopIcon className="h-5 w-5" />
                 </div>
-                <h3 className="text-base font-extrabold tracking-wide text-slate-800 dark:text-slate-100">Active Sessions</h3>
+
+                <h3 className="text-base font-extrabold tracking-wide text-slate-800 dark:text-slate-100">
+                  Active Sessions
+                </h3>
+
               </div>
-              
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono tracking-wide bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-250 dark:border-emerald-500/30 text-emerald-600 dark:text-emerald-450 shadow-[0_0_8px_rgba(16,185,129,0.05)]">
+
+              <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 font-mono text-[10px] font-bold tracking-wide text-emerald-600 dark:border-emerald-900/40 dark:bg-emerald-950/30 dark:text-emerald-400">
                 4 online
               </span>
+
             </div>
 
             <div className="space-y-4">
+
               {[
                 { name: 'Sarah Johnson', device: 'Chrome / Windows 11', ip: '192.168.1.15', active: true },
                 { name: 'Marcus Lee', device: 'Safari / iPhone 15 Pro', ip: '172.56.21.90', active: true },
                 { name: 'Priya Patel', device: 'Firefox / macOS Sequoia', ip: '82.165.99.124', active: true },
                 { name: 'Aisha Okonkwo', device: 'Chrome / Ubuntu Linux', ip: '109.112.5.42', active: true }
               ].map((sess, idx) => (
-                <div key={idx} className="flex justify-between items-center p-3 rounded-2xl bg-slate-50/50 dark:bg-slate-950/20 border border-slate-100 dark:border-slate-850/50">
+
+                <div
+                  key={idx}
+                  className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50/50 p-3 dark:border-slate-800 dark:bg-slate-950"
+                >
+
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-slate-100 text-slate-550 dark:bg-slate-900 dark:text-slate-400 font-extrabold text-[10px] flex items-center justify-center">
+
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-[10px] font-extrabold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
                       {getInitials(sess.name)}
                     </div>
+
                     <div>
-                      <span className="block text-xs font-bold text-slate-800 dark:text-slate-200">{sess.name}</span>
-                      <span className="block text-[10px] font-mono text-slate-400 dark:text-slate-500 mt-0.5">{sess.device} • {sess.ip}</span>
+
+                      <span className="block text-xs font-bold text-slate-800 dark:text-slate-200">
+                        {sess.name}
+                      </span>
+
+                      <span className="mt-0.5 block font-mono text-[10px] text-slate-400 dark:text-slate-500">
+                        {sess.device} • {sess.ip}
+                      </span>
+
                     </div>
+
                   </div>
-                  
-                  <span className="relative flex h-2 w-2 mr-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+
+                  <span className="relative mr-2 flex h-2 w-2">
+
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
+
                   </span>
+
                 </div>
+
               ))}
+
             </div>
           </div>
 
-          {/* CARD 2: RECENT TEAM ACTIVITY TIMELINE */}
-          <div className="bg-white border border-slate-200/80 shadow-sm dark:bg-cyber-card/85 dark:border-slate-800/80 dark:shadow-2xl rounded-3xl p-6 relative transition-all duration-300">
-            <div className="absolute -top-[1px] left-10 right-10 h-[1.5px] bg-gradient-to-r from-transparent via-neon-purple to-transparent opacity-40"></div>
+          {/* TEAM ACTIVITY */}
+          <div className="relative rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 dark:border-slate-800 dark:bg-slate-900">
 
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 rounded-xl bg-purple-50 text-neon-purple dark:bg-neon-purple/10 dark:shadow-[0_0_10px_rgba(189,0,255,0.1)]">
-                <ClockIcon className="w-5 h-5" />
+            <div className="absolute left-10 right-10 top-0 h-px bg-purple-200 dark:bg-purple-900/50"></div>
+
+            <div className="mb-6 flex items-center gap-3">
+
+              <div className="rounded-xl bg-purple-50 p-2 text-[#7C3AED] dark:bg-purple-900/30 dark:text-purple-400">
+                <ClockIcon className="h-5 w-5" />
               </div>
-              <h3 className="text-base font-extrabold tracking-wide text-slate-800 dark:text-slate-100">Team Activity Feed</h3>
+
+              <h3 className="text-base font-extrabold tracking-wide text-slate-800 dark:text-slate-100">
+                Team Activity Feed
+              </h3>
+
             </div>
 
-            <div className="space-y-4 max-h-[300px] overflow-y-auto pr-1">
+            <div className="max-h-[300px] space-y-4 overflow-y-auto pr-1">
+
               {[
                 { user: 'Sarah Johnson', event: 'Approved invoice INV-005 records', time: '10 min ago' },
                 { user: 'Marcus Lee', event: 'Modified global inventory settings', time: '1 hr ago' },
@@ -618,19 +865,38 @@ const Management = () => {
                 { user: 'Priya Patel', event: 'Generated monthly statements reports', time: '5 hrs ago' },
                 { user: 'Sarah Johnson', event: 'Added 12 items to catalog warehouse', time: 'Yesterday' }
               ].map((log, idx) => (
-                <div key={idx} className="relative pl-6 border-l border-slate-200 dark:border-slate-850 pb-2 last:pb-0">
-                  {/* Timeline point */}
-                  <span className="absolute -left-[4.5px] top-1.5 h-2 w-2 rounded-full bg-neon-purple dark:bg-neon-cyan shadow-[0_0_8px_rgba(0,243,255,0.6)]" />
-                  
-                  <div className="flex justify-between items-start gap-3">
+
+                <div
+                  key={idx}
+                  className="relative border-l border-slate-200 pb-2 pl-6 last:pb-0 dark:border-slate-800"
+                >
+
+                  <span className="absolute -left-[4.5px] top-1.5 h-2 w-2 rounded-full bg-[#7C3AED] dark:bg-purple-400"></span>
+
+                  <div className="flex items-start justify-between gap-3">
+
                     <div>
-                      <span className="text-xs font-bold text-slate-800 dark:text-slate-200 font-sans">{log.user}</span>
-                      <p className="text-[11px] font-mono text-slate-450 dark:text-slate-500 mt-0.5">{log.event}</p>
+
+                      <span className="font-sans text-xs font-bold text-slate-800 dark:text-slate-200">
+                        {log.user}
+                      </span>
+
+                      <p className="mt-0.5 font-mono text-[11px] text-slate-500 dark:text-slate-500">
+                        {log.event}
+                      </p>
+
                     </div>
-                    <span className="text-[9px] font-mono font-bold text-slate-400 dark:text-slate-550 whitespace-nowrap">{log.time}</span>
+
+                    <span className="whitespace-nowrap font-mono text-[9px] font-bold text-slate-400 dark:text-slate-500">
+                      {log.time}
+                    </span>
+
                   </div>
+
                 </div>
+
               ))}
+
             </div>
           </div>
 
@@ -638,228 +904,352 @@ const Management = () => {
 
       </div>
 
-      {/* MODAL WINDOW 1: INVITE NEW MEMBER */}
+      {/* INVITE NEW MEMBER MODAL */}
       {isInviteOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md bg-slate-950/20 dark:bg-black/40">
-          <div className="relative w-full max-w-md bg-white border border-slate-200 dark:bg-cyber-card dark:border-slate-800 shadow-2xl rounded-3xl p-6 overflow-hidden ">
-            <div className="absolute -top-[1px] left-8 right-8 h-[1.5px] bg-gradient-to-r from-transparent via-neon-purple to-transparent dark:via-neon-cyan"></div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/20 p-4 backdrop-blur-md dark:bg-black/40">
 
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-lg font-extrabold tracking-wide text-slate-800 dark:text-slate-100">Invite Team Member</h3>
-              <button 
+          <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-800 dark:bg-slate-900">
+
+            <div className="absolute left-8 right-8 top-0 h-px bg-purple-200 dark:bg-purple-900/50"></div>
+
+            <div className="mb-6 flex items-center justify-between">
+
+              <h3 className="text-lg font-extrabold tracking-wide text-slate-800 dark:text-slate-100">
+                Invite Team Member
+              </h3>
+
+              <button
                 onClick={() => setIsInviteOpen(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-550 dark:hover:text-slate-300 dark:hover:bg-slate-900 cursor-pointer"
+                className="cursor-pointer rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-300"
               >
-                <XMarkIcon className="w-5 h-5" />
+                <XMarkIcon className="h-5 w-5" />
               </button>
+
             </div>
 
             <form onSubmit={handleInviteSubmit} className="space-y-4">
+
               <div>
-                <label className="block text-xs font-bold font-mono tracking-wider uppercase text-slate-400 dark:text-slate-500 mb-2">Member Name</label>
+
+                <label className="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  Member Name
+                </label>
+
                 <input
                   type="text"
                   placeholder="e.g. John Doe"
                   value={newMember.name}
-                  onChange={(e) => setNewMember(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder-slate-400 font-medium focus:border-neon-purple focus:outline-none transition-all dark:bg-slate-950/40 dark:border-slate-800 dark:text-slate-100 dark:placeholder-slate-550 dark:focus:border-neon-cyan/80 dark:focus:ring-neon-cyan/40"
+                  onChange={(e) =>
+                    setNewMember(prev => ({
+                      ...prev,
+                      name: e.target.value
+                    }))
+                  }
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-800 placeholder-slate-400 transition-all focus:border-[#7C3AED] focus:outline-none focus:ring-4 focus:ring-purple-100 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-purple-500 dark:focus:ring-purple-900/30"
                   required
                 />
+
               </div>
 
               <div>
-                <label className="block text-xs font-bold font-mono tracking-wider uppercase text-slate-400 dark:text-slate-500 mb-2">Member Email</label>
+
+                <label className="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  Member Email
+                </label>
+
                 <input
                   type="email"
                   placeholder="e.g. john@acmecorp.com"
                   value={newMember.email}
-                  onChange={(e) => setNewMember(prev => ({ ...prev, email: e.target.value }))}
-                  className="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder-slate-400 font-medium focus:border-neon-purple focus:outline-none transition-all dark:bg-slate-950/40 dark:border-slate-800 dark:text-slate-100 dark:placeholder-slate-550 dark:focus:border-neon-cyan/80 dark:focus:ring-neon-cyan/40"
+                  onChange={(e) =>
+                    setNewMember(prev => ({
+                      ...prev,
+                      email: e.target.value
+                    }))
+                  }
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-800 placeholder-slate-400 transition-all focus:border-[#7C3AED] focus:outline-none focus:ring-4 focus:ring-purple-100 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-purple-500 dark:focus:ring-purple-900/30"
                   required
                 />
+
               </div>
 
               <div>
-                <label className="block text-xs font-bold font-mono tracking-wider uppercase text-slate-400 dark:text-slate-500 mb-2">Member Password</label>
+
+                <label className="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  Member Password
+                </label>
+
                 <div className="relative">
+
                   <input
                     type={showPassword ? "text" : "password"}
                     placeholder="Set account password"
                     value={newMember.password}
-                    onChange={(e) => setNewMember(prev => ({ ...prev, password: e.target.value }))}
-                    className="w-full bg-slate-100 border border-slate-200 rounded-xl pl-4 pr-11 py-3 text-sm text-slate-800 placeholder-slate-400 font-medium focus:border-neon-purple focus:outline-none transition-all dark:bg-slate-950/40 dark:border-slate-800 dark:text-slate-100 dark:placeholder-slate-550 dark:focus:border-neon-cyan/80 dark:focus:ring-neon-cyan/40"
+                    onChange={(e) =>
+                      setNewMember(prev => ({
+                        ...prev,
+                        password: e.target.value
+                      }))
+                    }
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-4 pr-11 text-sm font-medium text-slate-800 placeholder-slate-400 transition-all focus:border-[#7C3AED] focus:outline-none focus:ring-4 focus:ring-purple-100 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-purple-500 dark:focus:ring-purple-900/30"
                     required
                   />
+
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 cursor-pointer"
+                    className="absolute inset-y-0 right-0 flex cursor-pointer items-center pr-3.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
                     title={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? (
-                      <EyeSlashIcon className="w-5 h-5" />
+                      <EyeSlashIcon className="h-5 w-5" />
                     ) : (
-                      <EyeIcon className="w-5 h-5" />
+                      <EyeIcon className="h-5 w-5" />
                     )}
                   </button>
+
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold font-mono tracking-wider uppercase text-slate-400 dark:text-slate-500 mb-2">System Role</label>
+
+                <label className="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  System Role
+                </label>
+
                 <select
                   value={newMember.role}
-                  onChange={(e) => setNewMember(prev => ({ ...prev, role: e.target.value }))}
-                  className="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 font-medium focus:border-neon-purple focus:outline-none transition-all dark:bg-slate-950/40 dark:border-slate-800 dark:text-slate-100 dark:focus:border-neon-cyan/80 dark:focus:ring-neon-cyan/40"
+                  onChange={(e) =>
+                    setNewMember(prev => ({
+                      ...prev,
+                      role: e.target.value
+                    }))
+                  }
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-800 transition-all focus:border-[#7C3AED] focus:outline-none focus:ring-4 focus:ring-purple-100 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-purple-500 dark:focus:ring-purple-900/30"
                 >
                   <option value="inventory">Inventory Manager</option>
                   <option value="accountant">Accountant</option>
                 </select>
+
               </div>
 
-              <div className="pt-4 flex gap-3">
+              <div className="flex gap-3 pt-4">
+
                 <button
                   type="button"
                   onClick={() => setIsInviteOpen(false)}
-                  className="flex-1 py-3 rounded-xl border border-slate-200 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-900 text-xs font-bold font-mono tracking-wider text-slate-500 dark:text-slate-400 transition-colors"
+                  className="flex-1 rounded-xl border border-slate-200 py-3 font-mono text-xs font-bold tracking-wider text-slate-500 transition-colors hover:bg-slate-50 dark:border-slate-800 dark:text-slate-400 dark:hover:bg-slate-800"
                 >
                   Cancel
                 </button>
+
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="flex-1 py-3 bg-neon-purple text-white hover:bg-neon-purple/90 dark:bg-gradient-to-r dark:from-neon-cyan dark:to-neon-purple dark:text-slate-950 font-extrabold text-xs tracking-wider rounded-xl transition-all shadow-md dark:shadow-[0_0_15px_rgba(0,243,255,0.2)] disabled:opacity-50"
+                  className="flex-1 rounded-xl bg-[#7C3AED] py-3 text-xs font-extrabold tracking-wider text-white shadow-md transition-all hover:bg-[#6D28D9] disabled:opacity-50"
                 >
                   Send Invitation
                 </button>
+
               </div>
+
             </form>
           </div>
         </div>
       )}
 
-      {/* MODAL WINDOW 2: VIEW / EDIT MEMBER DETAILS */}
+      {/* VIEW / EDIT MEMBER DETAILS MODAL */}
       {selectedMember && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md bg-slate-950/20 dark:bg-black/40">
-          <div className="relative w-full max-w-md bg-white border border-slate-200 dark:bg-cyber-card dark:border-slate-800 shadow-2xl rounded-3xl p-6 overflow-hidden animate-float-1">
-            <div className="absolute -top-[1px] left-8 right-8 h-[1.5px] bg-gradient-to-r from-transparent via-neon-purple to-transparent dark:via-neon-cyan"></div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/20 p-4 backdrop-blur-md dark:bg-black/40">
 
-            <div className="flex justify-between items-center mb-6">
+          <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-800 dark:bg-slate-900">
+
+            <div className="absolute left-8 right-8 top-0 h-px bg-purple-200 dark:bg-purple-900/50"></div>
+
+            <div className="mb-6 flex items-center justify-between">
+
               <h3 className="text-lg font-extrabold tracking-wide text-slate-800 dark:text-slate-100">
                 {isEditMode ? 'Edit Access Level' : 'Member Details'}
               </h3>
-              <button 
+
+              <button
                 onClick={() => setSelectedMember(null)}
-                className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-550 dark:hover:text-slate-300 dark:hover:bg-slate-900 cursor-pointer"
+                className="cursor-pointer rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-300"
               >
-                <XMarkIcon className="w-5 h-5" />
+                <XMarkIcon className="h-5 w-5" />
               </button>
+
             </div>
 
             {isEditMode ? (
+
               <form onSubmit={handleSaveEdit} className="space-y-4">
-                <div className="flex items-center gap-3.5 p-3 rounded-2xl bg-slate-50 dark:bg-slate-950/20 border border-slate-100 dark:border-slate-900/60 mb-2">
-                  <div className={`w-10 h-10 rounded-full font-extrabold text-sm flex items-center justify-center border ${selectedMember.avatarBg}`}>
+
+                <div className="mb-2 flex items-center gap-3.5 rounded-2xl border border-slate-100 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-950">
+
+                  <div className={`flex h-10 w-10 items-center justify-center rounded-full border text-sm font-extrabold ${selectedMember.avatarBg}`}>
                     {getInitials(selectedMember.name)}
                   </div>
+
                   <div>
-                    <span className="block font-bold text-sm text-slate-800 dark:text-slate-100">{selectedMember.name}</span>
-                    <span className="block text-[11px] font-mono text-slate-400 dark:text-slate-500 mt-0.5">{selectedMember.email}</span>
+                    <span className="block text-sm font-bold text-slate-800 dark:text-slate-100">
+                      {selectedMember.name}
+                    </span>
+
+                    <span className="mt-0.5 block font-mono text-[11px] text-slate-400 dark:text-slate-500">
+                      {selectedMember.email}
+                    </span>
                   </div>
+
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold font-mono tracking-wider uppercase text-slate-400 dark:text-slate-500 mb-2">System Role</label>
+
+                  <label className="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                    System Role
+                  </label>
+
                   <select
                     value={editRole}
                     onChange={(e) => setEditRole(e.target.value)}
-                    className="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 font-medium focus:border-neon-purple focus:outline-none transition-all dark:bg-slate-950/40 dark:border-slate-800 dark:text-slate-100 dark:focus:border-neon-cyan/80 dark:focus:ring-neon-cyan/40"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-800 transition-all focus:border-[#7C3AED] focus:outline-none focus:ring-4 focus:ring-purple-100 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-purple-500 dark:focus:ring-purple-900/30"
                   >
                     <option>Admin</option>
                     <option>inventory</option>
                     <option>Accountant</option>
                     <option>Viewer</option>
                   </select>
+
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold font-mono tracking-wider uppercase text-slate-400 dark:text-slate-500 mb-2">Account Status</label>
+
+                  <label className="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                    Account Status
+                  </label>
+
                   <select
                     value={editStatus}
                     onChange={(e) => setEditStatus(e.target.value)}
-                    className="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 font-medium focus:border-neon-purple focus:outline-none transition-all dark:bg-slate-950/40 dark:border-slate-800 dark:text-slate-100 dark:focus:border-neon-cyan/80 dark:focus:ring-neon-cyan/40"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-800 transition-all focus:border-[#7C3AED] focus:outline-none focus:ring-4 focus:ring-purple-100 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-purple-500 dark:focus:ring-purple-900/30"
                   >
                     <option>Active</option>
                     <option>Inactive</option>
                     <option>Pending</option>
                   </select>
+
                 </div>
 
-                <div className="pt-4 flex gap-3">
+                <div className="flex gap-3 pt-4">
+
                   <button
                     type="button"
                     onClick={() => setSelectedMember(null)}
-                    className="flex-1 py-3 rounded-xl border border-slate-200 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-900 text-xs font-bold font-mono tracking-wider text-slate-500 dark:text-slate-400 transition-colors"
+                    className="flex-1 rounded-xl border border-slate-200 py-3 font-mono text-xs font-bold tracking-wider text-slate-500 transition-colors hover:bg-slate-50 dark:border-slate-800 dark:text-slate-400 dark:hover:bg-slate-800"
                   >
                     Cancel
                   </button>
+
                   <button
                     type="submit"
-                    className="flex-1 py-3 bg-neon-purple text-white hover:bg-neon-purple/90 dark:bg-gradient-to-r dark:from-neon-cyan dark:to-neon-purple dark:text-slate-950 font-extrabold text-xs tracking-wider rounded-xl transition-all shadow-md"
+                    className="flex-1 rounded-xl bg-[#7C3AED] py-3 text-xs font-extrabold tracking-wider text-white shadow-md transition-all hover:bg-[#6D28D9]"
                   >
                     Save Changes
                   </button>
-                </div>
-              </form>
-            ) : (
-              <div className="space-y-4 font-sans text-sm font-medium">
-                <div className="flex items-center gap-3.5 p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/20 border border-slate-100 dark:border-slate-900/60 mb-2">
-                  <div className={`w-12 h-12 rounded-full font-extrabold text-base flex items-center justify-center border ${selectedMember.avatarBg}`}>
-                    {getInitials(selectedMember.name)}
-                  </div>
-                  <div>
-                    <span className="block font-extrabold text-base text-slate-850 dark:text-slate-100">{selectedMember.name}</span>
-                    <span className="block text-xs font-mono text-slate-400 dark:text-slate-500 mt-0.5">{selectedMember.email}</span>
-                  </div>
+
                 </div>
 
-                <div className="space-y-3.5 p-2 font-mono text-xs text-slate-650 dark:text-slate-400">
-                  <div className="flex justify-between border-b border-slate-100 dark:border-slate-900/50 pb-2">
-                    <span className="font-bold text-slate-400">ROLE LEVEL</span>
-                    <span className="font-extrabold text-slate-800 dark:text-slate-200">{selectedMember.role}</span>
+              </form>
+
+            ) : (
+
+              <div className="space-y-4 font-sans text-sm font-medium">
+
+                <div className="mb-2 flex items-center gap-3.5 rounded-2xl border border-slate-100 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950">
+
+                  <div className={`flex h-12 w-12 items-center justify-center rounded-full border text-base font-extrabold ${selectedMember.avatarBg}`}>
+                    {getInitials(selectedMember.name)}
                   </div>
-                  <div className="flex justify-between border-b border-slate-100 dark:border-slate-900/50 pb-2">
+
+                  <div>
+                    <span className="block text-base font-extrabold text-slate-800 dark:text-slate-100">
+                      {selectedMember.name}
+                    </span>
+
+                    <span className="mt-0.5 block font-mono text-xs text-slate-400 dark:text-slate-500">
+                      {selectedMember.email}
+                    </span>
+                  </div>
+
+                </div>
+
+                <div className="space-y-3.5 p-2 font-mono text-xs text-slate-500 dark:text-slate-400">
+
+                  <div className="flex justify-between border-b border-slate-100 pb-2 dark:border-slate-800">
+                    <span className="font-bold text-slate-400">ROLE LEVEL</span>
+                    <span className="font-extrabold text-slate-800 dark:text-slate-200">
+                      {selectedMember.role}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between border-b border-slate-100 pb-2 dark:border-slate-800">
                     <span className="font-bold text-slate-400">ACCOUNT STATUS</span>
-                    <span className={`font-extrabold ${selectedMember.status === 'Active' ? 'text-emerald-500' : 'text-slate-500'}`}>
+
+                    <span
+                      className={`font-extrabold ${
+                        selectedMember.status === 'Active'
+                          ? 'text-emerald-500'
+                          : 'text-slate-500'
+                      }`}
+                    >
                       {selectedMember.status}
                     </span>
                   </div>
-                  <div className="flex justify-between border-b border-slate-100 dark:border-slate-900/50 pb-2">
+
+                  <div className="flex justify-between border-b border-slate-100 pb-2 dark:border-slate-800">
                     <span className="font-bold text-slate-400">JOINED DATE</span>
-                    <span className="font-extrabold text-slate-800 dark:text-slate-200">{selectedMember.joined}</span>
+
+                    <span className="font-extrabold text-slate-800 dark:text-slate-200">
+                      {selectedMember.joined}
+                    </span>
                   </div>
+
                   <div className="flex justify-between pb-1">
-                    <span className="font-bold text-slate-400">LAST ACTIVE TIME</span>
-                    <span className="font-extrabold text-slate-800 dark:text-slate-200">{selectedMember.lastActive}</span>
+
+                    <span className="font-bold text-slate-400">
+                      LAST ACTIVE TIME
+                    </span>
+
+                    <span className="font-extrabold text-slate-800 dark:text-slate-200">
+                      {selectedMember.lastActive}
+                    </span>
+
                   </div>
+
                 </div>
 
-                <div className="pt-4 flex gap-3">
+                <div className="flex gap-3 pt-4">
+
                   <button
                     onClick={() => setIsEditMode(true)}
-                    className="flex-1 py-3 bg-neon-purple text-white hover:bg-neon-purple/90 dark:bg-gradient-to-r dark:from-neon-cyan dark:to-neon-purple dark:text-slate-950 font-extrabold text-xs tracking-wider rounded-xl transition-all shadow-md text-center"
+                    className="flex-1 rounded-xl bg-[#7C3AED] py-3 text-center text-xs font-extrabold tracking-wider text-white shadow-md transition-all hover:bg-[#6D28D9]"
                   >
                     Edit Access Role
                   </button>
+
                   <button
                     onClick={() => setSelectedMember(null)}
-                    className="flex-1 py-3 rounded-xl border border-slate-200 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-900 text-xs font-bold font-mono tracking-wider text-slate-500 dark:text-slate-400 transition-colors"
+                    className="flex-1 rounded-xl border border-slate-200 py-3 font-mono text-xs font-bold tracking-wider text-slate-500 transition-colors hover:bg-slate-50 dark:border-slate-800 dark:text-slate-400 dark:hover:bg-slate-800"
                   >
                     Close Panel
                   </button>
+
                 </div>
+
               </div>
+
             )}
+
           </div>
         </div>
       )}
@@ -868,4 +1258,4 @@ const Management = () => {
   );
 };
 
-export default Management;
+export default management;

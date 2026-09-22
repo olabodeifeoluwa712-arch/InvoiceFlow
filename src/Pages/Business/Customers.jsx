@@ -44,7 +44,6 @@ const Customers = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Add customer modal
   const [showAddCustomer, setShowAddCustomer] =
     useState(false);
 
@@ -62,6 +61,8 @@ const Customers = () => {
   });
 
   const navigate = useNavigate();
+
+
   // =====================================================
   // FETCH CUSTOMERS
   // =====================================================
@@ -170,7 +171,6 @@ const Customers = () => {
 
     setFormError("");
 
-    // Display name is required by the backend
     if (!formData.displayName.trim()) {
       setFormError("Customer name is required.");
       return;
@@ -197,14 +197,11 @@ const Customers = () => {
             formData.notes.trim(),
         });
 
-      // Add the newly created customer
-      // to the beginning of the list
       setCustomersList((prev) => [
         newCustomer,
         ...prev,
       ]);
 
-      // Reset form
       setFormData({
         displayName: "",
         email: "",
@@ -236,15 +233,13 @@ const Customers = () => {
   // =====================================================
 
   return (
-    <div className="relative min-h-screen p-6 md:p-10 overflow-hidden font-sans select-none w-full transition-colors duration-300 bg-slate-50 text-slate-900 dark:bg-cyber-dark dark:text-slate-100">
+    <div className="relative min-h-screen p-6 md:p-10 overflow-hidden font-sans select-none w-full transition-colors duration-300 bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
 
-      {/* =================================================
-          BACKGROUND DECORATION
-      ================================================== */}
+      {/* BACKGROUND DECORATION */}
 
-      <div className="absolute top-1/4 -right-36 w-96 h-96 bg-neon-purple/5 dark:bg-neon-purple/10 rounded-full blur-[120px] pointer-events-none transition-all duration-300"></div>
+      <div className="absolute top-1/4 -right-36 w-96 h-96 bg-purple-500/5 dark:bg-purple-500/10 rounded-full blur-[120px] pointer-events-none transition-all duration-300" />
 
-      <div className="absolute bottom-1/4 -left-36 w-96 h-96 bg-neon-cyan/5 dark:bg-neon-cyan/10 rounded-full blur-[120px] pointer-events-none transition-all duration-300"></div>
+      <div className="absolute bottom-1/4 -left-36 w-96 h-96 bg-violet-500/5 dark:bg-violet-500/10 rounded-full blur-[120px] pointer-events-none transition-all duration-300" />
 
 
       <div className="relative z-10 max-w-6xl mx-auto space-y-6">
@@ -258,7 +253,7 @@ const Customers = () => {
 
           <div>
 
-            <h1 className="text-3xl font-extrabold tracking-wider text-slate-900 dark:bg-gradient-to-r dark:from-neon-cyan dark:via-slate-100 dark:to-neon-purple dark:bg-clip-text dark:text-transparent dark:text-glow-cyan transition-all duration-300">
+            <h1 className="text-3xl font-extrabold tracking-wider text-slate-900 dark:text-slate-100 transition-colors duration-300">
               Customers
             </h1>
 
@@ -285,7 +280,7 @@ const Customers = () => {
             <button
               type="button"
               onClick={handleOpenAddCustomer}
-              className="flex items-center gap-2 px-5 py-3 rounded-xl font-extrabold tracking-wider transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer shadow-md bg-neon-purple text-white hover:bg-neon-purple/90 dark:bg-gradient-to-r dark:from-neon-cyan dark:to-neon-purple dark:text-slate-950 dark:hover:from-neon-cyan dark:hover:to-neon-pink dark:shadow-[0_0_20px_rgba(0,243,255,0.3)] dark:hover:shadow-[0_0_25px_rgba(255,0,127,0.4)]"
+              className="flex items-center gap-2 px-5 py-3 rounded-xl font-extrabold tracking-wider transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer shadow-md bg-[#7C3AED] text-white hover:bg-[#6D28D9]"
             >
 
               <svg
@@ -318,7 +313,7 @@ const Customers = () => {
         ================================================== */}
 
         {error && (
-          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400">
+          <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-900/50 dark:bg-rose-950/30 dark:text-rose-200">
             {error}
           </div>
         )}
@@ -328,11 +323,11 @@ const Customers = () => {
             CUSTOMER TABLE CARD
         ================================================== */}
 
-        <div className="bg-white border border-slate-200/80 shadow-sm dark:bg-cyber-card/85 dark:backdrop-blur-xl dark:border-slate-800/80 dark:shadow-2xl rounded-3xl p-6 relative transition-all duration-300">
+        <div className="bg-white border border-slate-200/80 shadow-sm dark:bg-slate-900 dark:border-slate-800 rounded-3xl p-6 relative transition-all duration-300">
 
-          {/* Top glow */}
+          {/* Top accent */}
 
-          <div className="absolute -top-[1px] left-10 right-10 h-[1.5px] bg-gradient-to-r from-transparent via-neon-purple to-transparent dark:via-neon-cyan opacity-40 dark:opacity-65 transition-all duration-300"></div>
+          <div className="absolute -top-[1px] left-10 right-10 h-[1.5px] bg-gradient-to-r from-transparent via-purple-500/40 to-transparent opacity-70" />
 
 
           {/* =================================================
@@ -341,7 +336,7 @@ const Customers = () => {
 
           <div className="relative max-w-md mb-6 group">
 
-            <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 group-focus-within:text-neon-purple dark:group-focus-within:text-neon-cyan transition-colors">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 group-focus-within:text-[#7C3AED] dark:group-focus-within:text-purple-400 transition-colors">
 
               <svg
                 className="w-5 h-5"
@@ -366,7 +361,7 @@ const Customers = () => {
               onChange={(e) =>
                 setSearchTerm(e.target.value)
               }
-              className="w-full bg-slate-100 border border-slate-200 rounded-xl pl-11 pr-4 py-3 text-sm text-slate-850 placeholder-slate-400 font-medium focus:border-neon-purple focus:outline-none transition-all duration-300 focus:ring-1 focus:ring-neon-purple/30 dark:bg-slate-950/40 dark:border-slate-800 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-neon-cyan/80 dark:focus:ring-neon-cyan/50"
+              className="w-full bg-slate-100 border border-slate-200 rounded-xl pl-11 pr-4 py-3 text-sm text-slate-900 placeholder-slate-400 font-medium focus:border-[#7C3AED] focus:outline-none transition-all duration-300 focus:ring-2 focus:ring-[#7C3AED]/20 dark:bg-slate-950 dark:border-slate-800 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-purple-500 dark:focus:ring-purple-500/20"
             />
 
           </div>
@@ -382,7 +377,7 @@ const Customers = () => {
 
               <thead>
 
-                <tr className="border-b border-slate-200/60 dark:border-slate-800/50">
+                <tr className="border-b border-slate-200/60 dark:border-slate-800">
 
                   <th className="py-4 px-4 text-slate-400 dark:text-slate-500 font-semibold tracking-wider text-xs uppercase font-mono">
                     Customer
@@ -411,7 +406,7 @@ const Customers = () => {
               </thead>
 
 
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
 
 
                 {/* LOADING */}
@@ -464,7 +459,7 @@ const Customers = () => {
 
                         <tr
                           key={customer._id}
-                          className="hover:bg-slate-50/70 dark:hover:bg-slate-900/30 transition-colors duration-200 group/row"
+                          className="hover:bg-slate-50/70 dark:hover:bg-slate-950/60 transition-colors duration-200 group/row"
                         >
 
                           {/* CUSTOMER */}
@@ -473,11 +468,11 @@ const Customers = () => {
 
                             <div className="flex items-center gap-3">
 
-                              <div className="w-9 h-9 rounded-full font-bold text-xs flex items-center justify-center transition-all bg-purple-100 border border-purple-200 text-purple-700 dark:bg-neon-purple/10 dark:border-neon-purple/30 dark:text-neon-cyan dark:shadow-[0_0_8px_rgba(189,0,255,0.15)] dark:group-hover/row:shadow-[0_0_12px_rgba(189,0,255,0.3)]">
+                              <div className="w-9 h-9 rounded-full font-bold text-xs flex items-center justify-center transition-all bg-purple-100 border border-purple-200 text-purple-700 dark:bg-purple-900/30 dark:border-purple-800 dark:text-purple-300">
                                 {initials}
                               </div>
 
-                              <span className="text-slate-800 dark:text-slate-100 font-semibold text-sm group-hover/row:text-neon-purple dark:group-hover/row:text-neon-cyan transition-colors">
+                              <span className="text-slate-800 dark:text-slate-100 font-semibold text-sm group-hover/row:text-[#7C3AED] dark:group-hover/row:text-purple-400 transition-colors">
                                 {customer.displayName}
                               </span>
 
@@ -529,7 +524,7 @@ const Customers = () => {
                             <button
                               type="button"
                               onClick={() => navigate(`/customers/${customer._id}`)}
-                              className="text-slate-400 dark:text-slate-500 group-hover/row:text-neon-purple dark:group-hover/row:text-neon-cyan transition-colors duration-200 cursor-pointer"
+                              className="text-slate-400 dark:text-slate-500 group-hover/row:text-[#7C3AED] dark:group-hover/row:text-purple-400 transition-colors duration-200 cursor-pointer"
                             >
 
                               <svg
@@ -572,36 +567,40 @@ const Customers = () => {
       {/* =====================================================
           ADD CUSTOMER MODAL
       ====================================================== */}
-      {/* ===============================
-    ADD CUSTOMER MODAL
-================================ */}
+
       {showAddCustomer && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/45 backdrop-blur-[4px]"
           onClick={handleCloseAddCustomer}
         >
           <div
-            className="relative w-full max-w-[500px] rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-900 overflow-hidden"
+            className="relative w-full max-w-[500px] rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900 overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Purple top accent */}
-            <div className="h-1 w-full bg-gradient-to-r from-violet-500 via-purple-600 to-indigo-500" />
+
+            <div className="h-1 w-full bg-gradient-to-r from-purple-500 via-[#7C3AED] to-violet-500" />
 
             {/* Header */}
+
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800">
+
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-100 text-violet-600 dark:bg-violet-500/10 dark:text-violet-400">
+
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100 text-[#7C3AED] dark:bg-purple-900/30 dark:text-purple-400">
                   <UserPlusIcon className="h-5 w-5" />
                 </div>
 
                 <div>
-                  <h2 className="text-base font-semibold text-slate-900 dark:text-white">
+                  <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">
                     Add Customer
                   </h2>
+
                   <p className="text-xs text-slate-500 dark:text-slate-400">
                     Create a new customer profile
                   </p>
                 </div>
+
               </div>
 
               <button
@@ -611,19 +610,27 @@ const Customers = () => {
               >
                 <XMarkIcon className="h-5 w-5" />
               </button>
+
             </div>
 
+
             {/* Form */}
+
             <form onSubmit={handleSubmitCustomer} className="px-6 py-5">
+
               {formError && (
-                <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-xs text-red-600 dark:border-red-900/40 dark:bg-red-950/20 dark:text-red-400">
+                <div className="mb-4 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2.5 text-xs text-rose-700 dark:border-rose-900/50 dark:bg-rose-950/30 dark:text-rose-200">
                   {formError}
                 </div>
               )}
 
+
               <div className="space-y-4">
+
                 {/* Customer Name */}
+
                 <div>
+
                   <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">
                     Customer Name <span className="text-red-500">*</span>
                   </label>
@@ -634,13 +641,18 @@ const Customers = () => {
                     value={formData.displayName}
                     onChange={handleInputChange}
                     placeholder="e.g. John Doe"
-                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-500 focus:bg-white focus:ring-2 focus:ring-violet-500/10 dark:border-slate-700 dark:bg-slate-800/70 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-violet-500 dark:focus:bg-slate-800"
+                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#7C3AED] focus:bg-white focus:ring-2 focus:ring-[#7C3AED]/10 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-purple-500 dark:focus:bg-slate-950"
                   />
+
                 </div>
 
+
                 {/* Email + Phone */}
+
                 <div className="grid grid-cols-2 gap-3">
+
                   <div>
+
                     <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">
                       Email
                     </label>
@@ -651,11 +663,14 @@ const Customers = () => {
                       value={formData.email}
                       onChange={handleInputChange}
                       placeholder="customer@email.com"
-                      className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-500 focus:bg-white focus:ring-2 focus:ring-violet-500/10 dark:border-slate-700 dark:bg-slate-800/70 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-violet-500 dark:focus:bg-slate-800"
+                      className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#7C3AED] focus:bg-white focus:ring-2 focus:ring-[#7C3AED]/10 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-purple-500 dark:focus:bg-slate-950"
                     />
+
                   </div>
 
+
                   <div>
+
                     <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">
                       Phone
                     </label>
@@ -666,13 +681,18 @@ const Customers = () => {
                       value={formData.phone}
                       onChange={handleInputChange}
                       placeholder="08012345678"
-                      className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-500 focus:bg-white focus:ring-2 focus:ring-violet-500/10 dark:border-slate-700 dark:bg-slate-800/70 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-violet-500 dark:focus:bg-slate-800"
+                      className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#7C3AED] focus:bg-white focus:ring-2 focus:ring-[#7C3AED]/10 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-purple-500 dark:focus:bg-slate-950"
                     />
+
                   </div>
+
                 </div>
 
+
                 {/* Address */}
+
                 <div>
+
                   <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">
                     Address
                   </label>
@@ -683,12 +703,16 @@ const Customers = () => {
                     value={formData.address}
                     onChange={handleInputChange}
                     placeholder="Customer address"
-                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-500 focus:bg-white focus:ring-2 focus:ring-violet-500/10 dark:border-slate-700 dark:bg-slate-800/70 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-violet-500 dark:focus:bg-slate-800"
+                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#7C3AED] focus:bg-white focus:ring-2 focus:ring-[#7C3AED]/10 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-purple-500 dark:focus:bg-slate-950"
                   />
+
                 </div>
 
+
                 {/* Notes */}
+
                 <div>
+
                   <label className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-300">
                     Notes
                   </label>
@@ -699,17 +723,22 @@ const Customers = () => {
                     onChange={handleInputChange}
                     rows={2}
                     placeholder="Optional notes about this customer..."
-                    className="w-full resize-none rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-500 focus:bg-white focus:ring-2 focus:ring-violet-500/10 dark:border-slate-700 dark:bg-slate-800/70 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-violet-500 dark:focus:bg-slate-800"
+                    className="w-full resize-none rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#7C3AED] focus:bg-white focus:ring-2 focus:ring-[#7C3AED]/10 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-purple-500 dark:focus:bg-slate-950"
                   />
+
                 </div>
+
               </div>
 
+
               {/* Actions */}
+
               <div className="mt-5 flex justify-end gap-2.5 border-t border-slate-100 pt-4 dark:border-slate-800">
+
                 <button
                   type="button"
                   onClick={handleCloseAddCustomer}
-                  className="rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+                  className="rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
                 >
                   Cancel
                 </button>
@@ -717,8 +746,9 @@ const Customers = () => {
                 <button
                   type="submit"
                   disabled={creatingCustomer}
-                  className="flex items-center gap-2 rounded-lg bg-violet-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="flex items-center gap-2 rounded-lg bg-[#7C3AED] px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-[#6D28D9] disabled:cursor-not-allowed disabled:opacity-60"
                 >
+
                   {creatingCustomer ? (
                     <>
                       <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
@@ -730,9 +760,13 @@ const Customers = () => {
                       Add Customer
                     </>
                   )}
+
                 </button>
+
               </div>
+
             </form>
+
           </div>
         </div>
       )}

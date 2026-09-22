@@ -12,20 +12,20 @@ const getStatusStyle = (status) => {
   if (s === 'in stock') {
     return {
       light: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
-      dark: 'dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/30',
+      dark: 'dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800',
     };
   }
 
   if (s === 'low stock') {
     return {
       light: 'bg-amber-50 text-amber-700 border border-amber-200',
-      dark: 'dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/30',
+      dark: 'dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800',
     };
   }
 
   return {
     light: 'bg-red-50 text-red-600 border border-red-200',
-    dark: 'dark:bg-neon-pink/10 dark:text-neon-pink dark:border-neon-pink/30',
+    dark: 'dark:bg-red-900/30 dark:text-red-400 dark:border-red-800',
   };
 };
 
@@ -43,7 +43,7 @@ const getBarColor = (stock) => {
   if (stock <= 10) return 'bg-red-400 dark:bg-red-400';
   if (stock <= 30) return 'bg-amber-400 dark:bg-amber-400';
 
-  return 'bg-neon-purple dark:bg-neon-cyan';
+  return 'bg-[#7C3AED] dark:bg-purple-500';
 };
 
 const Products = () => {
@@ -180,12 +180,12 @@ const Products = () => {
   const maxStock = 100;
 
   return (
-    <div className="relative min-h-screen p-6 md:p-10 overflow-hidden font-sans select-none w-full transition-colors duration-300 bg-slate-50 text-slate-900 dark:bg-cyber-dark dark:text-slate-100">
+    <div className="relative min-h-screen p-6 md:p-10 overflow-hidden font-sans select-none w-full transition-colors duration-300 bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
 
       {/* Background Glow */}
-      <div className="absolute top-1/4 -right-36 w-96 h-96 bg-neon-purple/5 dark:bg-neon-purple/10 rounded-full blur-[120px] pointer-events-none transition-all duration-300" />
+      <div className="absolute top-1/4 -right-36 w-96 h-96 bg-purple-500/5 dark:bg-purple-500/10 rounded-full blur-[120px] pointer-events-none transition-all duration-300" />
 
-      <div className="absolute bottom-1/4 -left-36 w-96 h-96 bg-neon-cyan/5 dark:bg-neon-cyan/10 rounded-full blur-[120px] pointer-events-none transition-all duration-300" />
+      <div className="absolute bottom-1/4 -left-36 w-96 h-96 bg-violet-500/5 dark:bg-violet-500/10 rounded-full blur-[120px] pointer-events-none transition-all duration-300" />
 
       <div className="relative z-10 max-w-6xl mx-auto space-y-6">
 
@@ -193,7 +193,7 @@ const Products = () => {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
 
           <div>
-            <h1 className="text-3xl font-extrabold tracking-wider text-slate-900 dark:bg-gradient-to-r dark:from-neon-cyan dark:via-slate-100 dark:to-neon-purple dark:bg-clip-text dark:text-transparent dark:text-glow-cyan transition-all duration-300">
+            <h1 className="text-3xl font-extrabold tracking-wider text-slate-900 dark:text-slate-100 transition-all duration-300">
               Products &amp; Inventory
             </h1>
 
@@ -213,7 +213,7 @@ const Products = () => {
               setAddError('');
               setShowAddModal(true);
             }}
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-neon-purple text-white font-semibold text-sm hover:opacity-90 transition-all dark:bg-neon-cyan dark:text-slate-950"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#7C3AED] hover:bg-[#6D28D9] text-white font-semibold text-sm transition-all"
           >
             <span className="text-lg leading-none">+</span>
             Add Product
@@ -222,14 +222,14 @@ const Products = () => {
         </div>
 
         {/* Products Card */}
-        <div className="bg-white border border-slate-200/80 shadow-sm dark:bg-cyber-card/85 dark:backdrop-blur-xl dark:border-slate-800/80 dark:shadow-2xl rounded-3xl p-6 relative transition-all duration-300">
+        <div className="bg-white border border-slate-200 shadow-sm dark:bg-slate-900 dark:border-slate-800 dark:shadow-2xl rounded-3xl p-6 relative transition-all duration-300">
 
-          <div className="absolute -top-[1px] left-10 right-10 h-[1.5px] bg-gradient-to-r from-transparent via-neon-purple to-transparent dark:via-neon-cyan opacity-40 dark:opacity-65 transition-all duration-300" />
+          <div className="absolute -top-[1px] left-10 right-10 h-[1.5px] bg-gradient-to-r from-transparent via-[#7C3AED] to-transparent opacity-40 dark:opacity-60 transition-all duration-300" />
 
           {/* Search */}
           <div className="relative max-w-md mb-6 group">
 
-            <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 group-focus-within:text-neon-purple dark:group-focus-within:text-neon-cyan transition-colors">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 group-focus-within:text-[#7C3AED] dark:group-focus-within:text-purple-400 transition-colors">
               <svg
                 className="w-5 h-5"
                 fill="none"
@@ -250,13 +250,13 @@ const Products = () => {
               placeholder="Search products or SKU..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-slate-100 border border-slate-200 rounded-xl pl-11 pr-4 py-3 text-sm text-slate-800 placeholder-slate-400 font-medium focus:border-neon-purple focus:outline-none transition-all duration-300 focus:ring-1 focus:ring-neon-purple/30 dark:bg-slate-950/40 dark:border-slate-800 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-neon-cyan/80 dark:focus:ring-neon-cyan/50"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-4 py-3 text-sm text-slate-800 placeholder-slate-400 font-medium focus:border-[#7C3AED] focus:outline-none transition-all duration-300 focus:ring-1 focus:ring-purple-500/30 dark:bg-slate-950 dark:border-slate-800 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-purple-500 dark:focus:ring-purple-900/30"
             />
           </div>
 
           {/* Error */}
           {error && (
-            <div className="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-400">
+            <div className="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-800 dark:bg-red-900/30 dark:text-red-400">
               {error}
             </div>
           )}
@@ -267,7 +267,7 @@ const Products = () => {
             <table className="w-full text-left border-collapse">
 
               <thead>
-                <tr className="border-b border-slate-200/60 dark:border-slate-800/50">
+                <tr className="border-b border-slate-200/60 dark:border-slate-800">
 
                   <th className="py-4 px-4 text-slate-400 dark:text-slate-500 font-semibold tracking-wider text-xs uppercase font-mono">
                     Product
@@ -296,7 +296,7 @@ const Products = () => {
                 </tr>
               </thead>
 
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
 
                 {loading ? (
                   <tr>
@@ -347,7 +347,7 @@ const Products = () => {
                     return (
                       <tr
                         key={product.id}
-                        className="hover:bg-slate-50/70 dark:hover:bg-slate-900/30 transition-colors duration-200 group/row"
+                        className="hover:bg-slate-50 dark:hover:bg-slate-950/60 transition-colors duration-200 group/row"
                       >
 
                         {/* Product */}
@@ -355,7 +355,7 @@ const Products = () => {
 
                           <div className="flex items-center gap-3">
 
-                            <div className="w-9 h-9 rounded-xl flex items-center justify-center transition-all bg-slate-100 border border-slate-200 text-slate-400 dark:bg-slate-800/50 dark:border-slate-700 dark:text-slate-500 group-hover/row:border-neon-purple/30 dark:group-hover/row:border-neon-cyan/30">
+                            <div className="w-9 h-9 rounded-xl flex items-center justify-center transition-all bg-slate-100 border border-slate-200 text-slate-400 dark:bg-slate-950 dark:border-slate-800 dark:text-slate-500 group-hover/row:border-purple-200 group-hover/row:text-[#7C3AED] dark:group-hover/row:border-purple-800 dark:group-hover/row:text-purple-400">
 
                               <svg
                                 className="w-4.5 h-4.5"
@@ -373,7 +373,7 @@ const Products = () => {
 
                             </div>
 
-                            <span className="text-slate-800 dark:text-slate-100 font-semibold text-sm group-hover/row:text-neon-purple dark:group-hover/row:text-neon-cyan transition-colors">
+                            <span className="text-slate-800 dark:text-slate-100 font-semibold text-sm group-hover/row:text-[#7C3AED] dark:group-hover/row:text-purple-400 transition-colors">
                               {product.name}
                             </span>
 
@@ -435,7 +435,7 @@ const Products = () => {
                               navigate(`/products/${product.id}`)
                             }
                             title="View product"
-                            className="inline-flex items-center justify-center w-9 h-9 rounded-xl text-slate-400 hover:text-neon-purple hover:bg-neon-purple/10 dark:hover:text-neon-cyan dark:hover:bg-neon-cyan/10 transition-all"
+                            className="inline-flex items-center justify-center w-9 h-9 rounded-xl text-slate-400 hover:text-[#7C3AED] hover:bg-purple-50 dark:hover:text-purple-400 dark:hover:bg-purple-900/20 transition-all"
                           >
                             <svg
                               className="w-5 h-5"
@@ -480,7 +480,7 @@ const Products = () => {
         >
 
           <div
-            className="w-full max-w-lg bg-white dark:bg-cyber-card border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl overflow-hidden"
+            className="w-full max-w-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
 
@@ -514,7 +514,7 @@ const Products = () => {
               <div className="p-6 space-y-5">
 
                 {addError && (
-                  <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-400">
+                  <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-800 dark:bg-red-900/30 dark:text-red-400">
                     {addError}
                   </div>
                 )}
@@ -532,7 +532,7 @@ const Products = () => {
                     onChange={handleFormChange}
                     required
                     placeholder="e.g. Oraimo FreePods"
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-neon-purple focus:ring-1 focus:ring-neon-purple/30 dark:border-slate-700 dark:bg-slate-950/40 dark:text-slate-100 dark:focus:border-neon-cyan"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#7C3AED] focus:ring-1 focus:ring-purple-500/30 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-purple-500 dark:focus:ring-purple-900/30"
                   />
                 </div>
 
@@ -551,7 +551,7 @@ const Products = () => {
                       onChange={handleFormChange}
                       required
                       placeholder="e.g. Headphones"
-                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-neon-purple focus:ring-1 focus:ring-neon-purple/30 dark:border-slate-700 dark:bg-slate-950/40 dark:text-slate-100 dark:focus:border-neon-cyan"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#7C3AED] focus:ring-1 focus:ring-purple-500/30 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-purple-500 dark:focus:ring-purple-900/30"
                     />
                   </div>
 
@@ -566,7 +566,7 @@ const Products = () => {
                       value={formData.brand}
                       onChange={handleFormChange}
                       placeholder="e.g. Oraimo"
-                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-neon-purple focus:ring-1 focus:ring-neon-purple/30 dark:border-slate-700 dark:bg-slate-950/40 dark:text-slate-100 dark:focus:border-neon-cyan"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#7C3AED] focus:ring-1 focus:ring-purple-500/30 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-purple-500 dark:focus:ring-purple-900/30"
                     />
                   </div>
 
@@ -587,7 +587,7 @@ const Products = () => {
                       onChange={handleFormChange}
                       min="0"
                       placeholder="0"
-                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-neon-purple focus:ring-1 focus:ring-neon-purple/30 dark:border-slate-700 dark:bg-slate-950/40 dark:text-slate-100 dark:focus:border-neon-cyan"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#7C3AED] focus:ring-1 focus:ring-purple-500/30 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-purple-500 dark:focus:ring-purple-900/30"
                     />
                   </div>
 
@@ -603,7 +603,7 @@ const Products = () => {
                       onChange={handleFormChange}
                       min="0"
                       placeholder="0"
-                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-neon-purple focus:ring-1 focus:ring-neon-purple/30 dark:border-slate-700 dark:bg-slate-950/40 dark:text-slate-100 dark:focus:border-neon-cyan"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#7C3AED] focus:ring-1 focus:ring-purple-500/30 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-purple-500 dark:focus:ring-purple-900/30"
                     />
                   </div>
 
@@ -622,7 +622,7 @@ const Products = () => {
                     onChange={handleFormChange}
                     min="0"
                     placeholder="0"
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-neon-purple focus:ring-1 focus:ring-neon-purple/30 dark:border-slate-700 dark:bg-slate-950/40 dark:text-slate-100 dark:focus:border-neon-cyan"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#7C3AED] focus:ring-1 focus:ring-purple-500/30 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-purple-500 dark:focus:ring-purple-900/30"
                   />
 
                   <p className="mt-2 text-xs text-slate-400 dark:text-slate-500">
@@ -639,7 +639,7 @@ const Products = () => {
                   type="button"
                   onClick={() => setShowAddModal(false)}
                   disabled={addingProduct}
-                  className="px-5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 transition"
+                  className="px-5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-100 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800 transition"
                 >
                   Cancel
                 </button>
@@ -647,7 +647,7 @@ const Products = () => {
                 <button
                   type="submit"
                   disabled={addingProduct}
-                  className="px-5 py-2.5 rounded-xl bg-neon-purple text-white text-sm font-semibold hover:opacity-90 disabled:opacity-50 transition dark:bg-neon-cyan dark:text-slate-950"
+                  className="px-5 py-2.5 rounded-xl bg-[#7C3AED] hover:bg-[#6D28D9] text-white text-sm font-semibold disabled:opacity-50 transition"
                 >
                   {addingProduct ? 'Adding...' : 'Add Product'}
                 </button>
