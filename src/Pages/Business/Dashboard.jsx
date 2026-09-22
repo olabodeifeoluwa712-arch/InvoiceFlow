@@ -143,6 +143,7 @@ const Dashboard = () => {
 
     fetchDashboard();
   }, []);
+  // getAnalytics()
 
   if (loading) {
     return (
