@@ -1,15 +1,8 @@
 
 
-import { customers as customerActivity, invoices as recent, products } from '../../Database/data.json'
 import { getAnalytics } from '../../api/analytics.api'
 
-const recentInvoices = recent.slice(0, 5).reverse(); // Get the 5 most recent invoices
-const low = products.filter(product => product.status.toLowerCase() === "low stock" || product.status.toLowerCase() === "out of stock");
-const lowStockProducts = low.slice(0, 5); // Get the first 5 low stock products
-
-console.log(lowStockProducts);
-
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   AreaChart,
@@ -22,7 +15,42 @@ import {
 } from "recharts";
 import { useTheme } from "../../Context/ThemeContext";
 import { formatStockValue, getNameInitials } from "../../utils/formatter";
-import api from "../../api/http";
+
+const getAnalyticsRows = (response) => {
+  const payload = response?.data ?? response;
+
+  if (Array.isArray(payload)) return payload;
+
+  if (Array.isArray(payload?.monthly)) return payload.monthly;
+  if (Array.isArray(payload?.analytics)) return payload.analytics;
+  if (Array.isArray(payload?.data)) return payload.data;
+
+  return [];
+};
+
+const normalizeAnalytics = (response) => {
+  const rows = getAnalyticsRows(response);
+  const monthly = rows.map((row) => {
+    const monthNumber = Number(row?._id?.month || row?.month);
+    const month = Number.isInteger(monthNumber)
+      ? new Date(2000, monthNumber - 1, 1).toLocaleString("en-US", {
+          month: "short",
+        })
+      : row?.month || "Unknown";
+
+    return {
+      month,
+      revenue: Number(row?.totalRevenue || row?.revenue || 0),
+    };
+  });
+
+  return {
+    summary: {
+      totalRevenue: monthly.reduce((total, row) => total + row.revenue, 0),
+    },
+    chart: { monthly },
+  };
+};
 
 
 const RevenueChart = ({ chart }) => {
@@ -127,9 +155,13 @@ const Dashboard = () => {
         setLoading(true);
         setError("");
 
-        const response = await api.get("/dashboard");
+        const response = await getAnalytics();
 
-        setDashboard(response.data);
+        if (response?.error) {
+          throw new Error(response.error);
+        }
+
+        setDashboard(normalizeAnalytics(response));
       } catch (err) {
         console.error("Dashboard error:", err);
 
@@ -143,8 +175,6 @@ const Dashboard = () => {
 
     fetchDashboard();
   }, []);
-  // getAnalytics()
-
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-6">
@@ -195,6 +225,8 @@ const Dashboard = () => {
   const lowStockProducts = dashboard?.lowStockProducts || [];
   const customerActivity = dashboard?.customerActivity || [];
   const chart = dashboard?.chart || {};
+  console.log('charts:', dashboard);
+
 
   const metricCards = [
     {
